@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link'; // Додано
 import { useAuth } from '@/context/AuthContext';
 import { getAllOrders } from '@/services/admin';
 import { Order } from '@/types/order';
@@ -51,7 +52,14 @@ export default function AdminPage() {
       <Navbar />
       <main className="container py-16">
         <Badge>Admin</Badge>
-        <h1 className="text-4xl font-bold mt-4 mb-8">Orders Dashboard</h1>
+        <h1 className="text-4xl font-bold mt-4 mb-4">Orders Dashboard</h1>
+
+        {/* Посилання на керування продуктами */}
+        <div className="mb-8">
+          <Link href="/admin/products" className="text-purple-bright hover:underline">
+            Manage Products
+          </Link>
+        </div>
 
         {orders.length === 0 ? (
           <p className="text-white/60">No orders yet.</p>
