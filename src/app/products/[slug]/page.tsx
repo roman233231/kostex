@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
-import { products } from '@/data/products';
+import { getProductBySlug } from '@/services/product';
 
 export default async function ProductPage({
   params,
@@ -12,7 +12,7 @@ export default async function ProductPage({
   params: { slug: string };
 }) {
   const { slug } = await params;
-  const product = products.find(p => p.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();

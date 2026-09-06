@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -9,9 +9,10 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
-import { products } from '@/data/products';
 import { useAuth } from '@/context/AuthContext';
 import { createOrder } from '@/services/order';
+import { getPublishedProducts } from '@/services/product';
+import { Product } from '@/types/product';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const commonPages = ['Home', 'About', 'Services', 'Contact', 'Gallery', 'Blog', 'FAQ', 'Catalog', 'Team', 'Pricing', 'Reviews', 'Booking', 'Dashboard', 'Profile'];
@@ -56,8 +57,24 @@ export default function BuilderPage() {
   const [references, setReferences] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
-  const product = products.find(p => p.id === selectedProduct);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getPublishedProducts();
+        setAvailableProducts(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const product = availableProducts.find(p => p.id === selectedProduct);
 
   const totalPrice = (product?.startingPrice || 0) + selectedPages.length * 500 + selectedFeatures.length * 1000;
 
@@ -124,18 +141,22 @@ export default function BuilderPage() {
         return (
           <div>
             <h2 className="text-2xl font-bold mb-4">Choose Product</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {products.map(p => (
-                <Card key={p.id} className={`cursor-pointer ${selectedProduct === p.id ? 'border-purple-bright' : ''}`} hover={false}>
-                  <div onClick={() => setSelectedProduct(p.id)}>
-                    <Badge>{p.category}</Badge>
-                    <h3 className="text-lg font-semibold mt-2">{p.title}</h3>
-                    <p className="text-sm text-white/60 mt-1">{p.shortDescription}</p>
-                    <div className="mt-2 text-sm text-white/50">From {p.startingPrice.toLocaleString('uk-UA')} ₴</div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            {productsLoading ? (
+              <p className="text-white/60">Loading products...</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {availableProducts.map(p => (
+                  <Card key={p.id} className={`cursor-pointer ${selectedProduct === p.id ? 'border-purple-bright' : ''}`} hover={false}>
+                    <div onClick={() => setSelectedProduct(p.id)}>
+                      <Badge>{p.category}</Badge>
+                      <h3 className="text-lg font-semibold mt-2">{p.title}</h3>
+                      <p className="text-sm text-white/60 mt-1">{p.shortDescription}</p>
+                      <div className="mt-2 text-sm text-white/50">From {p.startingPrice.toLocaleString('uk-UA')} ₴</div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         );
       case 1:
