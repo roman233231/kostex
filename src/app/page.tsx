@@ -1,69 +1,69 @@
-import Image from "next/image";
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import Button from '@/components/ui/Button';
+import Card from '@/components/ui/Card';
+import Badge from '@/components/ui/Badge';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'KOSTEX',
+  description: 'Digital Products Studio',
+  url: 'https://kostex.example.com',
+  logo: 'https://kostex.example.com/logo.png', // заміни на свій логотип
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+  <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+    <Navbar />
+      <main className="container py-16">
+        <section className="text-center mb-16">
+          <Badge>Digital Products Studio</Badge>
+          <h1 className="text-5xl md:text-7xl font-bold mt-6 mb-4">
+            We build digital<br />products
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg text-white/60 max-w-2xl mx-auto mb-8">
+            Websites, Web Apps, Software, Bots and custom digital solutions.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <div className="flex gap-4 justify-center">
+            <Button href="/builder">Start a Project</Button>
+            <Button variant="outline" href="/portfolio">Explore Projects</Button>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <h3 className="text-xl font-semibold mb-2">Website</h3>
+            <p className="text-white/60">Modern responsive websites for any business.</p>
+          </Card>
+          <Card>
+            <h3 className="text-xl font-semibold mb-2">Web App</h3>
+            <p className="text-white/60">Complex web applications with dashboards.</p>
+          </Card>
+          <Card>
+            <h3 className="text-xl font-semibold mb-2">Bot</h3>
+            <p className="text-white/60">Telegram & Discord automation and support.</p>
+          </Card>
+        </section>
+
+        <section className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold">Get in touch</h2>
+            <Input label="Your name" placeholder="John Doe" />
+            <Input label="Email" type="email" placeholder="john@example.com" />
+            <Textarea label="Message" placeholder="Tell us about your project..." />
+            <Button>Send Message</Button>
+          </div>
+        </section>
       </main>
-    </div>
+      <Footer />
+    </>
   );
 }
