@@ -4,9 +4,13 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { getPublishedProducts } from '@/services/product';
+import { getAllCategories } from '@/services/category';
 
 export default async function CatalogPage() {
-  const products = await getPublishedProducts();
+  const [products, categories] = await Promise.all([
+    getPublishedProducts(),
+    getAllCategories().catch(() => []), // якщо помилка, порожній масив
+  ]);
 
   return (
     <>
@@ -22,15 +26,28 @@ export default async function CatalogPage() {
 
         {/* Category chips */}
         <div className="flex flex-wrap gap-3 mb-8">
-          {['websites', 'web-apps', 'software', 'bots'].map(cat => (
-            <a
-              key={cat}
-              href={`/catalog/${cat}`}
-              className="px-4 py-2 rounded-full border border-white/10 text-sm text-white/70 hover:border-purple-bright hover:text-purple-bright transition-colors"
-            >
-              {cat}
-            </a>
-          ))}
+          {categories.length > 0 ? (
+            categories.map(cat => (
+              <a
+                key={cat.id}
+                href={`/catalog/${cat.slug}`}
+                className="px-4 py-2 rounded-full border border-white/10 text-sm text-white/70 hover:border-purple-bright hover:text-purple-bright transition-colors"
+              >
+                {cat.name}
+              </a>
+            ))
+          ) : (
+            // fallback
+            ['websites', 'web-apps', 'software', 'bots'].map(cat => (
+              <a
+                key={cat}
+                href={`/catalog/${cat}`}
+                className="px-4 py-2 rounded-full border border-white/10 text-sm text-white/70 hover:border-purple-bright hover:text-purple-bright transition-colors"
+              >
+                {cat}
+              </a>
+            ))
+          )}
         </div>
 
         {/* Products grid */}

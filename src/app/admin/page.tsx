@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link'; // Додано
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { getAllOrders } from '@/services/admin';
 import { Order } from '@/types/order';
@@ -54,13 +54,16 @@ export default function AdminPage() {
         <Badge>Admin</Badge>
         <h1 className="text-4xl font-bold mt-4 mb-4">Orders Dashboard</h1>
 
-        {/* Посилання на керування продуктами та функціями */}
-        <div className="mb-8 flex gap-6">
+        {/* Посилання на керування */}
+        <div className="mb-8 flex gap-6 flex-wrap">
           <Link href="/admin/products" className="text-purple-bright hover:underline">
             Manage Products
           </Link>
           <Link href="/admin/features" className="text-purple-bright hover:underline">
             Manage Features
+          </Link>
+          <Link href="/admin/categories" className="text-purple-bright hover:underline">
+            Manage Categories
           </Link>
         </div>
 
