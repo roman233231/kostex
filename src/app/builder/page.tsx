@@ -7,39 +7,16 @@ import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import { useAuth } from '@/context/AuthContext';
 import { createOrder } from '@/services/order';
 import { getPublishedProducts } from '@/services/product';
+import { getActiveFeatures } from '@/services/feature';
 import { Product } from '@/types/product';
+import { Feature } from '@/types/feature';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const commonPages = ['Home', 'About', 'Services', 'Contact', 'Gallery', 'Blog', 'FAQ', 'Catalog', 'Team', 'Pricing', 'Reviews', 'Booking', 'Dashboard', 'Profile'];
-const commonFeatures = [
-  'Online Booking',
-  'Telegram Bot',
-  'CRM',
-  'Admin Panel',
-  'User Accounts',
-  'Authentication',
-  'Database',
-  'Online Payment',
-  'Map',
-  'Multilingual',
-  'Email',
-  'Push Notifications',
-  'Analytics',
-  'SEO',
-  'API',
-  'Search',
-  'Filters',
-  'Reviews',
-  'Notifications',
-  'File Upload',
-  'Chat',
-  'Calendar',
-];
 
 const steps = ['Product', 'Template & Design', 'Pages', 'Features', 'Requirements', 'Review'];
 
@@ -52,13 +29,16 @@ export default function BuilderPage() {
   const [template, setTemplate] = useState('');
   const [design, setDesign] = useState('');
   const [selectedPages, setSelectedPages] = useState<string[]>([]);
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]); // id функцій
   const [requirements, setRequirements] = useState('');
   const [references, setReferences] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
+  const [featuresLoading, setFeaturesLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -71,12 +51,29 @@ export default function BuilderPage() {
         setProductsLoading(false);
       }
     };
+    const fetchFeatures = async () => {
+      try {
+        const data = await getActiveFeatures();
+        setAvailableFeatures(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFeaturesLoading(false);
+      }
+    };
     fetchProducts();
+    fetchFeatures();
   }, []);
 
   const product = availableProducts.find(p => p.id === selectedProduct);
 
-  const totalPrice = (product?.startingPrice || 0) + selectedPages.length * 500 + selectedFeatures.length * 1000;
+  const totalPrice =
+    (product?.startingPrice || 0) +
+    selectedPages.length * 500 +
+    selectedFeatures.reduce((sum, featureId) => {
+      const feature = availableFeatures.find(f => f.id === featureId);
+      return sum + (feature?.price || 0);
+    }, 0);
 
   const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
     if (list.includes(value)) {
@@ -112,6 +109,11 @@ export default function BuilderPage() {
     setLoading(true);
     setError('');
     try {
+      // Перетворюємо id функцій на назви для збереження у замовленні
+      const featureNames = availableFeatures
+        .filter(f => selectedFeatures.includes(f.id!))
+        .map(f => f.name);
+
       const orderId = await createOrder({
         userId: currentUser.uid,
         productId: selectedProduct,
@@ -119,7 +121,7 @@ export default function BuilderPage() {
         template,
         design,
         pages: selectedPages,
-        features: selectedFeatures,
+        features: featureNames, // зберігаємо назви
         requirements,
         references: references ? references.split('\n').filter(r => r.trim()) : [],
         estimatedPrice: totalPrice,
@@ -217,18 +219,24 @@ export default function BuilderPage() {
         return (
           <div>
             <h3 className="text-xl font-semibold mb-4">Select Features</h3>
-            <div className="flex flex-wrap gap-2">
-              {commonFeatures.map(feature => (
-                <button
-                  key={feature}
-                  type="button"
-                  onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature)}
-                  className={`px-4 py-2 rounded-full border ${selectedFeatures.includes(feature) ? 'bg-purple-bright text-white border-purple-bright' : 'border-white/10 text-white/70 hover:border-purple-bright'}`}
-                >
-                  {feature}
-                </button>
-              ))}
-            </div>
+            {featuresLoading ? (
+              <p className="text-white/60">Loading features...</p>
+            ) : availableFeatures.length === 0 ? (
+              <p className="text-white/60">No features available.</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {availableFeatures.map(feature => (
+                  <button
+                    key={feature.id}
+                    type="button"
+                    onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
+                    className={`px-4 py-2 rounded-full border ${selectedFeatures.includes(feature.id!) ? 'bg-purple-bright text-white border-purple-bright' : 'border-white/10 text-white/70 hover:border-purple-bright'}`}
+                  >
+                    {feature.name} (+{feature.price} ₴)
+                  </button>
+                ))}
+              </div>
+            )}
             <p className="text-sm text-white/50 mt-4">Selected: {selectedFeatures.length} features</p>
           </div>
         );
@@ -259,7 +267,12 @@ export default function BuilderPage() {
                 <div><span className="text-white/50">Template:</span> {template}</div>
                 <div><span className="text-white/50">Design:</span> {design}</div>
                 <div><span className="text-white/50">Pages:</span> {selectedPages.join(', ') || 'None'}</div>
-                <div><span className="text-white/50">Features:</span> {selectedFeatures.join(', ') || 'None'}</div>
+                <div>
+                  <span className="text-white/50">Features:</span>{' '}
+                  {selectedFeatures.length > 0
+                    ? availableFeatures.filter(f => selectedFeatures.includes(f.id!)).map(f => f.name).join(', ')
+                    : 'None'}
+                </div>
                 <div><span className="text-white/50">Requirements:</span> {requirements || 'None'}</div>
                 <div><span className="text-white/50">References:</span> {references || 'None'}</div>
                 <div className="pt-4 border-t border-white/5">
