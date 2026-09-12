@@ -70,6 +70,9 @@ export default function AdminPage() {
           <Link href="/admin/categories" className="text-purple-bright hover:underline">
             Manage Categories
           </Link>
+          <Link href="/admin/portfolio" className="text-purple-bright hover:underline">
+            Portfolio
+          </Link>
           <Link href="/admin/clients" className="text-purple-bright hover:underline">
             Clients
           </Link>
