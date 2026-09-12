@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
-import Button from '@/components/ui/Button';
 import { getPublishedPortfolio } from '@/services/portfolio';
 
 export default async function PortfolioPage() {
@@ -23,21 +23,21 @@ export default async function PortfolioPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {items.map(item => (
-              <Card key={item.id} className="flex flex-col">
-                {item.image && (
-                  <div className="mb-3 rounded-md overflow-hidden">
-                    <img src={item.image} alt={item.title} className="w-full h-48 object-cover" />
+              <Link key={item.id} href={`/portfolio/${item.slug}`} className="block">
+                <Card className="flex flex-col h-full hover:border-purple-bright transition-colors">
+                  {item.image && (
+                    <div className="mb-3 rounded-md overflow-hidden">
+                      <img src={item.image} alt={item.title} className="w-full h-48 object-cover" />
+                    </div>
+                  )}
+                  <Badge className="self-start">{item.category}</Badge>
+                  <h3 className="text-xl font-semibold mt-3">{item.title}</h3>
+                  <p className="text-white/60 mt-2 flex-1">{item.description}</p>
+                  <div className="mt-4 text-sm text-purple-bright">
+                    View case →
                   </div>
-                )}
-                <Badge className="self-start">{item.category}</Badge>
-                <h3 className="text-xl font-semibold mt-3">{item.title}</h3>
-                <p className="text-white/60 mt-2 flex-1">{item.description}</p>
-                {item.demoUrl && (
-                  <div className="mt-4">
-                    <Button href={item.demoUrl}>View Demo</Button>
-                  </div>
-                )}
-              </Card>
+                </Card>
+              </Link>
             ))}
           </div>
         )}
