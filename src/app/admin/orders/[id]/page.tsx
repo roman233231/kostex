@@ -14,6 +14,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import { createNotification } from '@/services/notification';
 
 const statuses: Order['status'][] = [
   'NEW',
@@ -60,29 +61,37 @@ export default function AdminOrderDetailPage() {
     fetchData();
   }, [currentUser, appUser, id]);
 
-  const handleSaveStatusAndPrice = async () => {
-    if (!order) return;
-    setSaving(true);
-    try {
-      await updateOrderStatusAndPrice(
-        order.id!,
-        status,
-        finalPrice === '' ? undefined : Number(finalPrice)
-      );
-      const updatedOrder = {
-        ...order,
-        status,
-        finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice),
-      };
-      setOrder(updatedOrder);
-      alert('Order updated successfully');
-    } catch (err) {
-      console.error(err);
-      alert('Failed to update order');
-    } finally {
-      setSaving(false);
-    }
-  };
+const handleSaveStatusAndPrice = async () => {
+  if (!order) return;
+  setSaving(true);
+  try {
+    await updateOrderStatusAndPrice(
+      order.id!,
+      status,
+      finalPrice === '' ? undefined : Number(finalPrice)
+    );
+
+    await createNotification(
+      order.userId,
+      'Order updated',
+      `Your order status is now: ${status}`,
+      `/account/orders/${order.id}`
+    );
+
+    const updatedOrder = {
+      ...order,
+      status,
+      finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice),
+    };
+    setOrder(updatedOrder);
+    alert('Order updated successfully');
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update order');
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();

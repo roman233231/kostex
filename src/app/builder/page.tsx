@@ -14,6 +14,7 @@ import { getPublishedProducts } from '@/services/product';
 import { getActiveFeatures } from '@/services/feature';
 import { Product } from '@/types/product';
 import { Feature } from '@/types/feature';
+import { notifyAllAdmins } from '@/services/notification';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const commonPages = ['Home', 'About', 'Services', 'Contact', 'Gallery', 'Blog', 'FAQ', 'Catalog', 'Team', 'Pricing', 'Reviews', 'Booking', 'Dashboard', 'Profile'];
@@ -101,41 +102,47 @@ export default function BuilderPage() {
     setStep(step - 1);
   };
 
-  const handleSubmit = async () => {
-    if (!currentUser) {
-      router.push('/login');
-      return;
-    }
-    setLoading(true);
-    setError('');
-    try {
-      // Перетворюємо id функцій на назви для збереження у замовленні
-      const featureNames = availableFeatures
-        .filter(f => selectedFeatures.includes(f.id!))
-        .map(f => f.name);
+const handleSubmit = async () => {
+  if (!currentUser) {
+    router.push('/login');
+    return;
+  }
+  setLoading(true);
+  setError('');
+  try {
+    const featureNames = availableFeatures
+      .filter(f => selectedFeatures.includes(f.id!))
+      .map(f => f.name);
 
-      const orderId = await createOrder({
-        userId: currentUser.uid,
-        productId: selectedProduct,
-        productTitle: product?.title,
-        template,
-        design,
-        pages: selectedPages,
-        features: featureNames, // зберігаємо назви
-        requirements,
-        references: references ? references.split('\n').filter(r => r.trim()) : [],
-        estimatedPrice: totalPrice,
-        estimatedTime: product?.estimatedTime || 'TBD',
-        status: 'NEW',
-      });
-      router.push(`/account/orders`);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Failed to create order');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const orderId = await createOrder({
+      userId: currentUser.uid,
+      productId: selectedProduct,
+      productTitle: product?.title,
+      template,
+      design,
+      pages: selectedPages,
+      features: featureNames,
+      requirements,
+      references: references ? references.split('\n').filter(r => r.trim()) : [],
+      estimatedPrice: totalPrice,
+      estimatedTime: product?.estimatedTime || 'TBD',
+      status: 'NEW',
+    });
+
+    await notifyAllAdmins(
+      'New order received',
+      `New order: ${product?.title || 'Project'}`,
+      `/admin/orders/${orderId}`
+    );
+
+    router.push(`/account/orders`);
+  } catch (err: any) {
+    console.error(err);
+    setError(err.message || 'Failed to create order');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const renderStep = () => {
     switch (step) {

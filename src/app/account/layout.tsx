@@ -10,6 +10,7 @@ import Footer from '@/components/layout/Footer';
 const navItems = [
   { href: '/account', label: 'Dashboard', icon: '📊' },
   { href: '/account/orders', label: 'Orders', icon: '📦' },
+  { href: '/account/notifications', label: 'Notifications', icon: '🔔' },
   { href: '/account/messages', label: 'Messages', icon: '💬' },
   { href: '/account/files', label: 'Files', icon: '📁' },
   { href: '/account/profile', label: 'Profile', icon: '👤' },

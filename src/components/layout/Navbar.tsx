@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Button from '../ui/Button';
+import NotificationBell from './NotificationBell';
 import { useAuth } from '@/context/AuthContext';
 import { logoutUser } from '@/services/auth';
 import { useRouter } from 'next/navigation';
@@ -22,26 +23,45 @@ export default function Navbar() {
           KOSTEX
         </Link>
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/catalog" className="text-sm text-white/70 hover:text-white transition-colors">
+          <Link
+            href="/catalog"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
             Catalog
           </Link>
-          <Link href="/portfolio" className="text-sm text-white/70 hover:text-white transition-colors">
+          <Link
+            href="/portfolio"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
             Portfolio
           </Link>
-          <Link href="/inspiration" className="text-sm text-white/70 hover:text-white transition-colors">
+          <Link
+            href="/inspiration"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
             Inspiration
           </Link>
-          <Link href="/about" className="text-sm text-white/70 hover:text-white transition-colors">
+          <Link
+            href="/about"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
             About
           </Link>
-          <Link href="/contact" className="text-sm text-white/70 hover:text-white transition-colors">
+          <Link
+            href="/contact"
+            className="text-sm text-white/70 hover:text-white transition-colors"
+          >
             Contact
           </Link>
         </nav>
         <div className="flex items-center gap-3">
           {loading ? null : currentUser ? (
             <>
-              <Link href="/account" className="text-sm text-white/70 hover:text-white">
+              <NotificationBell />
+              <Link
+                href="/account"
+                className="text-sm text-white/70 hover:text-white"
+              >
                 {appUser?.displayName || 'Account'}
               </Link>
               <Button variant="outline" onClick={handleLogout}>
@@ -50,7 +70,9 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Button variant="outline" href="/login">Login</Button>
+              <Button variant="outline" href="/login">
+                Login
+              </Button>
               <Button href="/register">Start a Project</Button>
             </>
           )}
