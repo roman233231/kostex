@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { getAllOrders } from '@/services/admin';
+import { getAllOrders, getAdminStats, AdminStats } from '@/services/admin';
 import { Order } from '@/types/order';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -15,7 +15,8 @@ export default function AdminPage() {
   const { currentUser, appUser, loading } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (!loading && (!currentUser || appUser?.role !== 'admin')) {
@@ -25,21 +26,25 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (appUser?.role === 'admin') {
-      const fetchOrders = async () => {
+      const fetchData = async () => {
         try {
-          const data = await getAllOrders();
-          setOrders(data);
+          const [ordersData, statsData] = await Promise.all([
+            getAllOrders(),
+            getAdminStats(),
+          ]);
+          setOrders(ordersData);
+          setStats(statsData);
         } catch (err) {
           console.error(err);
         } finally {
-          setLoadingOrders(false);
+          setLoadingData(false);
         }
       };
-      fetchOrders();
+      fetchData();
     }
   }, [appUser]);
 
-  if (loading || loadingOrders) {
+  if (loading || loadingData) {
     return <div className="container py-16 text-center">Loading...</div>;
   }
 
@@ -52,7 +57,7 @@ export default function AdminPage() {
       <Navbar />
       <main className="container py-16">
         <Badge>Admin</Badge>
-        <h1 className="text-4xl font-bold mt-4 mb-4">Orders Dashboard</h1>
+        <h1 className="text-4xl font-bold mt-4 mb-4">Dashboard</h1>
 
         {/* Посилання на керування */}
         <div className="mb-8 flex gap-6 flex-wrap">
@@ -70,6 +75,40 @@ export default function AdminPage() {
           </Link>
         </div>
 
+        {/* Статистика */}
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">Total Orders</div>
+              <div className="text-4xl font-bold mt-2">{stats.totalOrders}</div>
+            </Card>
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">New Orders</div>
+              <div className="text-4xl font-bold mt-2 text-purple-bright">{stats.newOrders}</div>
+            </Card>
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">Active Projects</div>
+              <div className="text-4xl font-bold mt-2">{stats.activeOrders}</div>
+            </Card>
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">Completed</div>
+              <div className="text-4xl font-bold mt-2 text-green-400">{stats.completedOrders}</div>
+            </Card>
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">Clients</div>
+              <div className="text-4xl font-bold mt-2">{stats.totalClients}</div>
+            </Card>
+            <Card hover={false}>
+              <div className="text-sm text-white/50 uppercase tracking-wide">Revenue (Completed)</div>
+              <div className="text-4xl font-bold mt-2 text-purple-bright">
+                {stats.totalRevenue.toLocaleString('uk-UA')} ₴
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Список замовлень */}
+        <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>
         {orders.length === 0 ? (
           <p className="text-white/60">No orders yet.</p>
         ) : (
@@ -92,7 +131,9 @@ export default function AdminPage() {
                     <div className="text-right">
                       <Badge>{order.status}</Badge>
                       <div className="mt-2 text-sm text-white/60">
-                        Est. price: {order.estimatedPrice.toLocaleString('uk-UA')} ₴
+                        {order.finalPrice
+                          ? `Final: ${order.finalPrice.toLocaleString('uk-UA')} ₴`
+                          : `Est: ${order.estimatedPrice.toLocaleString('uk-UA')} ₴`}
                       </div>
                     </div>
                   </div>
