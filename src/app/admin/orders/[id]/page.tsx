@@ -64,8 +64,16 @@ export default function AdminOrderDetailPage() {
     if (!order) return;
     setSaving(true);
     try {
-      await updateOrderStatusAndPrice(order.id!, status, finalPrice === '' ? undefined : Number(finalPrice));
-      const updatedOrder = { ...order, status, finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice) };
+      await updateOrderStatusAndPrice(
+        order.id!,
+        status,
+        finalPrice === '' ? undefined : Number(finalPrice)
+      );
+      const updatedOrder = {
+        ...order,
+        status,
+        finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice),
+      };
       setOrder(updatedOrder);
       alert('Order updated successfully');
     } catch (err) {
@@ -116,11 +124,17 @@ export default function AdminOrderDetailPage() {
           <h1 className="text-4xl font-bold mt-4">{order.productTitle || 'Order'}</h1>
           <p className="text-white/60">Order ID: #{order.id}</p>
           <div className="mt-2 text-white/60">Client UID: {order.userId}</div>
-          <div className="text-white/60">Estimated price: {order.estimatedPrice.toLocaleString('uk-UA')} ₴</div>
+          <div className="text-white/60">
+            Estimated price: {order.estimatedPrice.toLocaleString('uk-UA')} ₴
+          </div>
           {order.finalPrice && (
-            <div className="text-white/60">Final price: {order.finalPrice.toLocaleString('uk-UA')} ₴</div>
+            <div className="text-white/60">
+              Final price: {order.finalPrice.toLocaleString('uk-UA')} ₴
+            </div>
           )}
-          <div className="text-white/60">Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}</div>
+          <div className="text-white/60">
+            Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}
+          </div>
         </div>
 
         {/* Блок керування статусом та ціною */}
@@ -134,7 +148,11 @@ export default function AdminOrderDetailPage() {
                 onChange={(e) => setStatus(e.target.value as Order['status'])}
                 className="mt-1 block w-full bg-surface-2 border border-white/10 rounded-md px-3 py-2 text-white"
               >
-                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                {statuses.map(s => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -171,7 +189,8 @@ export default function AdminOrderDetailPage() {
                   }`}
                 >
                   <div className="text-sm text-white/50">
-                    {msg.senderRole === 'admin' ? 'KOSTEX' : 'Client'} · {msg.createdAt ? new Date(msg.createdAt).toLocaleString('uk-UA') : ''}
+                    {msg.senderRole === 'admin' ? 'KOSTEX' : 'Client'} ·{' '}
+                    {msg.createdAt ? new Date(msg.createdAt).toLocaleString('uk-UA') : ''}
                   </div>
                   <div className="mt-1 text-white/90">{msg.text}</div>
                 </div>

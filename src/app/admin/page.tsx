@@ -65,6 +65,9 @@ export default function AdminPage() {
           <Link href="/admin/categories" className="text-purple-bright hover:underline">
             Manage Categories
           </Link>
+          <Link href="/admin/clients" className="text-purple-bright hover:underline">
+            Clients
+          </Link>
         </div>
 
         {orders.length === 0 ? (
@@ -82,7 +85,8 @@ export default function AdminPage() {
                     <div>
                       <h3 className="text-lg font-semibold">{order.productTitle || 'Order'}</h3>
                       <p className="text-sm text-white/50">
-                        Client: {order.userId} | Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}
+                        Client: {order.userId} | Created:{' '}
+                        {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}
                       </p>
                     </div>
                     <div className="text-right">

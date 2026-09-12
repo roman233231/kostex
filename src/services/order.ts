@@ -1,7 +1,6 @@
-import { collection, addDoc, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Order } from '@/types/order';
-import { updateDoc, doc } from 'firebase/firestore';
 
 export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
   const docRef = await addDoc(collection(db, 'orders'), {
