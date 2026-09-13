@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'KOSTEX — Digital Products Studio',
     description: 'Build your digital product with KOSTEX.',
-    url: 'https://kostex.example.com',
+    url: 'https://kostex.vercel.app',
     siteName: 'KOSTEX',
     type: 'website',
     locale: 'uk_UA',
@@ -39,6 +39,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'KOSTEX — Digital Products Studio',
     description: 'Build your digital product with KOSTEX.',
+  },
+  verification: {
+    google: 'bKPtZ7tHSb2R3wG0TWH096JiJNjHzsiSJe8cFjqJmoE',
   },
 };
 
