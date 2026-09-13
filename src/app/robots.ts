@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/account', '/admin', '/builder'], // закриваємо особисті сторінки
+      disallow: ['/account', '/admin', '/builder'],
     },
-    sitemap: 'https://kostex.example.com/sitemap.xml',
+    sitemap: 'https://kostex.vercel.app/sitemap.xml',
   };
 }
