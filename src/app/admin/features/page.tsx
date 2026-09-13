@@ -85,7 +85,7 @@ export default function AdminFeaturesPage() {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" href={`/admin/features/${feature.id}`}>Edit</Button>
-                    <Button variant="outline" onClick={() => handleDelete(feature.id)}>Delete</Button>
+                    <Button variant="outline" onClick={() => handleDelete(feature.id!)}>Delete</Button>
                   </div>
                 </div>
               </Card>

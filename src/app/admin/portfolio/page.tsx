@@ -85,7 +85,7 @@ export default function AdminPortfolioPage() {
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" href={`/admin/portfolio/${item.id}`}>Edit</Button>
-                    <Button variant="outline" onClick={() => handleDelete(item.id)}>Delete</Button>
+                    <Button variant="outline" onClick={() => handleDelete(item.id!)}>Delete</Button>
                   </div>
                 </div>
               </Card>

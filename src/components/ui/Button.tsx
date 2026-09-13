@@ -7,10 +7,20 @@ interface ButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit';
   href?: string;
+  disabled?: boolean;
 }
 
-export default function Button({ children, variant = 'primary', className = '', onClick, type = 'button', href }: ButtonProps) {
-  const baseClass = `btn btn-${variant} ${className}`;
+export default function Button({
+  children,
+  variant = 'primary',
+  className = '',
+  onClick,
+  type = 'button',
+  href,
+  disabled = false,
+}: ButtonProps) {
+  const baseClass = `btn btn-${variant} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+
   if (href) {
     return (
       <a href={href} className={baseClass}>
@@ -18,8 +28,9 @@ export default function Button({ children, variant = 'primary', className = '', 
       </a>
     );
   }
+
   return (
-    <button type={type} className={baseClass} onClick={onClick}>
+    <button type={type} className={baseClass} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

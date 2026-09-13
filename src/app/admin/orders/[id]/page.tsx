@@ -167,11 +167,11 @@ const handleSaveStatusAndPrice = async () => {
             <div>
               <label className="text-sm text-white/70">Final Price (UAH)</label>
               <Input
-                type="number"
-                value={finalPrice}
-                onChange={(e) => setFinalPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                placeholder="Final price"
-              />
+  type="number"
+  value={finalPrice === '' ? '' : finalPrice}
+  onChange={(e) => setFinalPrice(e.target.value === '' ? '' : Number(e.target.value))}
+  placeholder="Final price"
+/>
             </div>
             <div>
               <Button onClick={handleSaveStatusAndPrice} disabled={saving}>

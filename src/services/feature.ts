@@ -1,9 +1,34 @@
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, orderBy } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  getDoc,
+  query,
+  where,
+  orderBy,
+} from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Feature } from '@/types/feature';
 
 export async function getAllFeatures(): Promise<Feature[]> {
   const q = query(collection(db, 'features'), orderBy('name', 'asc'));
+  const querySnapshot = await getDocs(q);
+  const features: Feature[] = [];
+  querySnapshot.forEach((doc) => {
+    features.push({ id: doc.id, ...doc.data() } as Feature);
+  });
+  return features;
+}
+
+export async function getActiveFeatures(): Promise<Feature[]> {
+  const q = query(
+    collection(db, 'features'),
+    where('active', '==', true),
+    orderBy('name', 'asc')
+  );
   const querySnapshot = await getDocs(q);
   const features: Feature[] = [];
   querySnapshot.forEach((doc) => {
@@ -34,14 +59,4 @@ export async function updateFeature(featureId: string, featureData: Partial<Feat
 export async function deleteFeature(featureId: string): Promise<void> {
   const docRef = doc(db, 'features', featureId);
   await deleteDoc(docRef);
-}
-
-export async function getActiveFeatures(): Promise<Feature[]> {
-  const q = query(collection(db, 'features'), where('active', '==', true), orderBy('name', 'asc'));
-  const querySnapshot = await getDocs(q);
-  const features: Feature[] = [];
-  querySnapshot.forEach((doc) => {
-    features.push({ id: doc.id, ...doc.data() } as Feature);
-  });
-  return features;
 }
