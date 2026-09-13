@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Card from '@/components/ui/Card';
@@ -22,12 +23,18 @@ export default async function PortfolioPage() {
           <p className="text-white/60">No portfolio items yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {items.map(item => (
+            {items.map((item) => (
               <Link key={item.id} href={`/portfolio/${item.slug}`} className="block">
                 <Card className="flex flex-col h-full hover:border-purple-bright transition-colors">
                   {item.image && (
-                    <div className="mb-3 rounded-md overflow-hidden">
-                      <img src={item.image} alt={item.title} className="w-full h-48 object-cover" />
+                    <div className="mb-3 rounded-md overflow-hidden relative w-full h-48">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover"
+                      />
                     </div>
                   )}
                   <Badge className="self-start">{item.category}</Badge>

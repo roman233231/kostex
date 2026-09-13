@@ -1,18 +1,36 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { AuthProvider } from "@/context/AuthContext";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { AuthProvider } from '@/context/AuthContext';
+
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
   title: {
     default: 'KOSTEX — Digital Products Studio',
     template: '%s | KOSTEX',
   },
-  description: 'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
-  keywords: ['KOSTEX', 'digital products', 'websites', 'web apps', 'software', 'bots', 'CRM', 'e-commerce', 'automation'],
+  description:
+    'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
+  keywords: [
+    'KOSTEX',
+    'digital products',
+    'websites',
+    'web apps',
+    'software',
+    'bots',
+    'CRM',
+    'e-commerce',
+    'automation',
+  ],
   openGraph: {
     title: 'KOSTEX — Digital Products Studio',
     description: 'Build your digital product with KOSTEX.',
-    url: 'https://kostex.example.com', // зміни на свій домен, коли буде
+    url: 'https://kostex.example.com',
     siteName: 'KOSTEX',
     type: 'website',
     locale: 'uk_UA',
@@ -30,11 +48,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth" className={inter.variable}>
       <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

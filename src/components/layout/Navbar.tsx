@@ -1,11 +1,15 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Button from '../ui/Button';
-import NotificationBell from './NotificationBell';
 import { useAuth } from '@/context/AuthContext';
 import { logoutUser } from '@/services/auth';
 import { useRouter } from 'next/navigation';
+
+const NotificationBell = dynamic(() => import('./NotificationBell'), {
+  ssr: false,
+});
 
 export default function Navbar() {
   const { currentUser, appUser, loading } = useAuth();

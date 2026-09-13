@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Card from '@/components/ui/Card';
@@ -34,8 +35,15 @@ export default async function PortfolioDetailPage({
         </div>
 
         {item.image && (
-          <div className="mb-12 rounded-lg overflow-hidden border border-white/10">
-            <img src={item.image} alt={item.title} className="w-full" />
+          <div className="mb-12 rounded-lg overflow-hidden border border-white/10 relative w-full aspect-[16/9]">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 1200px"
+              className="object-cover"
+              priority
+            />
           </div>
         )}
 
