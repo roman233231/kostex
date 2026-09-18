@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import Button from '../ui/Button';
+import ThemeToggle from './ThemeToggle';
 import { useAuth } from '@/context/AuthContext';
 import { logoutUser } from '@/services/auth';
-import { useRouter } from 'next/navigation';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), {
   ssr: false,
@@ -32,32 +34,45 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[var(--bg)]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
       <div className="container flex items-center justify-between h-16">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          KOSTEX
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+          <Image
+            src="/logo-icon.png"
+            alt="KOSTEX"
+            width={36}
+            height={36}
+            className="w-9 h-9 transition-transform duration-300 group-hover:scale-110"
+            priority
+          />
+          <span className="hidden sm:block text-lg font-bold tracking-tight">
+            KOSTEX
+          </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-7">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-white/70 hover:text-white transition-colors"
+              className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           {loading ? null : currentUser ? (
             <>
               <NotificationBell />
               <Link
                 href="/account"
-                className="hidden md:inline text-sm text-white/70 hover:text-white"
+                className="hidden md:inline text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
               >
                 {appUser?.displayName || 'Account'}
               </Link>
@@ -78,7 +93,7 @@ export default function Navbar() {
 
           {/* Mobile burger */}
           <button
-            className="md:hidden p-2 text-white/80"
+            className="lg:hidden p-2 text-[var(--text)]"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Menu"
           >
@@ -102,25 +117,25 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-white/5 bg-[var(--bg)]">
-          <nav className="container py-4 flex flex-col gap-3">
+        <div className="lg:hidden border-t border-[var(--border)] bg-[var(--bg)]">
+          <nav className="container py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-white/70 hover:text-white transition-colors py-2"
+                className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors py-3"
               >
                 {link.label}
               </Link>
             ))}
-            <div className="pt-3 border-t border-white/5 flex flex-col gap-2">
+            <div className="pt-3 mt-3 border-t border-[var(--border)] flex flex-col gap-2">
               {currentUser ? (
                 <>
                   <Link
                     href="/account"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-white/70 hover:text-white py-2"
+                    className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] py-2"
                   >
                     {appUser?.displayName || 'Account'}
                   </Link>
@@ -129,7 +144,7 @@ export default function Navbar() {
                       setMenuOpen(false);
                       handleLogout();
                     }}
-                    className="text-sm text-white/70 hover:text-white text-left py-2"
+                    className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] text-left py-2"
                   >
                     Logout
                   </button>
@@ -139,14 +154,14 @@ export default function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-white/70 hover:text-white py-2"
+                    className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] py-2"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setMenuOpen(false)}
-                    className="text-sm text-purple-bright py-2"
+                    className="text-sm text-[var(--purple)] py-2"
                   >
                     Start a Project
                   </Link>

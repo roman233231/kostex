@@ -1,41 +1,73 @@
 @import "tailwindcss";
 
-:root {
-  /* Backgrounds */
+/* ===== ТЕМНА ТЕМА (за замовчуванням) ===== */
+:root,
+html.dark {
   --bg: #050507;
+  --bg-secondary: #0A0A0F;
   --surface: #0C0C12;
   --surface-2: #131320;
+  --surface-hover: #1A1A28;
 
-  /* Text */
   --text: #FFFFFF;
+  --text-secondary: #D4D4D8;
   --text-muted: #A1A1AA;
+  --text-faint: #52525B;
 
-  /* Brand */
   --purple: #8B5CF6;
   --purple-bright: #A855F7;
   --purple-neon: #C026FF;
 
-  /* Borders */
   --border: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.2);
+  --border-strong: rgba(255, 255, 255, 0.15);
 
-  /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-purple: 0 0 24px rgba(139, 92, 246, 0.25);
+  --shadow-purple-strong: 0 0 40px rgba(139, 92, 246, 0.4);
 
-  /* Shadows / Glows */
-  --shadow-purple: 0 0 20px rgba(139, 92, 246, 0.3);
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
+  color-scheme: dark;
 }
 
+/* ===== СВІТЛА ТЕМА ===== */
+html.light {
+  --bg: #FFFFFF;
+  --bg-secondary: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-2: #F4F4F5;
+  --surface-hover: #F4F4F5;
+
+  --text: #09090B;
+  --text-secondary: #3F3F46;
+  --text-muted: #71717A;
+  --text-faint: #A1A1AA;
+
+  --purple: #7C3AED;
+  --purple-bright: #8B5CF6;
+  --purple-neon: #A855F7;
+
+  --border: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.2);
+  --border-strong: rgba(0, 0, 0, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-purple: 0 0 24px rgba(124, 58, 237, 0.15);
+  --shadow-purple-strong: 0 0 40px rgba(124, 58, 237, 0.25);
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.06);
+
+  color-scheme: light;
+}
+
+/* ===== БАЗОВІ СТИЛІ ===== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -53,6 +85,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 a {
@@ -74,9 +107,9 @@ img {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.2;
+  line-height: 1.15;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .container {
@@ -88,57 +121,24 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 768px) {
   .container {
-    padding: 0 16px;
+    padding: 0 20px;
   }
 }
 
-/* Utility classes */
-.glow-purple {
-  box-shadow: var(--shadow-purple);
-}
-
-.card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  transition: border-color var(--transition-base), transform var(--transition-base);
-}
-
-.card:hover {
-  border-color: var(--border-hover);
-}
-
-.card.no-hover {
-  transition: none;
-}
-.card.no-hover:hover {
-  border-color: var(--border);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--purple-bright);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-/* Buttons */
+/* ===== КНОПКИ ===== */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 1rem;
-  transition: all var(--transition-base);
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
   white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
 }
 
 .btn-primary {
@@ -149,7 +149,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   filter: brightness(1.1);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-purple-strong);
 }
 
 .btn-outline {
@@ -159,38 +160,149 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-outline:hover {
-  border-color: var(--purple-bright);
-  color: var(--purple-bright);
+  border-color: var(--purple);
+  color: var(--purple);
+  background: rgba(139, 92, 246, 0.05);
 }
 
-/* Inputs */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ===== КАРТКИ ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.card.no-hover:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--purple-bright);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* ===== ІНПУТИ ===== */
 .input,
 .textarea {
   width: 100%;
   background-color: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   padding: 12px 16px;
   color: var(--text);
-  font-size: 1rem;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-size: 0.9375rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-faint);
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
   border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
 .textarea {
   min-height: 120px;
   resize: vertical;
+  font-family: inherit;
 }
 
-/* Section titles */
+/* ===== АНІМАЦІЇ ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== SECTION TITLES ===== */
 .section-title {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   margin-bottom: 16px;
@@ -199,5 +311,34 @@ h1, h2, h3, h4, h5, h6 {
 .section-subtitle {
   font-size: 1.125rem;
   color: var(--text-muted);
-  max-width: 600px;
+  max-width: 640px;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-2);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
