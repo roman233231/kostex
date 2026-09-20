@@ -33,35 +33,47 @@ export default function AccountLayout({
   }, [currentUser, loading, router]);
 
   if (loading) {
-    return <div className="container py-16 text-center">Loading...</div>;
+    return (
+      <div className="container py-16">
+        <div className="flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+        </div>
+      </div>
+    );
   }
 
-  if (!currentUser) {
-    return null;
-  }
+  if (!currentUser) return null;
 
   return (
     <>
       <Navbar />
-      <div className="container py-8 flex gap-8">
-        <aside className="w-64 shrink-0 hidden md:block">
-          <nav className="space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md text-sm transition-colors ${
-                  pathname === item.href
-                    ? 'bg-purple/10 text-purple-bright border border-purple/30'
-                    : 'text-white/70 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <span>{item.icon}</span>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+      <div className="container py-10 flex gap-10">
+        {/* Sidebar */}
+        <aside className="w-60 shrink-0 hidden md:block">
+          <div className="sticky top-24">
+            <nav className="space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                      isActive
+                        ? 'bg-[var(--purple)]/10 text-[var(--purple-bright)] border border-[var(--purple)]/30 font-medium'
+                        : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] border border-transparent'
+                    }`}
+                  >
+                    <span className="text-base">{item.icon}</span>
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
         </aside>
+
+        {/* Main */}
         <main className="flex-1 min-w-0">{children}</main>
       </div>
       <Footer />
