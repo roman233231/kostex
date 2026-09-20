@@ -1,74 +1,67 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import ProductCard from '@/components/ui/ProductCard';
+import Reveal from '@/components/ui/Reveal';
 import { getPublishedProducts } from '@/services/product';
 import { getAllCategories } from '@/services/category';
 
 export default async function CatalogPage() {
   const [products, categories] = await Promise.all([
-    getPublishedProducts(),
-    getAllCategories().catch(() => []), // якщо помилка, порожній масив
+    getPublishedProducts().catch(() => []),
+    getAllCategories().catch(() => []),
   ]);
 
   return (
     <>
       <Navbar />
       <main className="container py-16">
-        <div className="mb-12">
-          <Badge>Catalog</Badge>
-          <h1 className="text-5xl font-bold mt-4">Digital Products</h1>
-          <p className="text-lg text-white/60 mt-4 max-w-2xl">
-            Choose a starting point for your project. Customize it to fit your needs.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mb-12">
+            <Badge>Catalog</Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mt-4 tracking-tight">
+              Digital Products
+            </h1>
+            <p className="text-lg text-[var(--text-muted)] mt-4 max-w-2xl">
+              Choose a starting point for your project. Customize it to fit your needs.
+            </p>
+          </div>
+        </Reveal>
 
         {/* Category chips */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          {categories.length > 0 ? (
-            categories.map(cat => (
-              <a
-                key={cat.id}
-                href={`/catalog/${cat.slug}`}
-                className="px-4 py-2 rounded-full border border-white/10 text-sm text-white/70 hover:border-purple-bright hover:text-purple-bright transition-colors"
-              >
-                {cat.name}
-              </a>
-            ))
-          ) : (
-            // fallback
-            ['websites', 'web-apps', 'software', 'bots'].map(cat => (
-              <a
-                key={cat}
-                href={`/catalog/${cat}`}
-                className="px-4 py-2 rounded-full border border-white/10 text-sm text-white/70 hover:border-purple-bright hover:text-purple-bright transition-colors"
-              >
-                {cat}
-              </a>
-            ))
-          )}
-        </div>
+        <Reveal delay={100}>
+          <div className="flex flex-wrap gap-3 mb-10">
+            {categories.length > 0
+              ? categories.map((cat) => (
+                  <a
+                    key={cat.id}
+                    href={`/catalog/${cat.slug}`}
+                    className="px-4 py-2 rounded-full border border-[var(--border)] text-sm text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)] transition-colors"
+                  >
+                    {cat.name}
+                  </a>
+                ))
+              : ['websites', 'web-apps', 'software', 'bots'].map((cat) => (
+                  <a
+                    key={cat}
+                    href={`/catalog/${cat}`}
+                    className="px-4 py-2 rounded-full border border-[var(--border)] text-sm text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)] transition-colors capitalize"
+                  >
+                    {cat.replace('-', ' ')}
+                  </a>
+                ))}
+          </div>
+        </Reveal>
 
         {/* Products grid */}
         {products.length === 0 ? (
-          <p className="text-white/60">No products available yet.</p>
+          <p className="text-[var(--text-muted)]">No products available yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {products.map(product => (
-              <Card key={product.id} className="flex flex-col">
-                <Badge className="self-start">{product.category}</Badge>
-                <h3 className="text-xl font-semibold mt-3">{product.title}</h3>
-                <p className="text-white/60 mt-2 flex-1">{product.shortDescription}</p>
-                <div className="mt-4 pt-4 border-t border-white/5">
-                  <div className="text-sm text-white/50">From {product.startingPrice.toLocaleString('uk-UA')} ₴</div>
-                  <div className="text-sm text-white/50">{product.estimatedTime}</div>
-                </div>
-                <div className="flex gap-3 mt-4">
-                  <Button href={`/products/${product.slug}`} className="flex-1">View Details</Button>
-                  <Button variant="outline" href={product.demoUrl || '#'} className="flex-1">Demo</Button>
-                </div>
-              </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product, i) => (
+              <Reveal key={product.id} delay={i * 60}>
+                <ProductCard product={product} index={i} />
+              </Reveal>
             ))}
           </div>
         )}

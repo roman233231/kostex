@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Logo from '@/components/layout/Logo';
+import Reveal from '@/components/ui/Reveal';
 
 const buildCards = [
   { title: 'Website', href: '/catalog/websites', description: 'Modern responsive websites for any business.' },
@@ -33,12 +34,13 @@ export default function Home() {
 
           <div className="container relative py-24 md:py-36">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-              {/* Icon X */}
               <div className="mb-8 animate-fade-in">
-                <Logo size={96} className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]" />
+                <Logo
+                  size={96}
+                  className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]"
+                />
               </div>
 
-              {/* Brand name */}
               <div className="mb-4 animate-fade-in-up">
                 <h2 className="text-2xl md:text-3xl font-bold tracking-[0.3em] uppercase">
                   KOSTEX
@@ -72,51 +74,57 @@ export default function Home() {
 
         {/* WHAT WE BUILD */}
         <section className="container py-20 md:py-28">
-          <div className="text-center mb-16">
-            <Badge>What we build</Badge>
-            <h2 className="section-title mt-4">What do you want to build?</h2>
-            <p className="section-subtitle mx-auto">
-              Choose a category and start creating your digital product.
-            </p>
-          </div>
+          <Reveal>
+            <div className="text-center mb-16">
+              <Badge>What we build</Badge>
+              <h2 className="section-title mt-4">What do you want to build?</h2>
+              <p className="section-subtitle mx-auto">
+                Choose a category and start creating your digital product.
+              </p>
+            </div>
+          </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {buildCards.map((item) => (
-              <Link key={item.title} href={item.href} className="block">
-                <Card className="h-full transition-all duration-300 group">
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-[var(--purple)] transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-[var(--text-muted)]">{item.description}</p>
-                  <div className="mt-4 text-sm text-[var(--purple)] opacity-0 group-hover:opacity-100 transition-opacity">
-                    Explore →
-                  </div>
-                </Card>
-              </Link>
+            {buildCards.map((item, i) => (
+              <Reveal key={item.title} delay={i * 80}>
+                <Link href={item.href} className="block h-full">
+                  <Card className="h-full transition-all duration-300 group">
+                    <h3 className="text-xl font-semibold mb-2 group-hover:text-[var(--purple)] transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-[var(--text-muted)]">{item.description}</p>
+                    <div className="mt-4 text-sm text-[var(--purple)] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Explore →
+                    </div>
+                  </Card>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* CTA */}
         <section className="container py-20 md:py-28">
-          <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-8 py-16 md:py-24 text-center">
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'radial-gradient(circle at 50% 0%, rgba(139,92,246,0.15) 0%, transparent 60%)',
-              }}
-            />
-            <div className="relative">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                Ready to build your project?
-              </h2>
-              <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto mb-8">
-                Configure your product, see the estimated price, and place an order in minutes.
-              </p>
-              <Button href="/builder">Start Building</Button>
+          <Reveal>
+            <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-8 py-16 md:py-24 text-center">
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'radial-gradient(circle at 50% 0%, rgba(139,92,246,0.15) 0%, transparent 60%)',
+                }}
+              />
+              <div className="relative">
+                <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                  Ready to build your project?
+                </h2>
+                <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto mb-8">
+                  Configure your product, see the estimated price, and place an order in minutes.
+                </p>
+                <Button href="/builder">Start Building</Button>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />
