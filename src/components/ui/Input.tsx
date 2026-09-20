@@ -21,7 +21,12 @@ export default function Input({
 }: InputProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      {label && <label className="text-sm font-medium text-white/80">{label}</label>}
+      {label && (
+        <label className="text-sm font-medium text-[var(--text-secondary)]">
+          {label}
+          {required && <span className="text-[var(--purple)] ml-0.5">*</span>}
+        </label>
+      )}
       <input
         type={type}
         name={name}
