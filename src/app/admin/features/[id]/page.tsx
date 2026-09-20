@@ -6,9 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { getFeatureById, updateFeature } from '@/services/feature';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
+import Reveal from '@/components/ui/Reveal';
 
 export default function EditFeaturePage() {
   const { id } = useParams();
@@ -23,7 +26,7 @@ export default function EditFeaturePage() {
       router.push('/account');
     }
     if (id && appUser?.role === 'admin') {
-      const fetchFeature = async () => {
+      const fetchData = async () => {
         try {
           const feature = await getFeatureById(id as string);
           if (feature) {
@@ -39,17 +42,19 @@ export default function EditFeaturePage() {
           console.error(err);
         }
       };
-      fetchFeature();
+      fetchData();
     }
   }, [id, currentUser, appUser, loading, router]);
 
   if (loading || !form) {
-    return <div className="container py-16 text-center">Loading...</div>;
+    return (
+      <div className="container py-16 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+      </div>
+    );
   }
 
-  if (!currentUser || appUser?.role !== 'admin') {
-    return null;
-  }
+  if (!currentUser || appUser?.role !== 'admin') return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,20 +80,70 @@ export default function EditFeaturePage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16 max-w-2xl">
-        <h1 className="text-4xl font-bold mb-8">Edit Feature</h1>
-        {error && <div className="mb-4 p-3 rounded bg-red-500/10 text-red-400">{error}</div>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} required />
-          <Textarea label="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-          <Input label="Price (UAH)" type="number" value={form.price} onChange={(e) => setForm({...form, price: Number(e.target.value)})} />
-          <Input label="Estimated Time" value={form.estimatedTime} onChange={(e) => setForm({...form, estimatedTime: e.target.value})} />
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={form.active} onChange={(e) => setForm({...form, active: e.target.checked})} />
-            <span className="text-sm text-white/80">Active</span>
-          </label>
-          <Button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Update Feature'}</Button>
-        </form>
+      <main className="container py-12 max-w-2xl">
+        <Reveal>
+          <div className="mb-8">
+            <Badge>Admin</Badge>
+            <h1 className="text-4xl font-bold mt-4 tracking-tight">Edit Feature</h1>
+          </div>
+        </Reveal>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
+        <Reveal delay={80}>
+          <Card hover={false}>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
+              <Textarea
+                label="Description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                required
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Price (₴)"
+                  type="number"
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                  required
+                />
+                <Input
+                  label="Estimated Time"
+                  value={form.estimatedTime}
+                  onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
+                  required
+                />
+              </div>
+              <label className="flex items-center gap-3 cursor-pointer py-2">
+                <input
+                  type="checkbox"
+                  checked={form.active}
+                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                  className="w-4 h-4 accent-[var(--purple)]"
+                />
+                <span className="text-sm text-[var(--text-secondary)]">Active</span>
+              </label>
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => router.push('/admin/features')}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </Reveal>
       </main>
       <Footer />
     </>
