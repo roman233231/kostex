@@ -6,9 +6,14 @@ import { useAuth } from '@/context/AuthContext';
 import { getProductById, updateProduct } from '@/services/product';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
+import Reveal from '@/components/ui/Reveal';
+
+const categories = ['websites', 'web-apps', 'software', 'bots'];
 
 export default function EditProductPage() {
   const { id } = useParams();
@@ -23,7 +28,7 @@ export default function EditProductPage() {
       router.push('/account');
     }
     if (id && appUser?.role === 'admin') {
-      const fetchProduct = async () => {
+      const fetchData = async () => {
         try {
           const product = await getProductById(id as string);
           if (product) {
@@ -46,17 +51,19 @@ export default function EditProductPage() {
           console.error(err);
         }
       };
-      fetchProduct();
+      fetchData();
     }
   }, [id, currentUser, appUser, loading, router]);
 
   if (loading || !form) {
-    return <div className="container py-16 text-center">Loading...</div>;
+    return (
+      <div className="container py-16 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+      </div>
+    );
   }
 
-  if (!currentUser || appUser?.role !== 'admin') {
-    return null;
-  }
+  if (!currentUser || appUser?.role !== 'admin') return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,32 +97,132 @@ export default function EditProductPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16 max-w-2xl">
-        <h1 className="text-4xl font-bold mb-8">Edit Product</h1>
-        {error && <div className="mb-4 p-3 rounded bg-red-500/10 text-red-400">{error}</div>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Title" value={form.title} onChange={(e) => setForm({...form, title: e.target.value})} required />
-          <Input label="Slug" value={form.slug} onChange={(e) => setForm({...form, slug: e.target.value})} />
-          <div>
-            <label className="text-sm font-medium text-white/80">Category</label>
-            <select value={form.category} onChange={(e) => setForm({...form, category: e.target.value})} className="mt-1 block w-full bg-surface-2 border border-white/10 rounded-md px-3 py-2 text-white">
-              {['websites', 'web-apps', 'software', 'bots'].map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
+      <main className="container py-12 max-w-3xl">
+        <Reveal>
+          <div className="mb-8">
+            <Badge>Admin</Badge>
+            <h1 className="text-4xl font-bold mt-4 tracking-tight">Edit Product</h1>
           </div>
-          <Textarea label="Short Description" value={form.shortDescription} onChange={(e) => setForm({...form, shortDescription: e.target.value})} />
-          <Textarea label="Description" value={form.description} onChange={(e) => setForm({...form, description: e.target.value})} />
-          <Input label="Starting Price (UAH)" type="number" value={form.startingPrice} onChange={(e) => setForm({...form, startingPrice: Number(e.target.value)})} />
-          <Input label="Estimated Time" value={form.estimatedTime} onChange={(e) => setForm({...form, estimatedTime: e.target.value})} />
-          <Input label="Tags (comma separated)" value={form.tags} onChange={(e) => setForm({...form, tags: e.target.value})} />
-          <Input label="Features (comma separated)" value={form.features} onChange={(e) => setForm({...form, features: e.target.value})} />
-          <Input label="Pages (comma separated)" value={form.pages} onChange={(e) => setForm({...form, pages: e.target.value})} />
-          <Input label="Demo URL" value={form.demoUrl} onChange={(e) => setForm({...form, demoUrl: e.target.value})} />
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={form.published} onChange={(e) => setForm({...form, published: e.target.checked})} />
-            <span className="text-sm text-white/80">Published</span>
-          </label>
-          <Button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Update Product'}</Button>
-        </form>
+        </Reveal>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
+        <Reveal delay={80}>
+          <Card hover={false}>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Title"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                required
+              />
+
+              <Input
+                label="Slug"
+                value={form.slug}
+                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+              />
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-[var(--text-secondary)]">
+                  Category
+                </label>
+                <select
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  className="input"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <Textarea
+                label="Short Description"
+                value={form.shortDescription}
+                onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
+                required
+              />
+
+              <Textarea
+                label="Full Description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                required
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Starting Price (₴)"
+                  type="number"
+                  value={form.startingPrice}
+                  onChange={(e) => setForm({ ...form, startingPrice: Number(e.target.value) })}
+                  required
+                />
+                <Input
+                  label="Estimated Time"
+                  value={form.estimatedTime}
+                  onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
+                  required
+                />
+              </div>
+
+              <Input
+                label="Tags (comma separated)"
+                value={form.tags}
+                onChange={(e) => setForm({ ...form, tags: e.target.value })}
+              />
+
+              <Input
+                label="Features (comma separated)"
+                value={form.features}
+                onChange={(e) => setForm({ ...form, features: e.target.value })}
+              />
+
+              <Input
+                label="Pages (comma separated)"
+                value={form.pages}
+                onChange={(e) => setForm({ ...form, pages: e.target.value })}
+              />
+
+              <Input
+                label="Demo URL"
+                value={form.demoUrl}
+                onChange={(e) => setForm({ ...form, demoUrl: e.target.value })}
+              />
+
+              <label className="flex items-center gap-3 cursor-pointer py-2">
+                <input
+                  type="checkbox"
+                  checked={form.published}
+                  onChange={(e) => setForm({ ...form, published: e.target.checked })}
+                  className="w-4 h-4 accent-[var(--purple)]"
+                />
+                <span className="text-sm text-[var(--text-secondary)]">Published</span>
+              </label>
+
+              <div className="flex gap-3 pt-2">
+                <Button type="submit" disabled={saving}>
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push('/admin/products')}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </Reveal>
       </main>
       <Footer />
     </>
