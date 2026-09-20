@@ -2,13 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
 import Button from '../ui/Button';
 import ThemeToggle from './ThemeToggle';
+import Logo from './Logo';
+import UserMenu from './UserMenu';
 import { useAuth } from '@/context/AuthContext';
-import { logoutUser } from '@/services/auth';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), {
   ssr: false,
@@ -24,28 +23,24 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { currentUser, appUser, loading } = useAuth();
-  const router = useRouter();
+  const { currentUser, loading } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleLogout = async () => {
-    await logoutUser();
-    router.push('/');
-  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
       <div className="container flex items-center justify-between h-16">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <Image
-            src="/logo-icon.png"
-            alt="KOSTEX"
-            width={36}
-            height={36}
-            className="w-9 h-9 transition-transform duration-300 group-hover:scale-110"
-            priority
-          />
+        {/* Logo (Shift+click = /admin) */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 shrink-0 group"
+          onClick={(e) => {
+            if (e.shiftKey) {
+              e.preventDefault();
+              window.location.href = '/admin';
+            }
+          }}
+        >
+          <Logo size={36} className="w-9 h-9 transition-transform duration-300 group-hover:scale-110" />
           <span className="hidden sm:block text-lg font-bold tracking-tight">
             KOSTEX
           </span>
@@ -70,15 +65,7 @@ export default function Navbar() {
           {loading ? null : currentUser ? (
             <>
               <NotificationBell />
-              <Link
-                href="/account"
-                className="hidden md:inline text-sm text-[var(--text-muted)] hover:text-[var(--text)]"
-              >
-                {appUser?.displayName || 'Account'}
-              </Link>
-              <Button variant="outline" onClick={handleLogout} className="hidden md:inline-flex">
-                Logout
-              </Button>
+              <UserMenu />
             </>
           ) : (
             <>
@@ -137,17 +124,15 @@ export default function Navbar() {
                     onClick={() => setMenuOpen(false)}
                     className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] py-2"
                   >
-                    {appUser?.displayName || 'Account'}
+                    My Account
                   </Link>
-                  <button
-                    onClick={() => {
-                      setMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] text-left py-2"
+                  <Link
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-sm text-[var(--purple-bright)] py-2 font-medium"
                   >
-                    Logout
-                  </button>
+                    Admin Panel
+                  </Link>
                 </>
               ) : (
                 <>

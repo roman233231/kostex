@@ -1,10 +1,10 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
+import Logo from '@/components/layout/Logo';
 
 const buildCards = [
   { title: 'Website', href: '/catalog/websites', description: 'Modern responsive websites for any business.' },
@@ -22,7 +22,6 @@ export default function Home() {
       <main>
         {/* HERO */}
         <section className="relative overflow-hidden">
-          {/* Background glow */}
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full pointer-events-none"
             style={{
@@ -36,14 +35,7 @@ export default function Home() {
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
               {/* Icon X */}
               <div className="mb-8 animate-fade-in">
-                <Image
-                  src="/logo-icon.png"
-                  alt="KOSTEX"
-                  width={96}
-                  height={96}
-                  className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]"
-                  priority
-                />
+                <Logo size={96} className="w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]" />
               </div>
 
               {/* Brand name */}
@@ -56,10 +48,8 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Divider */}
               <div className="w-16 h-px bg-gradient-to-r from-transparent via-[var(--purple)] to-transparent my-8 animate-fade-in" />
 
-              {/* Headline */}
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 animate-fade-in-up">
                 We build digital
                 <br />
@@ -68,12 +58,10 @@ export default function Home() {
                 </span>
               </h1>
 
-              {/* Subtitle */}
               <p className="text-lg md:text-xl text-[var(--text-muted)] max-w-2xl mb-10 animate-fade-in-up">
                 Websites, Web Apps, Software, Bots and custom digital solutions — built for your business.
               </p>
 
-              {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up">
                 <Button href="/builder">Start a Project</Button>
                 <Button variant="outline" href="/portfolio">Explore Projects</Button>
