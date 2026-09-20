@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { getAllPortfolio, deletePortfolioItem } from '@/services/portfolio';
 import { PortfolioItem } from '@/types/portfolio';
@@ -10,12 +11,14 @@ import Footer from '@/components/layout/Footer';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import Reveal from '@/components/ui/Reveal';
 
 export default function AdminPortfolioPage() {
   const { currentUser, appUser, loading } = useAuth();
   const router = useRouter();
   const [items, setItems] = useState<PortfolioItem[]>([]);
-  const [loadingItems, setLoadingItems] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (!loading && (!currentUser || appUser?.role !== 'admin')) {
@@ -25,17 +28,17 @@ export default function AdminPortfolioPage() {
 
   useEffect(() => {
     if (appUser?.role === 'admin') {
-      const fetchItems = async () => {
+      const fetchData = async () => {
         try {
           const data = await getAllPortfolio();
           setItems(data);
         } catch (err) {
           console.error(err);
         } finally {
-          setLoadingItems(false);
+          setLoadingData(false);
         }
       };
-      fetchItems();
+      fetchData();
     }
   }, [appUser]);
 
@@ -43,52 +46,99 @@ export default function AdminPortfolioPage() {
     if (!confirm('Delete this portfolio item?')) return;
     try {
       await deletePortfolioItem(id);
-      setItems(prev => prev.filter(i => i.id !== id));
+      setItems((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error(err);
       alert('Failed to delete');
     }
   };
 
-  if (loading || loadingItems) {
-    return <div className="container py-16 text-center">Loading...</div>;
+  if (loading || loadingData) {
+    return (
+      <div className="container py-16 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+      </div>
+    );
   }
 
-  if (!currentUser || appUser?.role !== 'admin') {
-    return null;
-  }
+  if (!currentUser || appUser?.role !== 'admin') return null;
+
+  const filtered = items.filter((item) => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q)
+    );
+  });
 
   return (
     <>
       <Navbar />
-      <main className="container py-16">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4">Portfolio</h1>
+      <main className="container py-12">
+        <Reveal>
+          <div className="flex justify-between items-start mb-8 gap-4 flex-wrap">
+            <div>
+              <Badge>Admin</Badge>
+              <h1 className="text-4xl font-bold mt-4 tracking-tight">Portfolio</h1>
+            </div>
+            <Button href="/admin/portfolio/new">+ Add Item</Button>
           </div>
-          <Button href="/admin/portfolio/new">Add Item</Button>
-        </div>
+        </Reveal>
 
-        {items.length === 0 ? (
-          <p className="text-white/60">No portfolio items yet.</p>
+        <Reveal delay={80}>
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="Search portfolio..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input md:max-w-sm"
+            />
+          </div>
+        </Reveal>
+
+        {filtered.length === 0 ? (
+          <p className="text-[var(--text-muted)]">
+            {items.length === 0 ? 'No portfolio items yet.' : 'No items match your search.'}
+          </p>
         ) : (
-          <div className="space-y-4">
-            {items.map(item => (
-              <Card key={item.id} hover={false}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">{item.title}</h3>
-                    <p className="text-sm text-white/50">Category: {item.category}</p>
-                    <p className="text-sm text-white/60 mt-1">{item.description}</p>
-                    {!item.published && <Badge className="mt-2">Draft</Badge>}
+          <div className="space-y-3">
+            {filtered.map((item, i) => (
+              <Reveal key={item.id} delay={i * 30}>
+                <Card hover={false}>
+                  <div className="flex justify-between items-start gap-4 flex-wrap">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-base font-semibold">{item.title}</h3>
+                        <Badge>{item.category}</Badge>
+                        {!item.published && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                            Draft
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-[var(--text-muted)] mt-1 line-clamp-1">
+                        {item.description}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
+                      <Link
+                        href={`/admin/portfolio/${item.id}`}
+                        className="px-3 py-1.5 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)] transition-colors"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(item.id!)}
+                        className="px-3 py-1.5 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-red-500/40 hover:text-red-400 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" href={`/admin/portfolio/${item.id}`}>Edit</Button>
-                    <Button variant="outline" onClick={() => handleDelete(item.id!)}>Delete</Button>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </Reveal>
             ))}
           </div>
         )}
