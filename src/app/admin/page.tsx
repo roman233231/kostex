@@ -14,6 +14,7 @@ import Reveal from '@/components/ui/Reveal';
 
 const adminLinks = [
   { href: '/admin/orders', label: 'Orders' },
+  { href: '/admin/messages', label: 'Messages' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/features', label: 'Features' },
   { href: '/admin/categories', label: 'Categories' },

@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import FloatingChat from '@/components/chat/FloatingChat';
+import CursorGlow from '@/components/ui/CursorGlow';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -17,17 +19,7 @@ export const metadata: Metadata = {
   },
   description:
     'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
-  keywords: [
-    'KOSTEX',
-    'digital products',
-    'websites',
-    'web apps',
-    'software',
-    'bots',
-    'CRM',
-    'e-commerce',
-    'automation',
-  ],
+  keywords: ['KOSTEX', 'digital products', 'websites', 'web apps', 'software', 'bots', 'CRM', 'e-commerce', 'automation'],
   openGraph: {
     title: 'KOSTEX — Digital Products Studio',
     description: 'Build your digital product with KOSTEX.',
@@ -55,7 +47,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} dark`} data-scroll-behavior="smooth">
       <body>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <CursorGlow />
+            {children}
+            <FloatingChat />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

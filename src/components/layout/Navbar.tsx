@@ -7,11 +7,10 @@ import Button from '../ui/Button';
 import ThemeToggle from './ThemeToggle';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
+import SupportMessagesBell from './SupportMessagesBell';
 import { useAuth } from '@/context/AuthContext';
 
-const NotificationBell = dynamic(() => import('./NotificationBell'), {
-  ssr: false,
-});
+const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
 
 const navLinks = [
   { href: '/services', label: 'Services' },
@@ -29,7 +28,6 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
       <div className="container flex items-center justify-between h-16">
-        {/* Logo (Shift+click = /admin) */}
         <Link
           href="/"
           className="flex items-center gap-2.5 shrink-0 group"
@@ -41,12 +39,9 @@ export default function Navbar() {
           }}
         >
           <Logo size={36} className="w-9 h-9 transition-transform duration-300 group-hover:scale-110" />
-          <span className="hidden sm:block text-lg font-bold tracking-tight">
-            KOSTEX
-          </span>
+          <span className="hidden sm:block text-lg font-bold tracking-tight">KOSTEX</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-7">
           {navLinks.map((link) => (
             <Link
@@ -59,11 +54,12 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ThemeToggle />
 
           {loading ? null : currentUser ? (
             <>
+              <SupportMessagesBell />
               <NotificationBell />
               <UserMenu />
             </>
@@ -78,7 +74,6 @@ export default function Navbar() {
             </>
           )}
 
-          {/* Mobile burger */}
           <button
             className="lg:hidden p-2 text-[var(--text)]"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -102,7 +97,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="lg:hidden border-t border-[var(--border)] bg-[var(--bg)]">
           <nav className="container py-4 flex flex-col gap-1">
@@ -125,6 +119,13 @@ export default function Navbar() {
                     className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] py-2"
                   >
                     My Account
+                  </Link>
+                  <Link
+                    href="/admin/messages"
+                    onClick={() => setMenuOpen(false)}
+                    className="text-sm text-[var(--purple-bright)] py-2 font-medium"
+                  >
+                    Messages
                   </Link>
                   <Link
                     href="/admin"
