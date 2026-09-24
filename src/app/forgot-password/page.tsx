@@ -8,8 +8,10 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Logo from '@/components/layout/Logo';
 import { resetPassword } from '@/services/auth';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ForgotPasswordPage() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -23,9 +25,8 @@ export default function ForgotPasswordPage() {
     try {
       await resetPassword(email);
       setMessage('Password reset email sent. Check your inbox.');
-    } catch (err: any) {
-      console.error(err);
-      setError('Failed to send reset email. Check your email address.');
+    } catch (err) {
+      setError('Failed to send reset email.');
     } finally {
       setLoading(false);
     }
@@ -41,9 +42,6 @@ export default function ForgotPasswordPage() {
               <Logo size={56} className="w-14 h-14" />
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Reset password</h1>
-            <p className="text-[var(--text-muted)] mt-2">
-              We&apos;ll send you a link to reset it
-            </p>
           </div>
 
           <Card hover={false}>
@@ -60,7 +58,7 @@ export default function ForgotPasswordPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
-                label="Email"
+                label={t('contact.email')}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -68,7 +66,7 @@ export default function ForgotPasswordPage() {
                 required
               />
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Sending...' : 'Send Reset Email'}
+                {loading ? t('common.loading') : t('common.send')}
               </Button>
             </form>
           </Card>

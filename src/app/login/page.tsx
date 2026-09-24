@@ -11,10 +11,12 @@ import Button from '@/components/ui/Button';
 import Logo from '@/components/layout/Logo';
 import { loginUser, getUserData } from '@/services/auth';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const { currentUser, appUser, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -51,8 +53,7 @@ export default function LoginPage() {
             <div className="flex justify-center mb-4">
               <Logo size={56} className="w-14 h-14" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-            <p className="text-[var(--text-muted)] mt-2">Sign in to your KOSTEX account</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('nav.login')}</h1>
           </div>
 
           <Card hover={false}>
@@ -64,7 +65,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
-                label="Email"
+                label={t('contact.email')}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -80,16 +81,16 @@ export default function LoginPage() {
                 required
               />
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? t('common.loading') : t('nav.login')}
               </Button>
             </form>
 
             <div className="mt-5 pt-5 border-t border-[var(--border)] flex justify-between text-sm">
-              <Link href="/register" className="text-[var(--purple)] hover:underline">
-                Create account
+              <Link href="/register" className="text-[var(--purple-bright)] hover:underline">
+                {t('nav.register')}
               </Link>
-              <Link href="/forgot-password" className="text-[var(--purple)] hover:underline">
-                Forgot password?
+              <Link href="/forgot-password" className="text-[var(--purple-bright)] hover:underline">
+                Forgot?
               </Link>
             </div>
           </Card>

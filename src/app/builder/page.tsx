@@ -10,15 +10,18 @@ import Badge from '@/components/ui/Badge';
 import Textarea from '@/components/ui/Textarea';
 import Reveal from '@/components/ui/Reveal';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { createOrder } from '@/services/order';
 import { getPublishedProducts } from '@/services/product';
 import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
 import { Product } from '@/types/product';
 import { Feature } from '@/types/feature';
+import { TranslationKey } from '@/lib/translations';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const templateOptions = ['Business', 'Restaurant', 'Auto Service', 'Fitness', 'Portfolio', 'E-commerce', 'Landing'];
+
 const commonPages = [
   { name: 'Home', price: 0 },
   { name: 'About', price: 500 },
@@ -36,18 +39,19 @@ const commonPages = [
   { name: 'Profile', price: 600 },
 ];
 
-const steps = [
-  { title: 'Product', icon: '📦' },
-  { title: 'Style', icon: '🎨' },
-  { title: 'Pages', icon: '📄' },
-  { title: 'Features', icon: '⚡' },
-  { title: 'Details', icon: '✍️' },
-  { title: 'Review', icon: '✓' },
+const steps: { titleKey: TranslationKey; icon: string }[] = [
+  { titleKey: 'builder.step.product', icon: '📦' },
+  { titleKey: 'builder.step.style', icon: '🎨' },
+  { titleKey: 'builder.step.pages', icon: '📄' },
+  { titleKey: 'builder.step.features', icon: '⚡' },
+  { titleKey: 'builder.step.details', icon: '✍️' },
+  { titleKey: 'builder.step.review', icon: '✓' },
 ];
 
 export default function BuilderPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
 
   const [step, setStep] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState('');
@@ -104,11 +108,7 @@ export default function BuilderPage() {
 
   const totalPrice = (product?.startingPrice || 0) + pagesPrice + featuresPrice;
 
-  const toggleSelection = (
-    list: string[],
-    setList: (val: string[]) => void,
-    value: string
-  ) => {
+  const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
     if (list.includes(value)) {
       setList(list.filter((v) => v !== value));
     } else {
@@ -118,11 +118,11 @@ export default function BuilderPage() {
 
   const handleNext = () => {
     if (step === 0 && !selectedProduct) {
-      setError('Please select a product to continue.');
+      setError(t('builder.chooseStartDesc'));
       return;
     }
     if (step === 1 && (!template || !design)) {
-      setError('Please select both template and design style.');
+      setError(t('builder.designStyleDesc'));
       return;
     }
     setError('');
@@ -180,16 +180,13 @@ export default function BuilderPage() {
 
   const renderStep = () => {
     switch (step) {
-      // ========== STEP 0: PRODUCT ==========
       case 0:
         return (
           <div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Choose a starting point
+              {t('builder.chooseStart')}
             </h2>
-            <p className="text-[var(--text-muted)] mb-8 text-lg">
-              Select a base product. You'll customize everything in the next steps.
-            </p>
+            <p className="text-[var(--text-muted)] mb-8 text-lg">{t('builder.chooseStartDesc')}</p>
 
             {productsLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -203,7 +200,7 @@ export default function BuilderPage() {
               </div>
             ) : availableProducts.length === 0 ? (
               <Card hover={false} className="text-center py-16">
-                <p className="text-[var(--text-muted)]">No products available yet.</p>
+                <p className="text-[var(--text-muted)]">{t('builder.noProducts')}</p>
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -236,20 +233,24 @@ export default function BuilderPage() {
                         {p.category.replace('-', ' ')}
                       </div>
 
-                      <h3 className="text-xl font-bold mb-2">
-                        {p.title}
-                      </h3>
+                      <h3 className="text-xl font-bold mb-2">{p.title}</h3>
                       <p className="text-sm text-[var(--text-muted)] mb-5 line-clamp-2 leading-relaxed">
                         {p.shortDescription}
                       </p>
 
                       <div className="flex items-end justify-between pt-4 border-t border-[var(--border)]">
                         <div>
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">Starting from</div>
-                          <div className="text-lg font-bold gradient-text">{p.startingPrice.toLocaleString('uk-UA')} ₴</div>
+                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">
+                            {t('common.from')}
+                          </div>
+                          <div className="text-lg font-bold gradient-text">
+                            {p.startingPrice.toLocaleString('uk-UA')} ₴
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">Timeline</div>
+                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">
+                            {t('common.estimated')}
+                          </div>
                           <div className="text-sm font-medium">{p.estimatedTime}</div>
                         </div>
                       </div>
@@ -261,40 +262,35 @@ export default function BuilderPage() {
           </div>
         );
 
-      // ========== STEP 1: STYLE ==========
       case 1:
         return (
           <div className="space-y-10">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-                Design & style
+                {t('builder.designStyle')}
               </h2>
-              <p className="text-[var(--text-muted)] text-lg mb-8">
-                Choose a base template and visual style that matches your vision.
-              </p>
+              <p className="text-[var(--text-muted)] text-lg mb-8">{t('builder.designStyleDesc')}</p>
             </div>
 
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--purple)]/30 flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
+                <div className="w-8 h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
                   1
                 </div>
-                <label className="text-sm font-semibold text-[var(--text)] uppercase tracking-wider">
-                  Template
-                </label>
+                <label className="text-sm font-semibold uppercase tracking-wider">{t('builder.template')}</label>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                {templateOptions.map((t) => (
+                {templateOptions.map((tp) => (
                   <button
-                    key={t}
-                    onClick={() => setTemplate(t)}
+                    key={tp}
+                    onClick={() => setTemplate(tp)}
                     className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
-                      template === t
+                      template === tp
                         ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--purple)]/40 hover:text-[var(--text)] hover:-translate-y-0.5'
+                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--purple)]/40 hover:-translate-y-0.5'
                     }`}
                   >
-                    {t}
+                    {tp}
                   </button>
                 ))}
               </div>
@@ -302,12 +298,10 @@ export default function BuilderPage() {
 
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--purple)]/30 flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
+                <div className="w-8 h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
                   2
                 </div>
-                <label className="text-sm font-semibold text-[var(--text)] uppercase tracking-wider">
-                  Design Style
-                </label>
+                <label className="text-sm font-semibold uppercase tracking-wider">{t('builder.design')}</label>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
                 {designOptions.map((d) => (
@@ -317,7 +311,7 @@ export default function BuilderPage() {
                     className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
                       design === d
                         ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--purple)]/40 hover:text-[var(--text)] hover:-translate-y-0.5'
+                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--purple)]/40 hover:-translate-y-0.5'
                     }`}
                   >
                     {d}
@@ -328,16 +322,11 @@ export default function BuilderPage() {
           </div>
         );
 
-      // ========== STEP 2: PAGES ==========
       case 2:
         return (
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              What pages do you need?
-            </h2>
-            <p className="text-[var(--text-muted)] text-lg mb-8">
-              Select the pages for your product. You can add or remove later.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{t('builder.pagesQ')}</h2>
+            <p className="text-[var(--text-muted)] text-lg mb-8">{t('builder.pagesDesc')}</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {commonPages.map((page) => {
@@ -368,15 +357,10 @@ export default function BuilderPage() {
                           </svg>
                         )}
                       </div>
-                      <div>
-                        <div className="text-[15px] font-semibold">{page.name}</div>
-                        {isRequired && (
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mt-0.5">Included</div>
-                        )}
-                      </div>
+                      <span className="text-[15px] font-semibold">{page.name}</span>
                     </div>
                     <div className="text-xs font-medium text-[var(--text-muted)]">
-                      {page.price === 0 ? 'Free' : `+${page.price} ₴`}
+                      {page.price === 0 ? t('builder.free') : `+${page.price} ₴`}
                     </div>
                   </button>
                 );
@@ -385,22 +369,17 @@ export default function BuilderPage() {
           </div>
         );
 
-      // ========== STEP 3: FEATURES ==========
       case 3:
         return (
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Add powerful features
-            </h2>
-            <p className="text-[var(--text-muted)] text-lg mb-8">
-              Optional extras that make your product stand out.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{t('builder.featuresQ')}</h2>
+            <p className="text-[var(--text-muted)] text-lg mb-8">{t('builder.featuresDesc')}</p>
 
             {featuresLoading ? (
-              <p className="text-[var(--text-muted)]">Loading features...</p>
+              <p className="text-[var(--text-muted)]">{t('builder.loadingFeatures')}</p>
             ) : availableFeatures.length === 0 ? (
               <Card hover={false} className="text-center py-16">
-                <p className="text-[var(--text-muted)]">No features available.</p>
+                <p className="text-[var(--text-muted)]">{t('builder.noFeatures')}</p>
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -409,9 +388,7 @@ export default function BuilderPage() {
                   return (
                     <button
                       key={feature.id}
-                      onClick={() =>
-                        toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)
-                      }
+                      onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
                       className={`text-left p-5 rounded-xl border transition-all ${
                         isSelected
                           ? 'border-[var(--purple)] bg-[var(--purple)]/[0.06] shadow-[0_0_0_4px_rgba(139,92,246,0.08)]'
@@ -442,9 +419,7 @@ export default function BuilderPage() {
                           +{feature.price} ₴
                         </span>
                         <span className="text-[var(--text-faint)]">·</span>
-                        <span className="text-[var(--text-muted)]">
-                          {feature.estimatedTime}
-                        </span>
+                        <span className="text-[var(--text-muted)]">{feature.estimatedTime}</span>
                       </div>
                     </button>
                   );
@@ -454,78 +429,64 @@ export default function BuilderPage() {
           </div>
         );
 
-      // ========== STEP 4: REQUIREMENTS ==========
       case 4:
         return (
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Tell us more
-            </h2>
-            <p className="text-[var(--text-muted)] text-lg mb-8">
-              Any specific requirements, references or notes for the project.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{t('builder.tellMore')}</h2>
+            <p className="text-[var(--text-muted)] text-lg mb-8">{t('builder.tellMoreDesc')}</p>
 
             <div className="space-y-7">
               <div>
-                <label className="text-sm font-semibold text-[var(--text)] uppercase tracking-wider mb-3 block">
-                  Custom requirements
+                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
+                  {t('builder.requirements')}
                 </label>
                 <Textarea
                   value={requirements}
                   onChange={(e) => setRequirements(e.target.value)}
-                  placeholder="Tell us any specific requirements, features or ideas for your project..."
+                  placeholder={t('builder.requirementsPlaceholder')}
                 />
-                <p className="text-xs text-[var(--text-faint)] mt-2">
-                  Optional. The more details you share, the better we can plan.
-                </p>
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-[var(--text)] uppercase tracking-wider mb-3 block">
-                  References
+                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
+                  {t('builder.references')}
                 </label>
                 <Textarea
                   value={references}
                   onChange={(e) => setReferences(e.target.value)}
-                  placeholder="Paste links to websites you like — one URL per line&#10;https://example.com&#10;https://another.com"
+                  placeholder={t('builder.referencesPlaceholder')}
                 />
                 <p className="text-xs text-[var(--text-faint)] mt-2">
-                  We use references for inspiration only — never copy.
+                  {t('builder.referencesNote')}
                 </p>
               </div>
             </div>
           </div>
         );
 
-      // ========== STEP 5: REVIEW ==========
       case 5:
         return (
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-              Review your project
-            </h2>
-            <p className="text-[var(--text-muted)] text-lg mb-8">
-              Check everything is correct before placing your order.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{t('builder.reviewQ')}</h2>
+            <p className="text-[var(--text-muted)] text-lg mb-8">{t('builder.reviewDesc')}</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left — details */}
               <div className="lg:col-span-2 space-y-4">
-                <Card hover={false} className="border-[var(--border)]">
+                <Card hover={false}>
                   <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                    Project Summary
+                    {t('builder.projectSummary')}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                    <ReviewRow label="Product" value={product?.title || '—'} />
-                    <ReviewRow label="Template" value={template || '—'} />
-                    <ReviewRow label="Design" value={design || '—'} />
-                    <ReviewRow label="Estimated time" value={product?.estimatedTime || '—'} />
+                    <ReviewRow label={t('builder.step.product')} value={product?.title || '—'} />
+                    <ReviewRow label={t('builder.template')} value={template || '—'} />
+                    <ReviewRow label={t('builder.design')} value={design || '—'} />
+                    <ReviewRow label={t('common.estimated')} value={product?.estimatedTime || '—'} />
                   </div>
                 </Card>
 
-                <Card hover={false} className="border-[var(--border)]">
+                <Card hover={false}>
                   <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                    Pages ({selectedPages.length})
+                    {t('builder.step.pages')} ({selectedPages.length})
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {selectedPages.map((p) => (
@@ -540,9 +501,9 @@ export default function BuilderPage() {
                 </Card>
 
                 {selectedFeatures.length > 0 && (
-                  <Card hover={false} className="border-[var(--border)]">
+                  <Card hover={false}>
                     <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                      Features ({selectedFeatures.length})
+                      {t('builder.step.features')} ({selectedFeatures.length})
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {availableFeatures
@@ -550,7 +511,7 @@ export default function BuilderPage() {
                         .map((f) => (
                           <span
                             key={f.id}
-                            className="px-3 py-1.5 rounded-lg bg-[var(--purple)]/10 border border-[var(--purple)]/30 text-xs text-[var(--purple-bright)] font-medium"
+                            className="px-3 py-1.5 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] text-xs text-[var(--purple-bright)] font-medium"
                           >
                             {f.name}
                           </span>
@@ -560,9 +521,9 @@ export default function BuilderPage() {
                 )}
 
                 {requirements && (
-                  <Card hover={false} className="border-[var(--border)]">
+                  <Card hover={false}>
                     <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-4">
-                      Requirements
+                      {t('builder.requirements')}
                     </div>
                     <p className="text-sm text-[var(--text-secondary)] whitespace-pre-wrap leading-relaxed">
                       {requirements}
@@ -571,37 +532,36 @@ export default function BuilderPage() {
                 )}
               </div>
 
-              {/* Right — price card */}
               <div className="lg:col-span-1">
-                <Card hover={false} className="border-[var(--purple)]/30 bg-gradient-to-b from-[var(--purple)]/[0.06] to-transparent sticky top-24">
+                <Card hover={false} className="border-[var(--border-purple)] bg-gradient-to-b from-[var(--purple)]/[0.06] to-transparent sticky top-24">
                   <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                    Total Estimate
+                    {t('builder.totalEstimate')}
                   </div>
 
                   <div className="space-y-3 mb-6 text-sm">
                     <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>Base product</span>
+                      <span>{t('builder.baseProduct')}</span>
                       <span>{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span>
                     </div>
                     <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>Pages ({selectedPages.length})</span>
+                      <span>{t('builder.step.pages')} ({selectedPages.length})</span>
                       <span>+{pagesPrice.toLocaleString('uk-UA')} ₴</span>
                     </div>
                     <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>Features ({selectedFeatures.length})</span>
+                      <span>{t('builder.step.features')} ({selectedFeatures.length})</span>
                       <span>+{featuresPrice.toLocaleString('uk-UA')} ₴</span>
                     </div>
                   </div>
 
                   <div className="pt-6 border-t border-[var(--border)]">
                     <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">
-                      Total
+                      {t('builder.total')}
                     </div>
                     <div className="text-4xl font-bold gradient-text mb-2">
                       {totalPrice.toLocaleString('uk-UA')} ₴
                     </div>
                     <p className="text-xs text-[var(--text-faint)] leading-relaxed">
-                      Final price and timeline will be confirmed after project review.
+                      {t('product.finalNote')}
                     </p>
                   </div>
                 </Card>
@@ -621,55 +581,48 @@ export default function BuilderPage() {
     <>
       <Navbar />
       <main className="container py-12 md:py-16">
-        {/* Header */}
         <Reveal>
           <div className="max-w-3xl mb-12">
-            <Badge>Order Builder</Badge>
+            <Badge>{t('builder.step.product')}</Badge>
             <h1 className="text-4xl md:text-6xl font-bold mt-5 tracking-tight leading-[1.05]">
-              Build your <span className="gradient-text">project</span>
+              {t('builder.title')}{' '}
+              <span className="gradient-text">{t('builder.title2')}</span>
             </h1>
-            <p className="text-lg text-[var(--text-muted)] mt-4">
-              Configure your product step by step. See the price update in real time.
-            </p>
+            <p className="text-lg text-[var(--text-muted)] mt-4">{t('builder.subtitle')}</p>
           </div>
         </Reveal>
 
-        {/* Step indicator — desktop */}
         <div className="hidden md:block mb-12">
           <div className="relative">
-            {/* Track line */}
             <div className="absolute top-5 left-0 right-0 h-px bg-[var(--border)]" />
             <div
               className="absolute top-5 left-0 h-px bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
-
             <div className="relative grid grid-cols-6 gap-4">
               {steps.map((s, i) => {
                 const active = i === step;
                 const done = i < step;
                 return (
                   <button
-                    key={s.title}
+                    key={s.titleKey}
                     onClick={() => i <= step && setStep(i)}
                     disabled={i > step}
-                    className={`flex flex-col items-center text-center transition-all ${
-                      i <= step ? 'cursor-pointer' : 'cursor-default'
-                    }`}
+                    className={`flex flex-col items-center text-center ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
                   >
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                         active
                           ? 'bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-white shadow-[0_0_24px_rgba(139,92,246,0.5)] scale-110'
                           : done
-                          ? 'bg-[var(--purple)]/20 text-[var(--purple-bright)] border border-[var(--purple)]/40'
+                          ? 'bg-[var(--purple)]/20 text-[var(--purple-bright)] border border-[var(--border-purple)]'
                           : 'bg-[var(--surface)] text-[var(--text-faint)] border border-[var(--border)]'
                       }`}
                     >
                       {done ? '✓' : i + 1}
                     </div>
                     <div
-                      className={`mt-3 text-xs font-semibold transition-colors ${
+                      className={`mt-3 text-xs font-semibold ${
                         active
                           ? 'text-[var(--text)]'
                           : done
@@ -677,7 +630,7 @@ export default function BuilderPage() {
                           : 'text-[var(--text-faint)]'
                       }`}
                     >
-                      {s.title}
+                      {t(s.titleKey)}
                     </div>
                   </button>
                 );
@@ -686,13 +639,12 @@ export default function BuilderPage() {
           </div>
         </div>
 
-        {/* Mobile progress */}
         <div className="md:hidden mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-[var(--purple-bright)] uppercase tracking-wider">
-              Step {step + 1} of {steps.length}
+              {step + 1} / {steps.length}
             </span>
-            <span className="text-xs text-[var(--text-muted)]">{steps[step].title}</span>
+            <span className="text-xs text-[var(--text-muted)]">{t(steps[step].titleKey)}</span>
           </div>
           <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
             <div
@@ -709,18 +661,16 @@ export default function BuilderPage() {
           </div>
         )}
 
-        {/* Content */}
         <div key={step} className="mb-12" style={{ animation: 'fadeUp 0.5s ease' }}>
           {renderStep()}
         </div>
 
-        {/* Sticky bottom bar */}
         <div className="sticky bottom-4 z-30">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)]/95 backdrop-blur-xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
             <div className="flex items-center gap-5 w-full sm:w-auto">
               <div>
                 <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                  Total
+                  {t('builder.total')}
                 </div>
                 <div className="text-xl font-bold gradient-text">
                   {totalPrice.toLocaleString('uk-UA')} ₴
@@ -729,7 +679,7 @@ export default function BuilderPage() {
               <div className="w-px h-10 bg-[var(--border)]" />
               <div>
                 <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                  Progress
+                  {t('builder.step.review')}
                 </div>
                 <div className="text-sm font-semibold">
                   {step + 1} / {steps.length}
@@ -740,16 +690,16 @@ export default function BuilderPage() {
             <div className="flex gap-3 w-full sm:w-auto">
               {step > 0 && (
                 <Button variant="outline" onClick={handleBack} className="flex-1 sm:flex-none">
-                  ← Back
+                  ← {t('common.back')}
                 </Button>
               )}
               {step < steps.length - 1 ? (
                 <Button onClick={handleNext} className="flex-1 sm:flex-none">
-                  Continue →
+                  {t('common.continue')} →
                 </Button>
               ) : (
                 <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-none">
-                  {loading ? 'Creating...' : 'Create Order'}
+                  {loading ? t('common.loading') : t('common.create')}
                 </Button>
               )}
             </div>

@@ -10,9 +10,11 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Logo from '@/components/layout/Logo';
 import { registerUser } from '@/services/auth';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,8 +45,7 @@ export default function RegisterPage() {
             <div className="flex justify-center mb-4">
               <Logo size={56} className="w-14 h-14" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Create account</h1>
-            <p className="text-[var(--text-muted)] mt-2">Start building your digital product</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t('nav.register')}</h1>
           </div>
 
           <Card hover={false}>
@@ -56,14 +57,14 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
-                label="Full Name"
+                label={t('contact.name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
                 required
               />
               <Input
-                label="Email"
+                label={t('contact.email')}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -79,14 +80,13 @@ export default function RegisterPage() {
                 required
               />
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading ? t('common.loading') : t('nav.register')}
               </Button>
             </form>
 
-            <p className="mt-5 pt-5 border-t border-[var(--border)] text-sm text-[var(--text-muted)] text-center">
-              Already have an account?{' '}
-              <Link href="/login" className="text-[var(--purple)] hover:underline">
-                Sign in
+            <p className="mt-5 pt-5 border-t border-[var(--border)] text-sm text-center">
+              <Link href="/login" className="text-[var(--purple-bright)] hover:underline">
+                {t('nav.login')}
               </Link>
             </p>
           </Card>
