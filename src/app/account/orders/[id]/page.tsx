@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { getUserOrders } from '@/services/order';
 import { getOrderMessages, sendMessage } from '@/services/message';
 import { Order } from '@/types/order';
@@ -15,8 +16,9 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 
 export default function ClientOrderDetailPage() {
-  const { id } = useParams(); // orderId
+  const { id } = useParams();
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const [order, setOrder] = useState<Order | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -28,7 +30,7 @@ export default function ClientOrderDetailPage() {
     const fetchData = async () => {
       try {
         const orders = await getUserOrders(currentUser.uid);
-        const found = orders.find(o => o.id === id);
+        const found = orders.find((o) => o.id === id);
         if (found) {
           setOrder(found);
           const msgs = await getOrderMessages(id as string);
@@ -67,11 +69,29 @@ export default function ClientOrderDetailPage() {
   };
 
   if (loading) {
-    return <div className="container py-16 text-center">Loading...</div>;
+    return (
+      <>
+        <Navbar />
+        <main className="container py-16">
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   if (!order) {
-    return <div className="container py-16 text-center">Order not found.</div>;
+    return (
+      <>
+        <Navbar />
+        <main className="container py-16 text-center">
+          <p className="text-[var(--text-muted)]">Order not found.</p>
+        </main>
+        <Footer />
+      </>
+    );
   }
 
   return (
@@ -80,44 +100,65 @@ export default function ClientOrderDetailPage() {
       <main className="container py-16">
         <div className="mb-8">
           <Badge>{order.status}</Badge>
-          <h1 className="text-4xl font-bold mt-4">{order.productTitle || 'Order'}</h1>
-          <p className="text-white/60">Order ID: #{order.id}</p>
-          <div className="mt-2 text-white/60">Estimated price: {order.estimatedPrice.toLocaleString('uk-UA')} ₴</div>
-          <div className="text-white/60">Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}</div>
+          <h1 className="text-4xl font-bold mt-4 tracking-tight">
+            {order.productTitle || 'Order'}
+          </h1>
+          <p className="text-[var(--text-muted)]">#{order.id}</p>
+
+          {order.finalPrice ? (
+            <div className="mt-3 text-[var(--text-secondary)]">
+              <span className="text-[var(--text-faint)]">{t('common.finalPrice')}:</span>{' '}
+              <span className="text-xl font-bold text-[var(--purple-bright)]">
+                {order.finalPrice.toLocaleString('uk-UA')} ₴
+              </span>
+            </div>
+          ) : (
+            <div className="mt-3 text-[var(--text-muted)]">
+              {t('common.estimatedPrice')}: {order.estimatedPrice.toLocaleString('uk-UA')} ₴
+              <span className="text-[var(--text-faint)] text-sm ml-2">
+                ({t('product.finalNote')})
+              </span>
+            </div>
+          )}
+
+          <div className="text-[var(--text-muted)] mt-1">
+            {t('common.created')}: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : ''}
+          </div>
         </div>
 
-        <Card>
-          <h2 className="text-2xl font-semibold mb-4">Messages</h2>
+        <Card hover={false}>
+          <h2 className="text-2xl font-semibold mb-4">{t('common.messages')}</h2>
           <div className="space-y-4 max-h-96 overflow-y-auto mb-4 flex flex-col">
-  {messages.length === 0 ? (
-    <p className="text-white/50">No messages yet.</p>
-  ) : (
-    messages.map(msg => (
-      <div
-        key={msg.id}
-        className={`p-3 rounded-lg max-w-[80%] ${
-          msg.senderRole === 'admin'
-            ? 'bg-purple/10 border border-purple/30 self-start'
-            : 'bg-white/5 border border-white/10 self-end ml-auto'
-        }`}
-      >
-        <div className="text-sm text-white/50">
-          {msg.senderRole === 'admin' ? 'KOSTEX' : 'You'} · {msg.createdAt ? new Date(msg.createdAt).toLocaleString('uk-UA') : ''}
-        </div>
-        <div className="mt-1 text-white/90">{msg.text}</div>
-      </div>
-    ))
-  )}
-</div>
+            {messages.length === 0 ? (
+              <p className="text-[var(--text-muted)]">{t('common.noMessages')}</p>
+            ) : (
+              messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`chat-bubble max-w-[80%] ${
+                    msg.senderRole === 'admin'
+                      ? 'chat-bubble admin self-start'
+                      : 'chat-bubble client self-end ml-auto'
+                  }`}
+                >
+                  <div className="text-xs opacity-60 mb-1">
+                    {msg.senderRole === 'admin' ? 'KOSTEX' : t('nav.account')} ·{' '}
+                    {msg.createdAt ? new Date(msg.createdAt).toLocaleString('uk-UA') : ''}
+                  </div>
+                  <div>{msg.text}</div>
+                </div>
+              ))
+            )}
+          </div>
           <form onSubmit={handleSend} className="flex gap-2">
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={t('common.typeMessage')}
               className="flex-1"
             />
             <Button type="submit" disabled={sending}>
-              {sending ? 'Sending...' : 'Send'}
+              {sending ? t('common.sending') : t('common.send')}
             </Button>
           </form>
         </Card>
