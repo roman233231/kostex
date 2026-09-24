@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { getUserOrders } from '@/services/order';
 import { Order } from '@/types/order';
 import Card from '@/components/ui/Card';
@@ -12,6 +13,7 @@ import Reveal from '@/components/ui/Reveal';
 
 export default function OrdersPage() {
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,18 +44,16 @@ export default function OrdersPage() {
   if (orders.length === 0) {
     return (
       <div>
-        <h1 className="text-3xl font-bold mb-6">Orders</h1>
+        <h1 className="text-3xl font-bold mb-6">{t('account.orders')}</h1>
         <Card hover={false} className="text-center py-12">
           <div className="text-4xl mb-3">📦</div>
-          <h2 className="text-xl font-semibold mb-2">No orders yet</h2>
-          <p className="text-[var(--text-muted)] mb-5">
-            You haven't placed any orders. Start your first project now.
-          </p>
+          <h2 className="text-xl font-semibold mb-2">{t('account.noOrders')}</h2>
+          <p className="text-[var(--text-muted)] mb-5">{t('account.noOrdersDesc')}</p>
           <Link
             href="/builder"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] text-white font-semibold text-sm hover:brightness-110 transition"
           >
-            Create First Order
+            {t('account.createFirst')}
           </Link>
         </Card>
       </div>
@@ -62,23 +62,16 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Orders</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('account.orders')}</h1>
       <div className="space-y-4">
         {orders.map((order, i) => (
           <Reveal key={order.id} delay={i * 50}>
-            <div
-              onClick={() => router.push(`/account/orders/${order.id}`)}
-              className="cursor-pointer"
-            >
-              <Card hover={false} className="transition-all duration-300 hover:border-[var(--purple)]/40 hover:-translate-y-0.5">
+            <div onClick={() => router.push(`/account/orders/${order.id}`)} className="cursor-pointer">
+              <Card hover={false} className="transition-all hover:border-[var(--border-purple)] hover:-translate-y-0.5">
                 <div className="flex justify-between items-start gap-4 flex-wrap">
                   <div className="min-w-0">
-                    <h3 className="text-lg font-semibold">
-                      {order.productTitle || 'Order'}
-                    </h3>
-                    <p className="text-sm text-[var(--text-faint)] mt-1">
-                      #{order.id?.slice(0, 8)}
-                    </p>
+                    <h3 className="text-lg font-semibold">{order.productTitle || 'Order'}</h3>
+                    <p className="text-sm text-[var(--text-faint)] mt-1">#{order.id?.slice(0, 8)}</p>
                   </div>
                   <Badge>{order.status}</Badge>
                 </div>
@@ -86,14 +79,14 @@ export default function OrdersPage() {
                   <div className="text-sm text-[var(--text-muted)]">
                     {order.finalPrice ? (
                       <>
-                        <span className="text-[var(--text-faint)]">Final price:</span>{' '}
+                        <span className="text-[var(--text-faint)]">{t('common.finalPrice')}:</span>{' '}
                         <strong className="text-[var(--purple-bright)]">
                           {order.finalPrice.toLocaleString('uk-UA')} ₴
                         </strong>
                       </>
                     ) : (
                       <>
-                        <span className="text-[var(--text-faint)]">Estimated:</span>{' '}
+                        <span className="text-[var(--text-faint)]">{t('common.estimatedPrice')}:</span>{' '}
                         <strong>{order.estimatedPrice.toLocaleString('uk-UA')} ₴</strong>
                       </>
                     )}

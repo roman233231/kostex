@@ -3,11 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import {
-  getUserNotifications,
-  markAllRead,
-  markNotificationRead,
-} from '@/services/notification';
+import { useLanguage } from '@/context/LanguageContext';
+import { getUserNotifications, markAllRead, markNotificationRead } from '@/services/notification';
 import { Notification } from '@/types/notification';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -15,6 +12,7 @@ import Reveal from '@/components/ui/Reveal';
 
 export default function NotificationsPage() {
   const { currentUser } = useAuth();
+  const { t } = useLanguage();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,9 +28,7 @@ export default function NotificationsPage() {
     }
   };
 
-  useEffect(() => {
-    load();
-  }, [currentUser]);
+  useEffect(() => { load(); }, [currentUser]);
 
   const handleMarkAll = async () => {
     if (!currentUser) return;
@@ -59,10 +55,10 @@ export default function NotificationsPage() {
     <div>
       <Reveal>
         <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
-          <h1 className="text-3xl font-bold tracking-tight">Notifications</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('account.notifications')}</h1>
           {items.some((n) => !n.read) && (
             <Button variant="outline" onClick={handleMarkAll}>
-              Mark all as read
+              {t('account.markAll')}
             </Button>
           )}
         </div>
@@ -72,10 +68,8 @@ export default function NotificationsPage() {
         <Reveal delay={80}>
           <Card hover={false} className="text-center py-12">
             <div className="text-4xl mb-3">🔔</div>
-            <h2 className="text-lg font-semibold mb-1">No notifications yet</h2>
-            <p className="text-[var(--text-muted)] text-sm">
-              You&apos;ll see updates about your orders here.
-            </p>
+            <h2 className="text-lg font-semibold mb-1">{t('account.noNotifications')}</h2>
+            <p className="text-[var(--text-muted)] text-sm">{t('account.noNotificationsDesc')}</p>
           </Card>
         </Reveal>
       ) : (
@@ -89,8 +83,8 @@ export default function NotificationsPage() {
               >
                 <Card
                   hover={false}
-                  className={`cursor-pointer transition-all duration-300 hover:border-[var(--purple)]/40 ${
-                    !n.read ? 'border-[var(--purple)]/40 bg-[var(--purple)]/[0.03]' : ''
+                  className={`cursor-pointer transition-all hover:border-[var(--border-purple)] ${
+                    !n.read ? 'border-[var(--border-purple)] bg-[var(--purple)]/[0.03]' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -98,16 +92,10 @@ export default function NotificationsPage() {
                       <span className="mt-2 w-2 h-2 rounded-full bg-[var(--purple-bright)] flex-shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-[var(--text)]">
-                        {n.title}
-                      </div>
-                      <div className="text-sm text-[var(--text-muted)] mt-1">
-                        {n.message}
-                      </div>
+                      <div className="font-semibold">{n.title}</div>
+                      <div className="text-sm text-[var(--text-muted)] mt-1">{n.message}</div>
                       <div className="text-xs text-[var(--text-faint)] mt-2">
-                        {n.createdAt
-                          ? new Date(n.createdAt).toLocaleString('uk-UA')
-                          : ''}
+                        {n.createdAt ? new Date(n.createdAt).toLocaleString('uk-UA') : ''}
                       </div>
                     </div>
                   </div>

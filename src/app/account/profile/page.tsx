@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { updateUserProfile } from '@/services/auth';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -11,6 +12,7 @@ import Reveal from '@/components/ui/Reveal';
 
 export default function ProfilePage() {
   const { appUser, currentUser } = useAuth();
+  const { t } = useLanguage();
   const [name, setName] = useState(appUser?.displayName || '');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -23,9 +25,8 @@ export default function ProfilePage() {
     setError('');
     try {
       await updateUserProfile(name);
-      setMessage('Profile updated successfully');
+      setMessage(t('account.profileUpdated'));
     } catch (err: any) {
-      console.error(err);
       setError(err.message || 'Update failed');
     } finally {
       setLoading(false);
@@ -38,10 +39,8 @@ export default function ProfilePage() {
     <div>
       <Reveal>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
-          <p className="text-[var(--text-muted)] mt-1">
-            Manage your account information
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('account.profile')}</h1>
+          <p className="text-[var(--text-muted)] mt-1">{t('account.profileDesc')}</p>
         </div>
       </Reveal>
 
@@ -66,12 +65,14 @@ export default function ProfilePage() {
         <Card hover={false} className="max-w-lg">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="text-sm font-medium text-[var(--text-secondary)]">Email</label>
+              <label className="text-sm font-medium text-[var(--text-secondary)]">
+                {t('account.email')}
+              </label>
               <p className="text-sm text-[var(--text-muted)] mt-1">{currentUser?.email}</p>
             </div>
 
             <Input
-              label="Display Name"
+              label={t('account.displayName')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
@@ -90,7 +91,7 @@ export default function ProfilePage() {
             )}
 
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? t('account.saving') : t('account.saveChanges')}
             </Button>
           </form>
         </Card>
