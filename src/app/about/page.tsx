@@ -1,88 +1,80 @@
+'use client';
+
+import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
+import Counter from '@/components/ui/Counter';
+import { useLanguage } from '@/context/LanguageContext';
 
-const values = [
-  {
-    title: 'Premium Quality',
-    description: 'Every project is built with attention to detail, clean code, and modern design.',
-  },
-  {
-    title: 'Fast Delivery',
-    description: 'We value your time — most projects are delivered within 1-3 weeks.',
-  },
-  {
-    title: 'Transparent Process',
-    description: 'You see the price, timeline, and progress at every step through your account.',
-  },
-  {
-    title: 'Custom Approach',
-    description: 'No templates forced on you — we build exactly what your business needs.',
-  },
-];
+const valueKeys = ['v1', 'v2', 'v3', 'v4'] as const;
 
 export default function AboutPage() {
+  const { t } = useLanguage();
+
   return (
     <>
       <Navbar />
       <main className="container py-16">
         <Reveal>
-          <div className="max-w-3xl mb-16">
-            <Badge>About</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mt-4 tracking-tight">
-              We build digital products that work
+          <div className="max-w-3xl mb-14">
+            <Badge>{t('nav.about')}</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
+              {t('about.title')}
             </h1>
-            <p className="text-lg text-[var(--text-muted)] mt-6">
-              KOSTEX is a digital products studio. We create websites, web apps, software, bots, and custom digital solutions for businesses of any size.
-            </p>
+            <p className="text-lg text-[var(--text-muted)] mt-5">{t('about.subtitle')}</p>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
           <Reveal delay={0}>
             <Card hover={false} className="text-center py-8">
-              <div className="text-4xl font-bold text-[var(--purple-bright)]">50+</div>
-              <div className="text-sm text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                Projects Delivered
+              <div className="text-4xl font-bold gradient-text">
+                <Counter value={50} suffix="+" />
+              </div>
+              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
+                {t('about.projects')}
               </div>
             </Card>
           </Reveal>
           <Reveal delay={80}>
             <Card hover={false} className="text-center py-8">
-              <div className="text-4xl font-bold text-[var(--purple-bright)]">7–14</div>
-              <div className="text-sm text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                Days Average Delivery
+              <div className="text-4xl font-bold gradient-text">
+                <Counter value={14} prefix="7–" />
+              </div>
+              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
+                {t('about.days')}
               </div>
             </Card>
           </Reveal>
           <Reveal delay={160}>
             <Card hover={false} className="text-center py-8">
-              <div className="text-4xl font-bold text-[var(--purple-bright)]">100%</div>
-              <div className="text-sm text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                Custom Made
+              <div className="text-4xl font-bold gradient-text">
+                <Counter value={100} suffix="%" />
+              </div>
+              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
+                {t('about.custom')}
               </div>
             </Card>
           </Reveal>
         </div>
 
         <Reveal>
-          <div className="max-w-3xl mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Our values</h2>
-            <p className="text-[var(--text-muted)]">
-              What makes KOSTEX different from a typical web studio.
-            </p>
+          <div className="max-w-3xl mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t('about.valuesTitle')}</h2>
+            <p className="text-[var(--text-muted)]">{t('about.valuesSubtitle')}</p>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {values.map((v, i) => (
-            <Reveal key={v.title} delay={i * 80}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {valueKeys.map((key, i) => (
+            <Reveal key={key} delay={i * 80}>
               <Card hover={false} className="h-full">
-                <h3 className="text-xl font-semibold mb-2">{v.title}</h3>
-                <p className="text-[var(--text-muted)]">{v.description}</p>
+                <h3 className="text-lg font-semibold mb-2">{t(`about.${key}` as any)}</h3>
+                <p className="text-[var(--text-muted)]">{t(`about.${key}d` as any)}</p>
               </Card>
             </Reveal>
           ))}
@@ -90,13 +82,13 @@ export default function AboutPage() {
 
         <Reveal delay={200}>
           <div className="mt-20 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to work with us?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{t('about.readyTitle')}</h2>
             <p className="text-[var(--text-muted)] mb-6 max-w-xl mx-auto">
-              Start your project in the builder, or contact us for a custom solution.
+              {t('about.readySub')}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button href="/builder">Start a Project</Button>
-              <Button variant="outline" href="/contact">Contact Us</Button>
+              <Link href="/builder"><Button>{t('about.startProject')}</Button></Link>
+              <Link href="/contact"><Button variant="outline">{t('about.contactUs')}</Button></Link>
             </div>
           </div>
         </Reveal>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
@@ -9,8 +10,10 @@ import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function InspirationPage() {
+  const { t } = useLanguage();
   const [url, setUrl] = useState('');
   const [likes, setLikes] = useState('');
   const [notes, setNotes] = useState('');
@@ -27,12 +30,12 @@ export default function InspirationPage() {
       <main className="container py-16 max-w-5xl">
         <Reveal>
           <div className="mb-12">
-            <Badge>Inspiration</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mt-4 tracking-tight">
-              Find your inspiration
+            <Badge>{t('nav.inspiration')}</Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
+              {t('insp.title')}
             </h1>
             <p className="text-lg text-[var(--text-muted)] mt-4 max-w-2xl">
-              Found a website you like? Tell us what you like about it and we&apos;ll create something inspired by your references.
+              {t('insp.subtitle')}
             </p>
           </div>
         </Reveal>
@@ -43,21 +46,19 @@ export default function InspirationPage() {
               {submitted ? (
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4">✨</div>
-                  <h2 className="text-xl font-semibold mb-2">Thanks for the reference!</h2>
-                  <p className="text-[var(--text-muted)] mb-6">
-                    We&apos;ll include this in your project when you place an order.
-                  </p>
+                  <h2 className="text-xl font-semibold mb-2">{t('insp.thanks')}</h2>
+                  <p className="text-[var(--text-muted)] mb-6">{t('insp.thanksDesc')}</p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button href="/builder">Start a Project</Button>
+                    <Link href="/builder"><Button>{t('about.startProject')}</Button></Link>
                     <Button variant="outline" onClick={() => setSubmitted(false)}>
-                      Add another
+                      {t('insp.addAnother')}
                     </Button>
                   </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <Input
-                    label="Reference URL"
+                    label={t('insp.url')}
                     type="url"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
@@ -65,54 +66,46 @@ export default function InspirationPage() {
                     required
                   />
                   <Textarea
-                    label="What I like about it"
+                    label={t('insp.whatLike')}
                     value={likes}
                     onChange={(e) => setLikes(e.target.value)}
-                    placeholder="I like the navigation and hero section. I want a similar structure but in purple/black."
+                    placeholder="I like the navigation and hero section..."
                     required
                   />
                   <Textarea
-                    label="Additional notes (optional)"
+                    label={t('insp.notes')}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Any other details..."
                   />
                   <Button type="submit" className="w-full sm:w-auto">
-                    Submit Reference
+                    {t('insp.submit')}
                   </Button>
                 </form>
               )}
             </Card>
           </Reveal>
 
-          <Reveal delay={200} className="lg:col-span-2 space-y-6">
+          <Reveal delay={200} className="lg:col-span-2 space-y-5">
             <Card hover={false}>
-              <h3 className="text-lg font-semibold mb-3">How it works</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('insp.howItWorks')}</h3>
               <ol className="space-y-3 text-sm text-[var(--text-muted)]">
                 <li className="flex gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[var(--purple)]/15 text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                    1
-                  </span>
-                  Paste a link to a website you like
+                  <span className="w-6 h-6 rounded-full bg-[var(--purple-soft)] text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">1</span>
+                  {t('insp.step1')}
                 </li>
                 <li className="flex gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[var(--purple)]/15 text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                    2
-                  </span>
-                  Tell us what you like about it
+                  <span className="w-6 h-6 rounded-full bg-[var(--purple-soft)] text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">2</span>
+                  {t('insp.step2')}
                 </li>
                 <li className="flex gap-3">
-                  <span className="w-6 h-6 rounded-full bg-[var(--purple)]/15 text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                    3
-                  </span>
-                  We create something inspired by it
+                  <span className="w-6 h-6 rounded-full bg-[var(--purple-soft)] text-[var(--purple-bright)] flex items-center justify-center text-xs font-semibold flex-shrink-0">3</span>
+                  {t('insp.step3')}
                 </li>
               </ol>
             </Card>
-            <Card hover={false} className="border-[var(--purple)]/30">
-              <p className="text-sm text-[var(--text-muted)]">
-                <strong className="text-[var(--text)]">Note:</strong> We use references for design inspiration only. We never copy other sites, branding, or protected assets.
-              </p>
+            <Card hover={false} className="border-[var(--border-purple)]">
+              <p className="text-sm text-[var(--text-muted)]">{t('insp.note')}</p>
             </Card>
           </Reveal>
         </div>
