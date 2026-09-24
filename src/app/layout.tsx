@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import FloatingChat from '@/components/chat/FloatingChat';
 import CursorGlow from '@/components/ui/CursorGlow';
 
@@ -44,14 +45,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} dark`} data-scroll-behavior="smooth">
+    <html lang="uk" className={`${inter.variable} dark`} data-scroll-behavior="smooth">
       <body>
         <ThemeProvider>
-          <AuthProvider>
-            <CursorGlow />
-            {children}
-            <FloatingChat />
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <CursorGlow />
+              {children}
+              <FloatingChat />
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
