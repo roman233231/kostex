@@ -1,4 +1,7 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import Navbar from '@/components/layout/Navbar';
@@ -7,15 +10,45 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
+import { useLanguage } from '@/context/LanguageContext';
 import { getPortfolioBySlug } from '@/services/portfolio';
+import { PortfolioItem } from '@/types/portfolio';
 
-export default async function PortfolioDetailPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const { slug } = await params;
-  const item = await getPortfolioBySlug(slug);
+export default function PortfolioDetailPage() {
+  const { t } = useLanguage();
+  const params = useParams();
+  const slug = params?.slug as string;
+  const [item, setItem] = useState<PortfolioItem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!slug) return;
+    const load = async () => {
+      try {
+        const data = await getPortfolioBySlug(slug);
+        setItem(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="container py-16">
+          <div className="skeleton skeleton-line" style={{ width: '200px' }} />
+          <div className="skeleton mt-6" style={{ height: '60px', maxWidth: '500px' }} />
+          <div className="skeleton mt-10" style={{ height: '400px' }} />
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   if (!item || !item.published) {
     notFound();
@@ -27,15 +60,15 @@ export default async function PortfolioDetailPage({
       <main className="container py-16">
         <Link
           href="/portfolio"
-          className="text-sm text-[var(--text-muted)] hover:text-[var(--purple)] transition-colors inline-flex items-center gap-1"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors inline-flex items-center gap-1"
         >
-          ← Back to Portfolio
+          {t('portfolio.back')}
         </Link>
 
         <Reveal>
           <div className="mt-8 mb-12">
             <Badge>{item.category.replace('-', ' ')}</Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mt-4 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
               {item.title}
             </h1>
             <p className="text-lg text-[var(--text-muted)] mt-4 max-w-3xl">
@@ -59,12 +92,12 @@ export default async function PortfolioDetailPage({
           </Reveal>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
             {item.features && item.features.length > 0 && (
               <Reveal>
                 <Card hover={false}>
-                  <h2 className="text-2xl font-semibold mb-5">Features</h2>
+                  <h2 className="text-2xl font-semibold mb-5">{t('product.features')}</h2>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {item.features.map((f, i) => (
                       <li key={i} className="flex items-start gap-2 text-[var(--text-secondary)]">
@@ -97,21 +130,21 @@ export default async function PortfolioDetailPage({
           </div>
 
           <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-5">
               <Reveal delay={150}>
-                <Card hover={false} className="border-[var(--purple)]/30">
-                  <h3 className="text-lg font-semibold mb-3">Get this project</h3>
+                <Card hover={false} className="border-[var(--border-purple)]">
+                  <h3 className="text-lg font-semibold mb-3">{t('portfolio.getThis')}</h3>
                   <p className="text-sm text-[var(--text-muted)] mb-5">
-                    Like this project? You can order a similar one or customize it.
+                    {t('portfolio.getThisDesc')}
                   </p>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2.5">
                     {item.demoUrl && (
                       <Button href={item.demoUrl} className="w-full">
-                        View Live Demo
+                        {t('portfolio.viewLive')}
                       </Button>
                     )}
                     <Button variant="outline" href="/builder" className="w-full">
-                      Build Similar Project
+                      {t('portfolio.buildSimilar')}
                     </Button>
                   </div>
                 </Card>
@@ -120,7 +153,7 @@ export default async function PortfolioDetailPage({
               <Reveal delay={200}>
                 <Card hover={false}>
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-faint)] mb-3">
-                    Category
+                    {t('portfolio.category')}
                   </h3>
                   <Badge>{item.category.replace('-', ' ')}</Badge>
                 </Card>
