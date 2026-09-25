@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { subscribeToAdminUnreadCount } from '@/services/support';
+import { MessageSquare } from 'lucide-react';
 
 export default function SupportMessagesBell() {
   const { appUser } = useAuth();
@@ -20,21 +21,10 @@ export default function SupportMessagesBell() {
   return (
     <Link
       href="/admin/messages"
-      aria-label="Messages"
+      aria-label="Повідомлення"
       className="relative p-2 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
     >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
+      <MessageSquare size={20} />
       {unread > 0 && (
         <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-[var(--purple-neon)] text-white text-[10px] font-bold flex items-center justify-center">
           {unread > 9 ? '9+' : unread}

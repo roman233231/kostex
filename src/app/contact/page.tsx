@@ -10,6 +10,7 @@ import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
+import { Mail, Send, Clock, AtSign } from 'lucide-react';
 
 export default function ContactPage() {
   const { t } = useLanguage();
@@ -30,14 +31,41 @@ export default function ContactPage() {
     setMessage('');
   };
 
+  const contacts = [
+    {
+      icon: Mail,
+      label: 'Email',
+      value: 'kostex.official@gmail.com',
+      href: 'mailto:kostex.official@gmail.com',
+    },
+    {
+      icon: Send,
+      label: 'Telegram',
+      value: '@kostex_official',
+      href: 'https://t.me/kostex_official',
+    },
+    {
+  icon: AtSign,
+  label: 'Instagram',
+  value: '@kostex.studio',
+  href: 'https://instagram.com/kostex.studio',
+},
+    {
+      icon: Clock,
+      label: t('contact.responseTime'),
+      value: t('contact.responseDesc'),
+      href: null,
+    },
+  ];
+
   return (
     <>
       <Navbar />
-      <main className="container py-12 md:py-16 max-w-5xl">
+      <main className="container py-16 max-w-5xl">
         <Reveal>
           <div className="mb-12">
             <Badge>{t('nav.contact')}</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mt-4 tracking-tight">
               {t('contact.title')}
             </h1>
             <p className="text-lg text-[var(--text-muted)] mt-4 max-w-2xl">
@@ -46,7 +74,7 @@ export default function ContactPage() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <Reveal delay={100} className="lg:col-span-3">
             <Card hover={false}>
               {sent ? (
@@ -90,25 +118,34 @@ export default function ContactPage() {
             </Card>
           </Reveal>
 
-          <Reveal delay={200} className="lg:col-span-2 space-y-5">
-            <Card hover={false}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-faint)] mb-3">
-                {t('contact.emailLabel')}
-              </h3>
-              <p className="text-[var(--text-secondary)]">hello@kostex.com</p>
-            </Card>
-            <Card hover={false}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-faint)] mb-3">
-                {t('contact.telegram')}
-              </h3>
-              <p className="text-[var(--text-secondary)]">@kostex</p>
-            </Card>
-            <Card hover={false}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-faint)] mb-3">
-                {t('contact.responseTime')}
-              </h3>
-              <p className="text-[var(--text-secondary)]">{t('contact.responseDesc')}</p>
-            </Card>
+          <Reveal delay={200} className="lg:col-span-2 space-y-4">
+            {contacts.map((c, i) => {
+              const Icon = c.icon;
+              const content = (
+                <Card hover={false} className="group hover:border-[var(--border-purple)] transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-[var(--purple-bright)] shrink-0 group-hover:scale-110 transition-transform">
+                      <Icon size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-0.5">
+                        {c.label}
+                      </div>
+                      <div className="text-sm font-medium truncate">{c.value}</div>
+                    </div>
+                  </div>
+                </Card>
+              );
+
+              if (c.href) {
+                return (
+                  <a key={i} href={c.href} target="_blank" rel="noopener noreferrer" className="block">
+                    {content}
+                  </a>
+                );
+              }
+              return <div key={i}>{content}</div>;
+            })}
           </Reveal>
         </div>
       </main>
