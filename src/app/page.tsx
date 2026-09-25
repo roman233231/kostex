@@ -11,6 +11,8 @@ import Reveal from '@/components/ui/Reveal';
 import Counter from '@/components/ui/Counter';
 import TiltCard from '@/components/ui/TiltCard';
 import MagneticButton from '@/components/ui/MagneticButton';
+import FAQ from '@/components/ui/FAQ';
+import Reviews from '@/components/ui/Reviews';
 import { useLanguage } from '@/context/LanguageContext';
 
 const buildCards = [
@@ -249,6 +251,54 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* REVIEWS */}
+        <section className="container py-20 md:py-28">
+          <Reveal>
+            <div className="text-center mb-14">
+              <Badge>{t('reviews.badge')}</Badge>
+              <h2 className="section-title mt-4">
+                {t('reviews.title')}{' '}
+                <span className="gradient-text">{t('reviews.title2')}</span>
+              </h2>
+              <p className="section-subtitle mx-auto">{t('reviews.subtitle')}</p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={100}>
+            <Reviews />
+          </Reveal>
+        </section>
+
+        {/* FAQ */}
+        <section className="container py-20 md:py-28">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-start">
+            <Reveal className="lg:col-span-2">
+              <div className="lg:sticky lg:top-24">
+                <Badge>{t('faq.badge')}</Badge>
+                <h2 className="section-title mt-4">
+                  {t('faq.title')}{' '}
+                  <span className="gradient-text">{t('faq.title2')}</span>
+                </h2>
+                <p className="section-subtitle mt-3">{t('faq.subtitle')}</p>
+
+                <div className="mt-8 p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+                  <div className="font-semibold mb-2">Still have questions?</div>
+                  <p className="text-sm text-[var(--text-muted)] mb-4">
+                    Write to us and we'll get back within 24 hours.
+                  </p>
+                  <Link href="/contact">
+                    <Button variant="outline">{t('cta.contact')}</Button>
+                  </Link>
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={100} className="lg:col-span-3">
+              <FAQ />
             </Reveal>
           </div>
         </section>
