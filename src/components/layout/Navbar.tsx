@@ -31,6 +31,7 @@ import {
   Shield,
   Star,
   Package,
+  ArrowRight,
 } from 'lucide-react';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
@@ -81,11 +82,11 @@ export default function Navbar() {
             : 'border-b border-transparent'
         }`}
       >
-        <div className="container flex items-center justify-between h-16 md:h-[68px]">
+        <div className="container flex items-center justify-between h-16 md:h-[72px]">
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-2.5 shrink-0 group relative"
+            className="flex items-center gap-2.5 shrink-0 group"
             onClick={(e) => {
               if (e.shiftKey) {
                 e.preventDefault();
@@ -130,20 +131,22 @@ export default function Navbar() {
             })}
           </nav>
 
-          <div className="flex items-center gap-1">
-            <div className="hidden sm:flex items-center gap-1">
+          {/* Right side */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Language + Theme — показуємо з 640px і вище */}
+            <div className="hidden sm:flex items-center gap-1.5">
               <LanguageSwitcher />
               <ThemeToggle />
             </div>
 
             {loading ? (
-              <div className="w-8 h-8 rounded-full skeleton" />
+              <div className="w-9 h-9 rounded-full skeleton" />
             ) : currentUser ? (
-              <>
+              <div className="flex items-center gap-1">
                 <SupportMessagesBell />
                 <NotificationBell />
                 <UserMenu />
-              </>
+              </div>
             ) : (
               <>
                 <Button variant="outline" href="/login" className="hidden md:inline-flex">
@@ -157,19 +160,19 @@ export default function Navbar() {
 
             {/* Mobile burger */}
             <button
-              className="xl:hidden p-2 ml-1 rounded-lg text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors relative z-[10001]"
+              className="xl:hidden w-11 h-11 rounded-xl flex items-center justify-center text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all active:scale-95 ml-0.5"
               onClick={() => setMenuOpen(!menuOpen)}
               aria-label="Меню"
             >
-              <div className="w-6 h-6 relative flex items-center justify-center">
+              <div className="relative w-6 h-6 flex items-center justify-center">
                 <Menu
-                  size={22}
+                  size={24}
                   className={`absolute transition-all duration-300 ${
                     menuOpen ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0'
                   }`}
                 />
                 <X
-                  size={22}
+                  size={24}
                   className={`absolute transition-all duration-300 ${
                     menuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-90 scale-50'
                   }`}
@@ -180,42 +183,52 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* ============================================================
+          FULL-SCREEN MOBILE MENU
+          ============================================================ */}
       {menuOpen && (
-        <>
-          {/* Backdrop */}
+        <div
+          className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] overflow-y-auto"
+          style={{ animation: 'menuFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}
+        >
+          {/* Ambient glows */}
           <div
-            className="xl:hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[9998]"
-            style={{ animation: 'fadeIn 0.25s ease' }}
-            onClick={() => setMenuOpen(false)}
+            className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(139,92,246,0.2), transparent 70%)',
+              filter: 'blur(80px)',
+            }}
+          />
+          <div
+            className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(192,38,255,0.15), transparent 70%)',
+              filter: 'blur(80px)',
+            }}
           />
 
-          {/* Panel */}
-          <div
-            className="xl:hidden fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[var(--surface)] border-l border-[var(--border)] z-[9999] flex flex-col overflow-hidden"
-            style={{ animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
+          <div className="relative flex flex-col min-h-full">
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--border)]">
               <Link
                 href="/"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2.5"
                 onClick={() => setMenuOpen(false)}
               >
-                <Logo size={28} className="w-7 h-7" />
-                <span className="font-bold tracking-tight">KOSTEX</span>
+                <Logo size={32} className="w-8 h-8" />
+                <span className="text-lg font-bold tracking-tight">KOSTEX</span>
               </Link>
               <button
                 onClick={() => setMenuOpen(false)}
-                className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
+                className="w-11 h-11 rounded-xl flex items-center justify-center text-[var(--text)] hover:bg-[var(--surface-2)] transition-all active:scale-95"
                 aria-label="Закрити"
               >
-                <X size={20} />
+                <X size={24} />
               </button>
             </div>
 
-            {/* Nav links */}
-            <nav className="flex-1 overflow-y-auto py-3">
+            {/* Nav links — spacious */}
+            <nav className="flex-1 px-5 py-6 flex flex-col">
               {navLinks.map((link, i) => {
                 const Icon = link.icon;
                 const active = pathname === link.href;
@@ -224,88 +237,121 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-3 px-5 py-3.5 text-base border-l-2 transition-all ${
-                      active
-                        ? 'border-[var(--purple)] text-[var(--purple-bright)] bg-[var(--purple-soft)]'
-                        : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
-                    }`}
-                    style={{ animation: `fadeUp 0.4s ease ${i * 40}ms both` }}
+                    className="group flex items-center justify-between py-5 px-3 rounded-2xl transition-all active:scale-[0.98] hover:bg-[var(--surface-2)]"
+                    style={{ animation: `menuItemIn 0.4s ease ${i * 50}ms both` }}
                   >
-                    <Icon size={18} className="shrink-0" />
-                    <span>{t(link.key)}</span>
+                    <div className="flex items-center gap-5">
+                      <div
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shrink-0 ${
+                          active
+                            ? 'bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-white shadow-[0_0_24px_rgba(139,92,246,0.55)]'
+                            : 'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text-muted)] group-hover:text-[var(--purple-bright)] group-hover:border-[var(--border-purple)]'
+                        }`}
+                      >
+                        <Icon size={22} />
+                      </div>
+                      <span
+                        className={`text-xl sm:text-2xl font-bold tracking-tight transition-colors ${
+                          active
+                            ? 'text-[var(--purple-bright)]'
+                            : 'text-[var(--text)] group-hover:text-[var(--purple-bright)]'
+                        }`}
+                      >
+                        {t(link.key)}
+                      </span>
+                    </div>
+                    <ArrowRight
+                      size={22}
+                      className="text-[var(--text-faint)] group-hover:text-[var(--purple-bright)] group-hover:translate-x-1 transition-all shrink-0"
+                    />
                   </Link>
                 );
               })}
             </nav>
 
-            {/* Theme + language */}
-            <div className="px-5 py-4 border-t border-[var(--border)] flex items-center justify-between">
-              <LanguageSwitcher />
-              <ThemeToggle />
-            </div>
+            {/* Bottom section */}
+            <div className="px-5 pt-6 pb-8 space-y-5 border-t border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
+              {/* Theme + Language row */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs uppercase tracking-[0.15em] text-[var(--text-faint)] font-medium">
+                  Налаштування
+                </span>
+                <div className="flex items-center gap-2">
+                  <LanguageSwitcher />
+                  <ThemeToggle />
+                </div>
+              </div>
 
-            {/* Bottom actions */}
-            <div className="p-5 border-t border-[var(--border)] space-y-2.5">
+              {/* Actions */}
               {currentUser ? (
-                <>
+                <div className="grid grid-cols-2 gap-3">
                   <Link
                     href="/account"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all"
+                    className="flex flex-col items-center justify-center gap-2.5 py-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.97]"
                   >
-                    <User size={18} />
-                    {t('nav.myAccount')}
+                    <User size={22} />
+                    <span>{t('nav.myAccount')}</span>
                   </Link>
                   <Link
                     href="/account/orders"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all"
+                    className="flex flex-col items-center justify-center gap-2.5 py-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.97]"
                   >
-                    <Package size={18} />
-                    {t('nav.myOrders')}
+                    <Package size={22} />
+                    <span>{t('nav.myOrders')}</span>
                   </Link>
                   <Link
                     href="/account/messages"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border)] text-sm text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all"
+                    className="flex flex-col items-center justify-center gap-2.5 py-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.97]"
                   >
-                    <MessageSquare size={18} />
-                    {t('nav.messages')}
+                    <MessageSquare size={22} />
+                    <span>{t('nav.messages')}</span>
                   </Link>
-                  {isAdmin && (
+                  {isAdmin ? (
                     <Link
                       href="/admin"
                       onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border-purple)] bg-[var(--purple-soft)] text-sm text-[var(--purple-bright)] font-medium hover:bg-[var(--purple)]/20 transition-all"
+                      className="flex flex-col items-center justify-center gap-2.5 py-5 rounded-2xl border border-[var(--border-purple)] bg-[var(--purple-soft)] text-sm font-medium text-[var(--purple-bright)] hover:bg-[var(--purple)]/20 transition-all active:scale-[0.97]"
                     >
-                      <Shield size={18} />
-                      {t('nav.admin')}
+                      <Shield size={22} />
+                      <span>Адмін</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/builder"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex flex-col items-center justify-center gap-2.5 py-5 rounded-2xl bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-sm font-semibold text-white shadow-[0_6px_24px_rgba(139,92,246,0.4)] active:scale-[0.97]"
+                    >
+                      <ArrowRight size={22} />
+                      <span>Проєкт</span>
                     </Link>
                   )}
-                </>
+                </div>
               ) : (
-                <>
+                <div className="space-y-3">
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl border border-[var(--border)] text-sm font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all"
+                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl border border-[var(--border)] text-sm font-semibold text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.98]"
                   >
-                    <LogIn size={18} />
+                    <LogIn size={20} />
                     {t('nav.login')}
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-[var(--purple)] to-[var(--purple-bright)] text-sm font-medium text-white shadow-[0_4px_18px_rgba(139,92,246,0.35)] hover:brightness-110 transition-all"
+                    className="flex items-center justify-center gap-2.5 w-full py-4 rounded-2xl bg-gradient-to-r from-[var(--purple)] to-[var(--purple-bright)] text-sm font-semibold text-white shadow-[0_6px_24px_rgba(139,92,246,0.4)] hover:brightness-110 transition-all active:scale-[0.98]"
                   >
-                    <UserPlus size={18} />
+                    <UserPlus size={20} />
                     {t('nav.register')}
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

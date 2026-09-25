@@ -1001,3 +1001,61 @@ footer .footer-brand-text { margin-bottom: 1rem; }
     padding-bottom: 5rem;
   }
 }
+/* ============================================================
+   FULL-SCREEN MOBILE MENU ANIMATIONS
+   ============================================================ */
+@keyframes menuFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes menuItemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* ============================================================
+   LARGER TAP TARGETS (mobile-first)
+   ============================================================ */
+.chat-fab {
+  width: 64px !important;
+  height: 64px !important;
+}
+
+@media (max-width: 640px) {
+  .chat-fab {
+    width: 60px !important;
+    height: 60px !important;
+    bottom: max(20px, env(safe-area-inset-bottom)) !important;
+    right: 20px !important;
+  }
+}
+
+/* Більше місце в header на мобільному */
+@media (max-width: 640px) {
+  header .container {
+    height: 64px !important;
+    gap: 8px;
+  }
+}
+
+/* Плавніше натискання на всі інтерактивні елементи */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active:not(:disabled),
+a:active {
+  transform: scale(0.97);
+}
+
+/* Виправляємо sticky для мобільного меню */
+.xl\\:hidden.fixed.inset-0 {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}

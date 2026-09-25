@@ -155,8 +155,12 @@ export default function FloatingChat() {
         </div>
       )}
 
-      <button className="chat-fab" onClick={() => setOpen(!open)} aria-label="Чат підтримки">
-        {open ? <X size={24} /> : <MessageCircle size={24} />}
+      <button
+  className="chat-fab"
+  onClick={() => setOpen(!open)}
+  aria-label="Чат підтримки"
+>
+  {open ? <X size={26} strokeWidth={2.5} /> : <MessageCircle size={26} strokeWidth={2.5} />}
         {unread > 0 && !open && (
           <span className="chat-badge">{unread > 9 ? '9+' : unread}</span>
         )}

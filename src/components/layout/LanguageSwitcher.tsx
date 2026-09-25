@@ -6,10 +6,10 @@ export default function LanguageSwitcher() {
   const { lang, setLang } = useLanguage();
 
   return (
-    <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-[var(--surface-2)] border border-[var(--border)]">
+    <div className="flex items-center gap-0.5 p-0.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
       <button
         onClick={() => setLang('uk')}
-        className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${
+        className={`w-9 h-9 text-xs font-bold rounded-lg transition-all active:scale-95 ${
           lang === 'uk'
             ? 'bg-gradient-to-r from-[var(--purple)] to-[var(--purple-bright)] text-white shadow-sm'
             : 'text-[var(--text-muted)] hover:text-[var(--text)]'
@@ -20,7 +20,7 @@ export default function LanguageSwitcher() {
       </button>
       <button
         onClick={() => setLang('en')}
-        className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${
+        className={`w-9 h-9 text-xs font-bold rounded-lg transition-all active:scale-95 ${
           lang === 'en'
             ? 'bg-gradient-to-r from-[var(--purple)] to-[var(--purple-bright)] text-white shadow-sm'
             : 'text-[var(--text-muted)] hover:text-[var(--text)]'

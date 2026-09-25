@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -8,19 +9,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      aria-label="Toggle theme"
-      className="relative p-2 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+      aria-label="Змінити тему"
+      className="w-11 h-11 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all active:scale-95"
     >
-      {theme === 'dark' ? (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-        </svg>
-      ) : (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      )}
+      {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
     </button>
   );
 }
