@@ -11,7 +11,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { blogPosts } from '@/data/blog';
 
 export default function BlogPostPage() {
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
   const params = useParams();
   const slug = params?.slug as string;
   const post = blogPosts.find((p) => p.slug === slug);
@@ -26,21 +26,21 @@ export default function BlogPostPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16">
+      <main className="container py-8 md:py-16">
         <Link
           href="/blog"
-          className="text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors inline-flex items-center gap-1"
+          className="text-xs md:text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors inline-flex items-center gap-1"
         >
           ← Back to Blog
         </Link>
 
         <Reveal>
-          <article className="max-w-3xl mx-auto mt-8">
+          <article className="max-w-3xl mx-auto mt-6 md:mt-8">
             <Badge>{post.category}</Badge>
-            <h1 className="text-3xl md:text-5xl font-bold mt-4 tracking-tight leading-[1.1]">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mt-4 tracking-tight leading-[1.15]">
               {title}
             </h1>
-            <div className="flex items-center gap-4 mt-5 text-sm text-[var(--text-faint)]">
+            <div className="flex items-center gap-3 md:gap-4 mt-4 md:mt-5 text-xs md:text-sm text-[var(--text-faint)] flex-wrap">
               <span>
                 {new Date(post.date).toLocaleDateString(
                   lang === 'uk' ? 'uk-UA' : 'en-US',
@@ -51,20 +51,22 @@ export default function BlogPostPage() {
               <span>{post.readingTime} min read</span>
             </div>
 
-            <div className="mt-10 space-y-6">
+            <div className="mt-8 md:mt-10 space-y-5 md:space-y-6">
               {content.map((paragraph, i) => (
-                <p key={i} className="text-lg text-[var(--text-secondary)] leading-relaxed">
+                <p
+                  key={i}
+                  className="text-base md:text-lg text-[var(--text-secondary)] leading-relaxed md:leading-relaxed"
+                >
                   {paragraph}
                 </p>
               ))}
             </div>
 
-            {/* CTA */}
-            <div className="mt-14 p-8 rounded-2xl border border-[var(--border-purple)] bg-gradient-to-b from-[var(--purple-soft)] to-transparent text-center">
-              <h3 className="text-xl md:text-2xl font-bold mb-3">
+            <div className="mt-12 md:mt-14 p-6 md:p-8 rounded-2xl border border-[var(--border-purple)] bg-gradient-to-b from-[var(--purple-soft)] to-transparent text-center">
+              <h3 className="text-lg md:text-2xl font-bold mb-3">
                 {lang === 'uk' ? 'Потрібен сайт або додаток?' : 'Need a website or app?'}
               </h3>
-              <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+              <p className="text-sm md:text-base text-[var(--text-muted)] mb-5 md:mb-6 max-w-md mx-auto">
                 {lang === 'uk'
                   ? 'Налаштуйте свій проєкт у конструкторі та побачте ціну одразу.'
                   : 'Configure your project in the builder and see the price instantly.'}

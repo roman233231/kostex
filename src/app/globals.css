@@ -906,3 +906,98 @@ footer .footer-brand-text { margin-bottom: 1rem; }
     }
   }
 }
+/* ============================================================
+   MOBILE POLISH — фінальні фікси
+   ============================================================ */
+
+/* Читабельність довгих текстів (Blog, About, Privacy) */
+@media (max-width: 768px) {
+  article p,
+  .prose p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
+
+/* Картки на мобільному — без hover-зміщень */
+@media (max-width: 768px) {
+  .card:hover,
+  [class*="hover:-translate-y"]:hover {
+    transform: none !important;
+  }
+}
+
+/* Кнопки на всю ширину в формах на мобільному */
+@media (max-width: 640px) {
+  form .btn {
+    width: 100%;
+  }
+}
+
+/* Сітки — мінімальний gap */
+@media (max-width: 640px) {
+  .grid.gap-5 { gap: 1rem; }
+  .grid.gap-6 { gap: 1.125rem; }
+}
+
+/* Секції — компактні на телефоні */
+@media (max-width: 640px) {
+  section.py-12 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  section.py-16 { padding-top: 3rem; padding-bottom: 3rem; }
+  section.py-20 { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  section.py-24 { padding-top: 4rem; padding-bottom: 4rem; }
+  section.py-28 { padding-top: 4rem; padding-bottom: 4rem; }
+}
+
+/* Hero — менше padding на телефоні */
+@media (max-width: 640px) {
+  .container.py-16 { padding-top: 3rem; padding-bottom: 3rem; }
+  .container.py-12 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+}
+
+/* Footer — компактніше */
+@media (max-width: 640px) {
+  footer .footer-grid { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+  footer h4 { margin-bottom: 0.75rem; }
+  footer ul li + li { margin-top: 0.5rem; }
+}
+
+/* Прибираємо overflow-x для card */
+.card { overflow-wrap: break-word; word-break: break-word; }
+
+/* Кнопки — не менше 44px */
+@media (max-width: 768px) {
+  .btn,
+  button:not([aria-label="Close"]):not([aria-label="Menu"]):not(.chat-send):not(.chat-fab) {
+    min-height: 44px;
+  }
+}
+
+/* Sticky шапка кабінету — не перекриває контент */
+@media (max-width: 768px) {
+  .sticky.top-16 {
+    top: 4rem;
+  }
+}
+
+/* Заголовки в картках — трохи менші на телефоні */
+@media (max-width: 640px) {
+  h1 { letter-spacing: -0.03em; }
+  h2 { letter-spacing: -0.025em; }
+}
+
+/* Таблички (Admin) — горизонтальний скрол */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+/* Відступ знизу під floating chat на мобільному */
+@media (max-width: 640px) {
+  main:not(.no-chat-padding) {
+    padding-bottom: 5rem;
+  }
+}

@@ -33,7 +33,7 @@ export default function ContactPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16 max-w-5xl">
+      <main className="container py-12 md:py-16 max-w-5xl">
         <Reveal>
           <div className="mb-12">
             <Badge>{t('nav.contact')}</Badge>
@@ -46,7 +46,7 @@ export default function ContactPage() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8">
           <Reveal delay={100} className="lg:col-span-3">
             <Card hover={false}>
               {sent ? (
