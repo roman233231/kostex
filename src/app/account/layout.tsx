@@ -41,7 +41,34 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   return (
     <>
       <Navbar />
-      <div className="container py-10 flex gap-10">
+
+      {/* Mobile horizontal nav */}
+      <div className="md:hidden border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-xl sticky top-16 z-30">
+        <div className="-mx-5 px-5 overflow-x-auto scrollbar-hide">
+          <nav className="flex gap-1 py-3 min-w-max">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                    isActive
+                      ? 'bg-[var(--purple-soft)] text-[var(--purple-bright)] border border-[var(--border-purple)]'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text)] border border-transparent'
+                  }`}
+                >
+                  <span className="text-sm">{item.icon}</span>
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
+      <div className="container py-6 md:py-10 flex gap-10">
+        {/* Desktop sidebar */}
         <aside className="w-60 shrink-0 hidden md:block">
           <div className="sticky top-24">
             <nav className="space-y-1">
@@ -65,8 +92,11 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             </nav>
           </div>
         </aside>
+
+        {/* Main */}
         <main className="flex-1 min-w-0">{children}</main>
       </div>
+
       <Footer />
     </>
   );

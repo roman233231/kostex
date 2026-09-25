@@ -869,3 +869,40 @@ footer .footer-brand-text { margin-bottom: 1rem; }
 @media (min-width: 769px) and (max-width: 1024px) {
   .container { padding: 0 28px; }
 }
+/* ============================================================
+   MOBILE BUILDER — sticky bar має відступ знизу
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Забезпечуємо місце для sticky bar знизу */
+  body:has(.builder-page) main {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Кабінет — мобільний хедер */
+@media (max-width: 768px) {
+  /* Горизонтальний скрол в кабінеті */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   SAFE AREA для iPhone з "чубчиком"
+   ============================================================ */
+@supports (padding: max(0px)) {
+  .chat-fab {
+    bottom: max(24px, env(safe-area-inset-bottom));
+    right: max(24px, env(safe-area-inset-right));
+  }
+  @media (max-width: 640px) {
+    .chat-fab {
+      bottom: max(16px, env(safe-area-inset-bottom));
+      right: max(16px, env(safe-area-inset-right));
+    }
+  }
+}
