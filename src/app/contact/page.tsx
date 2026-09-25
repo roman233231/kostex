@@ -10,7 +10,26 @@ import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
-import { Mail, Send, Clock, AtSign } from 'lucide-react';
+import { Mail, Send, Clock } from 'lucide-react';
+
+// Іконка Instagram — вставляється ПІСЛЯ імпортів
+// і ПЕРЕД функцією ContactPage (на верхньому рівні файлу)
+const InstagramIcon = ({ size = 18 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
 
 export default function ContactPage() {
   const { t } = useLanguage();
@@ -45,11 +64,11 @@ export default function ContactPage() {
       href: 'https://t.me/kostex_official',
     },
     {
-  icon: AtSign,
-  label: 'Instagram',
-  value: '@kostex.studio',
-  href: 'https://instagram.com/kostex.studio',
-},
+      icon: InstagramIcon,
+      label: 'Instagram',
+      value: '@kostex.studio',
+      href: 'https://instagram.com/kostex.studio',
+    },
     {
       icon: Clock,
       label: t('contact.responseTime'),

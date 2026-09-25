@@ -9,7 +9,7 @@ import {
   markClientReadMessages,
   SupportMessage,
 } from '@/services/support';
-import { Send, X, MessageCircle, Check, CheckCheck } from 'lucide-react';
+import { Send, X, MessageCircle, Check, CheckCheck, Shield } from 'lucide-react';
 
 function CheckIcon({ read }: { read: boolean }) {
   if (!read) {
@@ -82,7 +82,9 @@ export default function FloatingChat() {
         <div className="chat-panel">
           {/* Header */}
           <div className="chat-header">
-            <div className="chat-avatar">K</div>
+            <div className="chat-avatar">
+              <Shield size={20} className="text-white relative z-10" strokeWidth={2.5} />
+            </div>
             <div className="flex-1 min-w-0">
               <div className="font-semibold text-sm">Підтримка KOSTEX</div>
               <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
@@ -92,7 +94,7 @@ export default function FloatingChat() {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
               aria-label="Закрити"
             >
               <X size={18} />
@@ -107,8 +109,8 @@ export default function FloatingChat() {
                   <span className="text-2xl">👋</span>
                 </div>
                 <div className="font-semibold mb-1">Вітаємо!</div>
-                <div className="text-sm text-[var(--text-muted)] max-w-[240px] mx-auto">
-                  Запитайте нас про проєкт, ціни або функції.
+                <div className="text-sm text-[var(--text-muted)] max-w-[240px] mx-auto leading-relaxed">
+                  Запитайте нас про проєкт, ціни або функції. Відповідаємо швидко.
                 </div>
               </div>
             ) : (
@@ -153,7 +155,7 @@ export default function FloatingChat() {
         </div>
       )}
 
-      <button className="chat-fab" onClick={() => setOpen(!open)} aria-label="Чат">
+      <button className="chat-fab" onClick={() => setOpen(!open)} aria-label="Чат підтримки">
         {open ? <X size={24} /> : <MessageCircle size={24} />}
         {unread > 0 && !open && (
           <span className="chat-badge">{unread > 9 ? '9+' : unread}</span>
