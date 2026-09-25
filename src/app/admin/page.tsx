@@ -20,6 +20,7 @@ const adminLinks = [
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/portfolio', label: 'Portfolio' },
   { href: '/admin/clients', label: 'Clients' },
+  { href: '/admin/seed', label: '⚡ Seed Data' },
 ];
 
 export default function AdminPage() {

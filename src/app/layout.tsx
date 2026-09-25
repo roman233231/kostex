@@ -14,28 +14,60 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://kostex.vercel.app'),
   title: {
     default: 'KOSTEX — Digital Products Studio',
     template: '%s | KOSTEX',
   },
   description:
     'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
-  keywords: ['KOSTEX', 'digital products', 'websites', 'web apps', 'software', 'bots', 'CRM', 'e-commerce', 'automation'],
+  keywords: [
+    'KOSTEX',
+    'digital products',
+    'websites',
+    'web apps',
+    'software',
+    'bots',
+    'CRM',
+    'e-commerce',
+    'automation',
+    'Ukraine',
+  ],
+  authors: [{ name: 'KOSTEX' }],
+  creator: 'KOSTEX',
+  publisher: 'KOSTEX',
   openGraph: {
-    title: 'KOSTEX — Digital Products Studio',
-    description: 'Build your digital product with KOSTEX.',
-    url: 'https://kostex.vercel.app',
-    siteName: 'KOSTEX',
     type: 'website',
     locale: 'uk_UA',
+    alternateLocale: ['en_US'],
+    url: 'https://kostex.vercel.app',
+    siteName: 'KOSTEX',
+    title: 'KOSTEX — Digital Products Studio',
+    description:
+      'We build websites, web apps, software, bots and custom digital solutions.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'KOSTEX — Digital Products Studio',
-    description: 'Build your digital product with KOSTEX.',
+    description:
+      'We build websites, web apps, software, bots and custom digital solutions.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   verification: {
     google: 'bKPtZ7tHSb2R3wG0TWH096JiJNjHzsiSJe8cFjqJmoE',
+  },
+  icons: {
+    icon: '/logo-icon.png',
+    apple: '/logo-icon.png',
   },
 };
 
@@ -45,7 +77,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk" className={`${inter.variable} dark`} data-scroll-behavior="smooth" style={{ overflowX: 'hidden' }}>
+    <html lang="uk" className={`${inter.variable} dark`} data-scroll-behavior="smooth">
       <body>
         <ThemeProvider>
           <LanguageProvider>
