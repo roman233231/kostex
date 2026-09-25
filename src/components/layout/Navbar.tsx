@@ -19,6 +19,7 @@ const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: fals
 const navLinks: { href: string; key: TranslationKey }[] = [
   { href: '/services', key: 'nav.services' },
   { href: '/catalog', key: 'nav.catalog' },
+  { href: '/pricing', key: 'pricing.badge' },
   { href: '/portfolio', key: 'nav.portfolio' },
   { href: '/inspiration', key: 'nav.inspiration' },
   { href: '/about', key: 'nav.about' },
