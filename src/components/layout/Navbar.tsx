@@ -21,7 +21,7 @@ const navLinks: { href: string; key: TranslationKey }[] = [
   { href: '/catalog', key: 'nav.catalog' },
   { href: '/pricing', key: 'pricing.badge' },
   { href: '/portfolio', key: 'nav.portfolio' },
-  { href: '/inspiration', key: 'nav.inspiration' },
+  { href: '/blog', key: 'nav.blog' as any },
   { href: '/about', key: 'nav.about' },
   { href: '/contact', key: 'nav.contact' },
 ];

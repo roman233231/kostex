@@ -9,28 +9,28 @@ const columns: { titleKey: TranslationKey; links: { href: string; labelKey: Tran
   {
     titleKey: 'footer.products',
     links: [
-      { href: '/catalog/websites', labelKey: 'nav.catalog' },
-      { href: '/catalog/web-apps', labelKey: 'nav.catalog' },
-      { href: '/catalog/software', labelKey: 'nav.catalog' },
-      { href: '/catalog/bots', labelKey: 'nav.catalog' },
+      { href: '/catalog/websites', labelKey: 'catalog.websites' },
+      { href: '/catalog/web-apps', labelKey: 'catalog.webapps' },
+      { href: '/catalog/software', labelKey: 'catalog.software' },
+      { href: '/catalog/bots', labelKey: 'catalog.bots' },
     ],
   },
   {
     titleKey: 'footer.company',
     links: [
       { href: '/services', labelKey: 'nav.services' },
+      { href: '/pricing', labelKey: 'pricing.badge' },
       { href: '/portfolio', labelKey: 'nav.portfolio' },
       { href: '/about', labelKey: 'nav.about' },
-      { href: '/contact', labelKey: 'nav.contact' },
     ],
   },
   {
     titleKey: 'footer.more',
     links: [
+      { href: '/blog', labelKey: 'nav.blog' },
       { href: '/inspiration', labelKey: 'nav.inspiration' },
-      { href: '/builder', labelKey: 'nav.register' },
+      { href: '/contact', labelKey: 'nav.contact' },
       { href: '/privacy', labelKey: 'nav.about' },
-      { href: '/terms', labelKey: 'nav.about' },
     ],
   },
 ];

@@ -17,6 +17,7 @@ export const translations = {
     'nav.myOrders': 'Мої замовлення',
     'nav.notifications': 'Сповіщення',
     'nav.profile': 'Профіль',
+    'nav.blog': 'Блог',
 
     // Hero
     'hero.badge': 'Digital Products Studio',
@@ -372,6 +373,7 @@ export const translations = {
     'nav.myOrders': 'My Orders',
     'nav.notifications': 'Notifications',
     'nav.profile': 'Profile',
+    'nav.blog': 'Blog',
 
     // Hero
     'hero.badge': 'Digital Products Studio',
