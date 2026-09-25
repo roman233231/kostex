@@ -836,3 +836,36 @@ footer .footer-brand-text { margin-bottom: 1rem; }
 .no-scroll-x {
   overflow-x: hidden;
 }
+/* ============================================================
+   MOBILE EXTRAS — horizontal scroll для chips
+   ============================================================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Тап-таргети: кнопки-чіпи */
+@media (max-width: 768px) {
+  button, .btn, a[role="button"] {
+    min-height: 44px;
+  }
+  button.px-4, .btn {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+}
+
+/* Дуже вузькі телефони */
+@media (max-width: 360px) {
+  .container { padding: 0 14px; }
+  h1 { font-size: 1.85rem; }
+  .section-title { font-size: 1.5rem; }
+}
+
+/* Tablet refinements */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container { padding: 0 28px; }
+}

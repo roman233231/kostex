@@ -32,25 +32,25 @@ export default function PortfolioPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16">
+      <main className="container py-12 md:py-16">
         <Reveal>
-          <div className="mb-12">
+          <div className="mb-8 md:mb-12">
             <Badge>{t('nav.portfolio')}</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-4 tracking-tight">
               {t('portfolio.title')}
             </h1>
-            <p className="text-lg text-[var(--text-muted)] mt-4 max-w-2xl">
+            <p className="text-base md:text-lg text-[var(--text-muted)] mt-3 md:mt-4 max-w-2xl">
               {t('portfolio.subtitle')}
             </p>
           </div>
         </Reveal>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="skeleton-card">
                 <div className="skeleton skeleton-image" />
-                <div className="p-5">
+                <div className="p-4 md:p-5">
                   <div className="skeleton skeleton-line" style={{ width: '80px' }} />
                   <div className="skeleton skeleton-title mt-3" />
                   <div className="skeleton skeleton-line" />
@@ -59,9 +59,9 @@ export default function PortfolioPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <p className="text-[var(--text-muted)]">{t('portfolio.noItems')}</p>
+          <p className="text-[var(--text-muted)] py-12 text-center">{t('portfolio.noItems')}</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {items.map((item, i) => (
               <Reveal key={item.id} delay={i * 60}>
                 <PortfolioCard item={item} index={i} />
