@@ -1,11 +1,10 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
 export const alt = 'KOSTEX — Digital Products Studio';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default async function Image() {
+export default function Image() {
   return new ImageResponse(
     (
       <div
@@ -16,144 +15,101 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #08080C 0%, #0E0E16 50%, #08080C 100%)',
+          background: '#08080C',
+          fontFamily: 'sans-serif',
           position: 'relative',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
-        {/* Ambient glow */}
         <div
           style={{
             position: 'absolute',
-            top: '-30%',
-            left: '20%',
-            width: '800px',
-            height: '800px',
+            top: -200,
+            left: 300,
+            width: 900,
+            height: 900,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(139,92,246,0.35), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.4), transparent 65%)',
             filter: 'blur(80px)',
           }}
         />
         <div
           style={{
             position: 'absolute',
-            bottom: '-30%',
-            right: '10%',
-            width: '700px',
-            height: '700px',
+            bottom: -200,
+            right: 200,
+            width: 800,
+            height: 800,
             borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(192,38,255,0.25), transparent 70%)',
+            background: 'radial-gradient(circle, rgba(192,38,255,0.3), transparent 65%)',
             filter: 'blur(80px)',
           }}
         />
 
-        {/* Content */}
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '60px',
-            position: 'relative',
+            fontSize: 96,
+            fontWeight: 700,
+            letterSpacing: '0.28em',
+            color: '#FFFFFF',
+            marginBottom: 20,
+            marginLeft: '0.28em',
           }}
         >
-          {/* Logo X */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '30px',
-            }}
-          >
-            <svg width="140" height="140" viewBox="0 0 200 200" fill="none">
-              <path
-                d="M 30 40 L 80 40 L 170 160 L 120 160 Z"
-                fill="url(#grad1)"
-              />
-              <path
-                d="M 80 40 L 130 40 L 40 160 L 0 160 Z"
-                fill="white"
-                opacity="0.9"
-              />
-              <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#8B5CF6" />
-                  <stop offset="100%" stopColor="#C026FF" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-
-          {/* Brand name */}
-          <div
-            style={{
-              fontSize: '72px',
-              fontWeight: 700,
-              letterSpacing: '0.3em',
-              color: '#FFFFFF',
-              marginBottom: '16px',
-              marginLeft: '0.3em',
-            }}
-          >
-            KOSTEX
-          </div>
-
-          {/* Tagline */}
-          <div
-            style={{
-              fontSize: '22px',
-              fontWeight: 500,
-              letterSpacing: '0.35em',
-              color: '#9A9AA8',
-              marginBottom: '40px',
-              textTransform: 'uppercase',
-              marginLeft: '0.35em',
-            }}
-          >
-            Digital Products Studio
-          </div>
-
-          {/* Divider */}
-          <div
-            style={{
-              width: '100px',
-              height: '2px',
-              background: 'linear-gradient(90deg, transparent, #8B5CF6, transparent)',
-              marginBottom: '30px',
-            }}
-          />
-
-          {/* Services */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '24px',
-              fontSize: '16px',
-              color: '#CFCFD6',
-              letterSpacing: '0.05em',
-            }}
-          >
-            <span>Websites</span>
-            <span style={{ color: '#8B5CF6' }}>✦</span>
-            <span>Web Apps</span>
-            <span style={{ color: '#8B5CF6' }}>✦</span>
-            <span>Bots</span>
-            <span style={{ color: '#8B5CF6' }}>✦</span>
-            <span>CRM</span>
-          </div>
+          KOSTEX
         </div>
 
-        {/* Bottom right label */}
         <div
           style={{
+            display: 'flex',
+            fontSize: 22,
+            fontWeight: 500,
+            letterSpacing: '0.35em',
+            color: '#9A9AA8',
+            marginBottom: 40,
+            textTransform: 'uppercase',
+            marginLeft: '0.35em',
+          }}
+        >
+          Digital Products Studio
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            width: 120,
+            height: 2,
+            background: 'linear-gradient(90deg, transparent, #8B5CF6, transparent)',
+            marginBottom: 36,
+          }}
+        />
+
+        <div
+          style={{
+            display: 'flex',
+            gap: 24,
+            fontSize: 18,
+            color: '#CFCFD6',
+          }}
+        >
+          <span>Websites</span>
+          <span style={{ color: '#8B5CF6' }}>✦</span>
+          <span>Web Apps</span>
+          <span style={{ color: '#8B5CF6' }}>✦</span>
+          <span>Bots</span>
+          <span style={{ color: '#8B5CF6' }}>✦</span>
+          <span>CRM</span>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
             position: 'absolute',
-            bottom: '40px',
-            right: '60px',
-            fontSize: '16px',
+            bottom: 40,
+            right: 60,
+            fontSize: 14,
             color: '#55555F',
-            letterSpacing: '0.15em',
+            letterSpacing: '0.2em',
             textTransform: 'uppercase',
           }}
         >
@@ -161,8 +117,6 @@ export default async function Image() {
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }

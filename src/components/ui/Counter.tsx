@@ -12,24 +12,31 @@ interface CounterProps {
 
 export default function Counter({
   value,
-  duration = 1800,
+  duration = 1600,
   suffix = '',
   prefix = '',
   decimals = 0,
 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [display, setDisplay] = useState(0);
-  const started = useRef(false);
+  const [display, setDisplay] = useState(value);
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || hasAnimated) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      setDisplay(value);
+      setHasAnimated(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !started.current) {
-            started.current = true;
+          if (entry.isIntersecting && !hasAnimated) {
+            setHasAnimated(true);
             const start = performance.now();
             const animate = (now: number) => {
               const t = Math.min((now - start) / duration, 1);
@@ -42,12 +49,12 @@ export default function Counter({
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.1 }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [value, duration]);
+  }, [value, duration, hasAnimated]);
 
   return (
     <span ref={ref}>
