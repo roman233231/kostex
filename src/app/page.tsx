@@ -34,11 +34,11 @@ export default function Home() {
       <Navbar />
       <main>
         {/* HERO */}
-        <section className="relative overflow-hidden min-h-[88vh] flex items-center">
+        <section className="relative overflow-hidden min-h-[80vh] md:min-h-[88vh] flex items-center">
           <div className="grid-bg" />
 
           <div
-            className="glow-orb animate-float-slow"
+            className="glow-orb animate-float-slow hidden md:block"
             style={{
               top: '-10%',
               left: '20%',
@@ -48,7 +48,7 @@ export default function Home() {
             }}
           />
           <div
-            className="glow-orb animate-float"
+            className="glow-orb animate-float hidden md:block"
             style={{
               bottom: '-15%',
               right: '10%',
@@ -59,9 +59,9 @@ export default function Home() {
             }}
           />
 
-          <div className="container relative py-20 md:py-28">
+          <div className="container relative py-16 md:py-28">
             <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-              <div className="mb-7 animate-fade-down">
+              <div className="mb-6 md:mb-7 animate-fade-down">
                 <div className="relative">
                   <div
                     className="absolute inset-0 rounded-full"
@@ -73,63 +73,63 @@ export default function Home() {
                   />
                   <Logo
                     size={88}
-                    className="relative w-20 h-20 md:w-24 md:h-24 drop-shadow-[0_0_40px_rgba(139,92,246,0.6)]"
+                    className="relative w-16 h-16 md:w-24 md:h-24 drop-shadow-[0_0_40px_rgba(139,92,246,0.6)]"
                   />
                 </div>
               </div>
 
-              <div className="animate-fade-up delay-100 mb-5">
+              <div className="animate-fade-up delay-100 mb-4 md:mb-5">
                 <Badge>{t('hero.badge')}</Badge>
               </div>
 
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-6 animate-fade-up delay-200 leading-[0.95]">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-5 md:mb-6 animate-fade-up delay-200 leading-[0.95]">
                 {t('hero.title1')}
                 <br />
                 <span className="gradient-text">{t('hero.title2')}</span>
                 <span className="text-[var(--purple)] animate-blink ml-1">_</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-[var(--text-muted)] max-w-2xl mb-9 animate-fade-up delay-300">
+              <p className="text-base sm:text-lg md:text-xl text-[var(--text-muted)] max-w-2xl mb-7 md:mb-9 animate-fade-up delay-300 px-2">
                 {t('hero.subtitle')}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 animate-fade-up delay-400">
-                <MagneticButton href="/builder">
-                  <Button className="btn-lg">{t('hero.cta1')} →</Button>
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 animate-fade-up delay-400 w-full sm:w-auto px-4 sm:px-0">
+                <MagneticButton href="/builder" className="w-full sm:w-auto">
+                  <Button className="btn-lg w-full sm:w-auto">{t('hero.cta1')} →</Button>
                 </MagneticButton>
-                <MagneticButton href="/portfolio">
-                  <Button variant="outline" className="btn-lg">{t('hero.cta2')}</Button>
+                <MagneticButton href="/portfolio" className="w-full sm:w-auto">
+                  <Button variant="outline" className="btn-lg w-full sm:w-auto">{t('hero.cta2')}</Button>
                 </MagneticButton>
               </div>
 
-              <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-3xl animate-fade-up delay-600">
+              <div className="mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 w-full max-w-3xl animate-fade-up delay-600">
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold gradient-text">
+                  <div className="text-2xl md:text-4xl font-bold gradient-text">
                     <Counter value={50} suffix="+" />
                   </div>
-                  <div className="text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
+                  <div className="text-[10px] md:text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
                     {t('hero.stat1')}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold gradient-text">24/7</div>
-                  <div className="text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
+                  <div className="text-2xl md:text-4xl font-bold gradient-text">24/7</div>
+                  <div className="text-[10px] md:text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
                     {t('hero.stat2')}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold gradient-text">
+                  <div className="text-2xl md:text-4xl font-bold gradient-text">
                     <Counter value={14} prefix="7–" />
                   </div>
-                  <div className="text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
+                  <div className="text-[10px] md:text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
                     {t('hero.stat3')}
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold gradient-text">
+                  <div className="text-2xl md:text-4xl font-bold gradient-text">
                     <Counter value={100} suffix="%" />
                   </div>
-                  <div className="text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
+                  <div className="text-[10px] md:text-xs text-[var(--text-faint)] uppercase tracking-wider mt-1">
                     {t('hero.stat4')}
                   </div>
                 </div>
@@ -139,11 +139,14 @@ export default function Home() {
         </section>
 
         {/* MARQUEE */}
-        <section className="py-6 border-y border-[var(--border)] bg-[var(--surface)]/40">
+        <section className="py-5 md:py-6 border-y border-[var(--border)] bg-[var(--surface)]/40">
           <div className="marquee">
             <div className="marquee-track">
               {[...techStack, ...techStack].map((tech, i) => (
-                <div key={i} className="text-lg md:text-xl font-semibold text-[var(--text-faint)] whitespace-nowrap flex items-center gap-14">
+                <div
+                  key={i}
+                  className="text-base md:text-xl font-semibold text-[var(--text-faint)] whitespace-nowrap flex items-center gap-8 md:gap-14"
+                >
                   <span>{tech}</span>
                   <span className="text-[var(--purple)]">✦</span>
                 </div>
@@ -153,9 +156,9 @@ export default function Home() {
         </section>
 
         {/* WHAT WE BUILD */}
-        <section className="container py-20 md:py-28">
+        <section className="container py-16 md:py-28">
           <Reveal>
-            <div className="text-center mb-14">
+            <div className="text-center mb-10 md:mb-14">
               <Badge>{t('sections.whatWeBuild')}</Badge>
               <h2 className="section-title mt-4">
                 {t('sections.whatYouWant')}{' '}
@@ -165,16 +168,16 @@ export default function Home() {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {buildCards.map((item, i) => (
               <Reveal key={item.titleKey} delay={i * 70}>
                 <Link href={item.href} className="block h-full">
                   <TiltCard className="h-full">
                     <Card className="h-full flex flex-col group">
-                      <div className="text-4xl mb-4 transition-transform duration-500 group-hover:scale-110">
+                      <div className="text-3xl md:text-4xl mb-3 md:mb-4 transition-transform duration-500 group-hover:scale-110">
                         {item.icon}
                       </div>
-                      <h3 className="text-lg font-bold mb-2 group-hover:text-[var(--purple)] transition-colors">
+                      <h3 className="text-base md:text-lg font-bold mb-2 group-hover:text-[var(--purple)] transition-colors">
                         {t(item.titleKey)}
                       </h3>
                       <p className="text-[var(--text-muted)] text-sm flex-1">{t(item.descKey)}</p>
@@ -190,8 +193,8 @@ export default function Home() {
         </section>
 
         {/* WHY KOSTEX */}
-        <section className="container py-20 md:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+        <section className="container py-16 md:py-28">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14 items-center">
             <Reveal>
               <div>
                 <Badge>{t('sections.whyUs')}</Badge>
@@ -199,20 +202,20 @@ export default function Home() {
                   {t('sections.whyUsTitle')}{' '}
                   <span className="gradient-text">{t('sections.whyUsTitle2')}</span>
                 </h2>
-                <p className="section-subtitle mt-4">{t('sections.whyUsSubtitle')}</p>
+                <p className="section-subtitle mt-3 md:mt-4">{t('sections.whyUsSubtitle')}</p>
 
-                <div className="mt-9 space-y-5">
+                <div className="mt-7 md:mt-9 space-y-4 md:space-y-5">
                   {(['builder', 'delivery', 'transparency'] as const).map((key, i) => (
                     <Reveal key={key} delay={i * 100}>
-                      <div className="flex gap-4">
-                        <div className="w-9 h-9 rounded-xl bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-[var(--purple-bright)] font-bold shrink-0">
+                      <div className="flex gap-3 md:gap-4">
+                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-[var(--purple-bright)] font-bold shrink-0 text-sm">
                           ✓
                         </div>
                         <div>
-                          <h3 className="font-semibold mb-0.5 text-base">
+                          <h3 className="font-semibold mb-0.5 text-sm md:text-base">
                             {t(`features.${key}` as any)}
                           </h3>
-                          <p className="text-sm text-[var(--text-muted)]">
+                          <p className="text-xs md:text-sm text-[var(--text-muted)]">
                             {t(`features.${key}Desc` as any)}
                           </p>
                         </div>
@@ -232,8 +235,8 @@ export default function Home() {
                     filter: 'blur(60px)',
                   }}
                 />
-                <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
-                  <div className="flex gap-2 mb-5">
+                <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+                  <div className="flex gap-2 mb-4 md:mb-5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
@@ -243,10 +246,10 @@ export default function Home() {
                     <div className="h-2 rounded-full bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] w-full" />
                     <div className="h-2 rounded-full bg-[var(--surface-2)] w-5/6" />
                     <div className="h-2 rounded-full bg-[var(--surface-2)] w-2/3" />
-                    <div className="mt-5 grid grid-cols-3 gap-2.5">
-                      <div className="h-14 rounded-lg bg-[var(--surface-2)]" />
-                      <div className="h-14 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)]" />
-                      <div className="h-14 rounded-lg bg-[var(--surface-2)]" />
+                    <div className="mt-4 md:mt-5 grid grid-cols-3 gap-2.5">
+                      <div className="h-12 md:h-14 rounded-lg bg-[var(--surface-2)]" />
+                      <div className="h-12 md:h-14 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)]" />
+                      <div className="h-12 md:h-14 rounded-lg bg-[var(--surface-2)]" />
                     </div>
                   </div>
                 </div>
@@ -256,9 +259,9 @@ export default function Home() {
         </section>
 
         {/* REVIEWS */}
-        <section className="container py-20 md:py-28">
+        <section className="container py-16 md:py-28">
           <Reveal>
-            <div className="text-center mb-14">
+            <div className="text-center mb-10 md:mb-14">
               <Badge>{t('reviews.badge')}</Badge>
               <h2 className="section-title mt-4">
                 {t('reviews.title')}{' '}
@@ -274,7 +277,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section className="container py-20 md:py-28">
+        <section className="container py-16 md:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-start">
             <Reveal className="lg:col-span-2">
               <div className="lg:sticky lg:top-24">
@@ -285,9 +288,9 @@ export default function Home() {
                 </h2>
                 <p className="section-subtitle mt-3">{t('faq.subtitle')}</p>
 
-                <div className="mt-8 p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-                  <div className="font-semibold mb-2">Still have questions?</div>
-                  <p className="text-sm text-[var(--text-muted)] mb-4">
+                <div className="mt-7 md:mt-8 p-4 md:p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+                  <div className="font-semibold mb-2 text-sm md:text-base">Still have questions?</div>
+                  <p className="text-xs md:text-sm text-[var(--text-muted)] mb-4">
                     Write to us and we'll get back within 24 hours.
                   </p>
                   <Link href="/contact">
@@ -304,9 +307,9 @@ export default function Home() {
         </section>
 
         {/* CTA */}
-        <section className="container py-20 md:py-28">
+        <section className="container py-16 md:py-28">
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-8 py-16 md:py-24 text-center">
+            <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-[var(--border)] bg-[var(--surface)] px-6 md:px-8 py-12 md:py-24 text-center">
               <div className="grid-bg" />
               <div
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full"
@@ -316,15 +319,15 @@ export default function Home() {
                 }}
               />
               <div className="relative">
-                <h2 className="text-4xl md:text-6xl font-bold mb-5 tracking-tight">
+                <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-5 tracking-tight">
                   {t('cta.title1')}
                   <br />
                   <span className="gradient-text">{t('cta.title2')}</span>?
                 </h2>
-                <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto mb-9">
+                <p className="text-base md:text-lg text-[var(--text-muted)] max-w-2xl mx-auto mb-7 md:mb-9">
                   {t('cta.subtitle')}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
                   <MagneticButton href="/builder">
                     <Button className="btn-lg">{t('cta.button')} →</Button>
                   </MagneticButton>

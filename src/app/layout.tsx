@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="uk" className={`${inter.variable} dark`} data-scroll-behavior="smooth">
+    <html lang="uk" className={`${inter.variable} dark`} data-scroll-behavior="smooth" style={{ overflowX: 'hidden' }}>
       <body>
         <ThemeProvider>
           <LanguageProvider>
