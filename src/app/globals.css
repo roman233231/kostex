@@ -1222,3 +1222,9 @@ a:active {
 .color-card:hover .color-arrow {
   transform: translateX(6px);
 }
+/* ============================================================
+   GROUP HOVER helpers for color cards
+   ============================================================ */
+.color-card {
+  cursor: pointer;
+}
