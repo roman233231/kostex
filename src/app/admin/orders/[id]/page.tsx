@@ -14,11 +14,22 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
-import { ArrowLeft, Send } from 'lucide-react';
+import {
+  ArrowLeft,
+  Send,
+  MessageSquare,
+  Package,
+  Palette,
+  FileText,
+  Zap,
+  User as UserIcon,
+  Mail,
+  ExternalLink,
+  Check,
+} from 'lucide-react';
 
 const statusLabels: Record<string, string> = {
   'NEW': 'Нове',
@@ -31,26 +42,20 @@ const statusLabels: Record<string, string> = {
   'CANCELLED': 'Скасовано',
 };
 
-const statusColors: Record<string, string> = {
-  'NEW': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  'REVIEW': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  'ACCEPTED': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-  'IN DEVELOPMENT': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-  'CLIENT REVIEW': 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-  'REVISION': 'bg-pink-500/10 text-pink-400 border-pink-500/30',
-  'COMPLETED': 'bg-green-500/10 text-green-400 border-green-500/30',
-  'CANCELLED': 'bg-red-500/10 text-red-400 border-red-500/30',
+const statusColors: Record<string, { color1: string; color2: string; glow: string }> = {
+  'NEW': { color1: '#3B82F6', color2: '#06B6D4', glow: 'rgba(59,130,246,0.5)' },
+  'REVIEW': { color1: '#F59E0B', color2: '#F97316', glow: 'rgba(245,158,11,0.5)' },
+  'ACCEPTED': { color1: '#06B6D4', color2: '#14B8A6', glow: 'rgba(6,182,212,0.5)' },
+  'IN DEVELOPMENT': { color1: '#8B5CF6', color2: '#A855F7', glow: 'rgba(139,92,246,0.5)' },
+  'CLIENT REVIEW': { color1: '#F97316', color2: '#F43F5E', glow: 'rgba(249,115,22,0.5)' },
+  'REVISION': { color1: '#EC4899', color2: '#F43F5E', glow: 'rgba(236,72,153,0.5)' },
+  'COMPLETED': { color1: '#10B981', color2: '#14B8A6', glow: 'rgba(16,185,129,0.5)' },
+  'CANCELLED': { color1: '#EF4444', color2: '#F43F5E', glow: 'rgba(239,68,68,0.5)' },
 };
 
 const statuses: Order['status'][] = [
-  'NEW',
-  'REVIEW',
-  'ACCEPTED',
-  'IN DEVELOPMENT',
-  'CLIENT REVIEW',
-  'REVISION',
-  'COMPLETED',
-  'CANCELLED',
+  'NEW', 'REVIEW', 'ACCEPTED', 'IN DEVELOPMENT',
+  'CLIENT REVIEW', 'REVISION', 'COMPLETED', 'CANCELLED',
 ];
 
 export default function AdminOrderDetailPage() {
@@ -102,7 +107,11 @@ export default function AdminOrderDetailPage() {
     if (!order) return;
     setSaving(true);
     try {
-      await updateOrderStatusAndPrice(order.id!, newStatus, finalPrice === '' ? undefined : Number(finalPrice));
+      await updateOrderStatusAndPrice(
+        order.id!,
+        newStatus,
+        finalPrice === '' ? undefined : Number(finalPrice)
+      );
 
       await createNotification(
         order.userId,
@@ -125,8 +134,15 @@ export default function AdminOrderDetailPage() {
     if (!order) return;
     setSaving(true);
     try {
-      await updateOrderStatusAndPrice(order.id!, status, finalPrice === '' ? undefined : Number(finalPrice));
-      setOrder({ ...order, finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice) });
+      await updateOrderStatusAndPrice(
+        order.id!,
+        status,
+        finalPrice === '' ? undefined : Number(finalPrice)
+      );
+      setOrder({
+        ...order,
+        finalPrice: finalPrice === '' ? order.finalPrice : Number(finalPrice),
+      });
       alert('Ціну збережено');
     } catch (err) {
       console.error(err);
@@ -175,6 +191,8 @@ export default function AdminOrderDetailPage() {
     );
   }
 
+  const colors = statusColors[order.status] || statusColors.NEW;
+
   return (
     <>
       <Navbar />
@@ -188,54 +206,89 @@ export default function AdminOrderDetailPage() {
 
         {/* Header */}
         <Reveal>
-          <div className="mb-8">
-            <div className="flex items-center gap-3 flex-wrap mb-3">
-              <span
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
-                  statusColors[order.status] || ''
-                }`}
-              >
-                {statusLabels[order.status] || order.status}
-              </span>
-              <span className="text-xs text-[var(--text-faint)]">
-                #{order.id?.slice(0, 12)}
-              </span>
+          <div
+            className="color-card mb-6"
+            style={
+              {
+                '--card-color-1': colors.color1,
+                '--card-color-2': colors.color2,
+                '--card-glow': colors.glow,
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner !p-6 md:!p-8">
+              <div className="color-card-content">
+                <div className="flex items-center gap-3 flex-wrap mb-3">
+                  <span
+                    className="px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
+                      boxShadow: `0 6px 16px -6px ${colors.glow}`,
+                    }}
+                  >
+                    {statusLabels[order.status] || order.status}
+                  </span>
+                  <span className="text-xs text-[var(--text-faint)] font-mono">
+                    #{order.id?.slice(0, 12)}
+                  </span>
+                </div>
+
+                <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-4">
+                  {order.productTitle || 'Замовлення'}
+                </h1>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <UserIcon size={14} className="text-[var(--text-faint)]" />
+                    <span className="text-[var(--text-muted)]">Клієнт:</span>
+                    <strong className="truncate">{clientName}</strong>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} className="text-[var(--text-faint)]" />
+                    <a
+                      href={`mailto:${clientEmail}`}
+                      className="text-[var(--purple-bright)] hover:underline truncate"
+                    >
+                      {clientEmail}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="text-xs text-[var(--text-faint)] mt-3">
+                  Створено:{' '}
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleString('uk-UA')
+                    : ''}
+                </div>
+              </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              {order.productTitle || 'Замовлення'}
-            </h1>
-            <p className="text-[var(--text-muted)] mt-2">
-              Клієнт: <strong>{clientName}</strong> · {clientEmail}
-            </p>
-            <p className="text-[var(--text-faint)] text-sm mt-1">
-              Створено:{' '}
-              {order.createdAt
-                ? new Date(order.createdAt).toLocaleString('uk-UA')
-                : ''}
-            </p>
           </div>
         </Reveal>
 
         {/* Config details */}
         <Reveal delay={80}>
-          <Card hover={false} className="mb-6">
-            <h2 className="text-lg font-semibold mb-5">Конфігурація замовлення</h2>
+          <div className="card no-hover mb-6">
+            <h2 className="text-lg font-semibold mb-5 flex items-center gap-2">
+              <Package size={18} className="text-[var(--purple-bright)]" />
+              Конфігурація
+            </h2>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1">
-                  Продукт
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1 flex items-center gap-1.5">
+                  <Package size={11} /> Продукт
                 </div>
                 <div className="font-medium">{order.productTitle || '—'}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1">
-                  Шаблон
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1 flex items-center gap-1.5">
+                  <Palette size={11} /> Шаблон
                 </div>
                 <div className="font-medium">{order.template || '—'}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1">
-                  Дизайн
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1 flex items-center gap-1.5">
+                  <Palette size={11} /> Дизайн
                 </div>
                 <div className="font-medium">{order.design || '—'}</div>
               </div>
@@ -248,9 +301,9 @@ export default function AdminOrderDetailPage() {
             </div>
 
             {order.pages && order.pages.length > 0 && (
-              <div className="mt-5">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2">
-                  Сторінки ({order.pages.length})
+              <div className="mt-6">
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2 flex items-center gap-1.5">
+                  <FileText size={11} /> Сторінки ({order.pages.length})
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {order.pages.map((p, i) => (
@@ -266,9 +319,9 @@ export default function AdminOrderDetailPage() {
             )}
 
             {order.features && order.features.length > 0 && (
-              <div className="mt-5">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2">
-                  Функції ({order.features.length})
+              <div className="mt-6">
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2 flex items-center gap-1.5">
+                  <Zap size={11} /> Функції ({order.features.length})
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {order.features.map((f, i) => (
@@ -284,7 +337,7 @@ export default function AdminOrderDetailPage() {
             )}
 
             {order.requirements && (
-              <div className="mt-5">
+              <div className="mt-6">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2">
                   Побажання клієнта
                 </div>
@@ -295,7 +348,7 @@ export default function AdminOrderDetailPage() {
             )}
 
             {order.references && order.references.length > 0 && (
-              <div className="mt-5">
+              <div className="mt-6">
                 <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-2">
                   Референси
                 </div>
@@ -306,46 +359,58 @@ export default function AdminOrderDetailPage() {
                       href={r}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-sm text-[var(--purple-bright)] hover:underline truncate"
+                      className="flex items-center gap-2 text-sm text-[var(--purple-bright)] hover:underline truncate"
                     >
-                      {r}
+                      <ExternalLink size={12} className="shrink-0" />
+                      <span className="truncate">{r}</span>
                     </a>
                   ))}
                 </div>
               </div>
             )}
-          </Card>
+          </div>
         </Reveal>
 
         {/* Manage order */}
         <Reveal delay={160}>
-          <Card hover={false} className="mb-6 border-[var(--border-purple)]">
+          <div className="card no-hover mb-6 border-[var(--border-purple)]">
             <h2 className="text-lg font-semibold mb-5">Керування замовленням</h2>
 
-            {/* Quick statuses */}
             <div className="mb-6">
               <div className="text-xs uppercase tracking-wider text-[var(--text-faint)] mb-3">
                 Швидка зміна статусу
               </div>
               <div className="flex flex-wrap gap-2">
-                {statuses.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => handleQuickStatus(s)}
-                    disabled={saving || s === order.status}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-medium border transition-all ${
-                      s === order.status
-                        ? statusColors[s] + ' cursor-default'
-                        : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple-bright)] hover:-translate-y-0.5'
-                    }`}
-                  >
-                    {statusLabels[s] || s}
-                  </button>
-                ))}
+                {statuses.map((s) => {
+                  const sc = statusColors[s];
+                  const isCurrent = s === order.status;
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => handleQuickStatus(s)}
+                      disabled={saving || isCurrent}
+                      className={`px-3.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                        isCurrent
+                          ? 'text-white cursor-default'
+                          : 'border border-[var(--border)] text-[var(--text-muted)] hover:-translate-y-0.5 hover:text-[var(--text)]'
+                      }`}
+                      style={
+                        isCurrent
+                          ? {
+                              background: `linear-gradient(135deg, ${sc.color1}, ${sc.color2})`,
+                              boxShadow: `0 6px 16px -6px ${sc.glow}`,
+                            }
+                          : {}
+                      }
+                    >
+                      {isCurrent && <Check size={12} strokeWidth={3} />}
+                      {statusLabels[s] || s}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Final price */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pt-5 border-t border-[var(--border)]">
               <div>
                 <label className="text-xs uppercase tracking-wider text-[var(--text-faint)] mb-2 block">
@@ -374,52 +439,83 @@ export default function AdminOrderDetailPage() {
                 </Button>
               </div>
             </div>
-          </Card>
+          </div>
         </Reveal>
 
         {/* Chat */}
         <Reveal delay={240}>
-          <Card hover={false}>
-            <h2 className="text-lg font-semibold mb-5">Повідомлення з клієнтом</h2>
-            <div className="space-y-3 max-h-96 overflow-y-auto mb-4 flex flex-col">
-              {messages.length === 0 ? (
-                <p className="text-[var(--text-muted)] text-sm text-center py-8">
-                  Ще немає повідомлень
-                </p>
-              ) : (
-                messages.map((msg) => (
+          <div
+            className="color-card"
+            style={
+              {
+                '--card-color-1': '#8B5CF6',
+                '--card-color-2': '#A855F7',
+                '--card-glow': 'rgba(139,92,246,0.5)',
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner">
+              <div className="color-card-content">
+                <div className="flex items-center gap-3 mb-5">
                   <div
-                    key={msg.id}
-                    className={`p-3 rounded-lg max-w-[80%] ${
-                      msg.senderRole === 'admin'
-                        ? 'bg-[var(--purple-soft)] border border-[var(--border-purple)] self-end ml-auto'
-                        : 'bg-[var(--surface-2)] border border-[var(--border)] self-start'
-                    }`}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
+                    style={{
+                      background: 'linear-gradient(135deg, #8B5CF6, #A855F7)',
+                    }}
                   >
-                    <div className="text-xs text-[var(--text-faint)] mb-1">
-                      {msg.senderRole === 'admin' ? 'KOSTEX' : clientName} ·{' '}
-                      {msg.createdAt
-                        ? new Date(msg.createdAt).toLocaleString('uk-UA')
-                        : ''}
-                    </div>
-                    <div className="text-sm text-[var(--text)]">{msg.text}</div>
+                    <MessageSquare size={18} />
                   </div>
-                ))
-              )}
-            </div>
+                  <div className="font-semibold">Повідомлення з клієнтом</div>
+                </div>
 
-            <form onSubmit={handleSend} className="flex gap-2">
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Напишіть повідомлення..."
-                className="flex-1"
-              />
-              <Button type="submit" disabled={sending || !newMessage.trim()}>
-                <Send size={16} />
-              </Button>
-            </form>
-          </Card>
+                <div className="space-y-3 max-h-96 overflow-y-auto mb-4 flex flex-col">
+                  {messages.length === 0 ? (
+                    <p className="text-[var(--text-muted)] text-sm text-center py-8">
+                      Ще немає повідомлень
+                    </p>
+                  ) : (
+                    messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`p-3 rounded-lg max-w-[80%] ${
+                          msg.senderRole === 'admin'
+                            ? 'self-end ml-auto text-white'
+                            : 'bg-[var(--surface-2)] border border-[var(--border)] self-start'
+                        }`}
+                        style={
+                          msg.senderRole === 'admin'
+                            ? {
+                                background: 'linear-gradient(135deg, #8B5CF6, #C026FF)',
+                              }
+                            : {}
+                        }
+                      >
+                        <div className="text-xs opacity-60 mb-1">
+                          {msg.senderRole === 'admin' ? 'KOSTEX' : clientName} ·{' '}
+                          {msg.createdAt
+                            ? new Date(msg.createdAt).toLocaleString('uk-UA')
+                            : ''}
+                        </div>
+                        <div className="text-sm">{msg.text}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                <form onSubmit={handleSend} className="flex gap-2">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Напишіть повідомлення..."
+                    className="flex-1"
+                  />
+                  <Button type="submit" disabled={sending || !newMessage.trim()}>
+                    <Send size={16} />
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
         </Reveal>
       </main>
       <Footer />
