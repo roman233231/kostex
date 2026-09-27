@@ -8,10 +8,9 @@ import { getAllCategories, deleteCategory } from '@/services/category';
 import { Category } from '@/types/category';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import Button from '@/components/ui/Button';
+import { Plus, Pencil, Trash2, FolderTree } from 'lucide-react';
 
 export default function AdminCategoriesPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -42,13 +41,13 @@ export default function AdminCategoriesPage() {
   }, [appUser]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this category?')) return;
+    if (!confirm('Видалити цю категорію?')) return;
     try {
       await deleteCategory(id);
       setCategories((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
       console.error(err);
-      alert('Failed to delete');
+      alert('Помилка видалення');
     }
   };
 
@@ -69,43 +68,68 @@ export default function AdminCategoriesPage() {
         <Reveal>
           <div className="flex justify-between items-start mb-8 gap-4 flex-wrap">
             <div>
-              <Badge>Admin</Badge>
-              <h1 className="text-4xl font-bold mt-4 tracking-tight">Categories</h1>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                Категорії
+              </h1>
+              <p className="text-[var(--text-muted)] mt-2">
+                {categories.length} {categories.length === 1 ? 'категорія' : 'категорій'}
+              </p>
             </div>
-            <Button href="/admin/categories/new">+ Add Category</Button>
+            <Link href="/admin/categories/new">
+              <Button>
+                <Plus size={16} />
+                Додати
+              </Button>
+            </Link>
           </div>
         </Reveal>
 
         {categories.length === 0 ? (
-          <p className="text-[var(--text-muted)]">No categories yet.</p>
+          <div className="card no-hover text-center py-14">
+            <FolderTree size={48} className="text-[var(--text-faint)] mx-auto mb-4" />
+            <p className="text-[var(--text-muted)]">Категорій поки немає.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category, i) => (
               <Reveal key={category.id} delay={i * 40}>
-                <Card hover={false}>
-                  <div className="flex justify-between items-start gap-3 flex-wrap">
-                    <div className="min-w-0">
-                      <h3 className="text-base font-semibold">{category.name}</h3>
-                      <p className="text-xs text-[var(--text-faint)] mt-1">
-                        /{category.slug}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Link
-                        href={`/admin/categories/${category.id}`}
-                        className="px-2.5 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)] transition-colors"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(category.id!)}
-                        className="px-2.5 py-1 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-red-500/40 hover:text-red-400 transition-colors"
-                      >
-                        Delete
-                      </button>
+                <div
+                  className="color-card h-full"
+                  style={
+                    {
+                      '--card-color-1': '#F59E0B',
+                      '--card-color-2': '#F97316',
+                      '--card-glow': 'rgba(245,158,11,0.5)',
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner">
+                    <div className="color-card-content">
+                      <div className="flex justify-between items-start gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <h3 className="text-base font-semibold">{category.name}</h3>
+                          <p className="text-xs text-[var(--text-faint)] mt-1">
+                            /{category.slug}
+                          </p>
+                        </div>
+                        <div className="flex gap-1.5">
+                          <Link
+                            href={`/admin/categories/${category.id}`}
+                            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(category.id!)}
+                            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-red-500/40 hover:text-red-400 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </Reveal>
             ))}
           </div>

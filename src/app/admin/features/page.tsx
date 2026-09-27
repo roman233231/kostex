@@ -8,10 +8,9 @@ import { getAllFeatures, deleteFeature } from '@/services/feature';
 import { Feature } from '@/types/feature';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import Button from '@/components/ui/Button';
+import { Search, Plus, Pencil, Trash2, Zap } from 'lucide-react';
 
 export default function AdminFeaturesPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -43,13 +42,13 @@ export default function AdminFeaturesPage() {
   }, [appUser]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this feature?')) return;
+    if (!confirm('Видалити цю функцію?')) return;
     try {
       await deleteFeature(id);
       setFeatures((prev) => prev.filter((f) => f.id !== id));
     } catch (err) {
       console.error(err);
-      alert('Failed to delete');
+      alert('Помилка видалення');
     }
   };
 
@@ -66,7 +65,10 @@ export default function AdminFeaturesPage() {
   const filtered = features.filter((f) => {
     if (!search) return true;
     const q = search.toLowerCase();
-    return f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q);
+    return (
+      f.name.toLowerCase().includes(q) ||
+      f.description.toLowerCase().includes(q)
+    );
   });
 
   return (
@@ -76,67 +78,96 @@ export default function AdminFeaturesPage() {
         <Reveal>
           <div className="flex justify-between items-start mb-8 gap-4 flex-wrap">
             <div>
-              <Badge>Admin</Badge>
-              <h1 className="text-4xl font-bold mt-4 tracking-tight">Features</h1>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                Функції
+              </h1>
+              <p className="text-[var(--text-muted)] mt-2">
+                {features.length} {features.length === 1 ? 'функція' : 'функцій'}
+              </p>
             </div>
-            <Button href="/admin/features/new">+ Add Feature</Button>
+            <Link href="/admin/features/new">
+              <Button>
+                <Plus size={16} />
+                Додати
+              </Button>
+            </Link>
           </div>
         </Reveal>
 
         <Reveal delay={80}>
-          <div className="mb-6">
+          <div className="relative md:max-w-sm mb-6">
+            <Search
+              size={16}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]"
+            />
             <input
               type="text"
-              placeholder="Search features..."
+              placeholder="Пошук функцій..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input md:max-w-sm"
+              className="input pl-10"
             />
           </div>
         </Reveal>
 
         {filtered.length === 0 ? (
-          <p className="text-[var(--text-muted)]">
-            {features.length === 0 ? 'No features yet.' : 'No features match your search.'}
-          </p>
+          <div className="card no-hover text-center py-14">
+            <Zap size={48} className="text-[var(--text-faint)] mx-auto mb-4" />
+            <p className="text-[var(--text-muted)]">
+              {features.length === 0 ? 'Функцій поки немає.' : 'Нічого не знайдено.'}
+            </p>
+          </div>
         ) : (
           <div className="space-y-3">
             {filtered.map((feature, i) => (
               <Reveal key={feature.id} delay={i * 30}>
-                <Card hover={false}>
-                  <div className="flex justify-between items-start gap-4 flex-wrap">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-base font-semibold">{feature.name}</h3>
-                        {!feature.active && (
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-faint)] border border-[var(--border)]">
-                            Inactive
-                          </span>
-                        )}
+                <div
+                  className="color-card"
+                  style={
+                    {
+                      '--card-color-1': '#10B981',
+                      '--card-color-2': '#14B8A6',
+                      '--card-glow': 'rgba(16,185,129,0.5)',
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner">
+                    <div className="color-card-content">
+                      <div className="flex justify-between items-start gap-4 flex-wrap">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-base font-semibold">{feature.name}</h3>
+                            {!feature.active && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--text-faint)] border border-[var(--border)]">
+                                Неактивна
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-[var(--text-muted)] mt-2">
+                            {feature.description}
+                          </p>
+                          <p className="text-xs text-[var(--text-faint)] mt-1">
+                            {feature.price} ₴ · {feature.estimatedTime}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Link
+                            href={`/admin/features/${feature.id}`}
+                            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(feature.id!)}
+                            className="p-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-red-500/40 hover:text-red-400 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
-                      <p className="text-sm text-[var(--text-muted)] mt-1">
-                        {feature.description}
-                      </p>
-                      <p className="text-xs text-[var(--text-faint)] mt-1">
-                        {feature.price} ₴ · {feature.estimatedTime}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Link
-                        href={`/admin/features/${feature.id}`}
-                        className="px-3 py-1.5 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)] transition-colors"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(feature.id!)}
-                        className="px-3 py-1.5 rounded-md border border-[var(--border)] text-xs text-[var(--text-muted)] hover:border-red-500/40 hover:text-red-400 transition-colors"
-                      >
-                        Delete
-                      </button>
                     </div>
                   </div>
-                </Card>
+                </div>
               </Reveal>
             ))}
           </div>
