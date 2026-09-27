@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import Textarea from '@/components/ui/Textarea';
 import Reveal from '@/components/ui/Reveal';
 import { useAuth } from '@/context/AuthContext';
@@ -17,7 +15,17 @@ import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
 import { Product } from '@/types/product';
 import { Feature } from '@/types/feature';
-import { TranslationKey } from '@/lib/translations';
+import {
+  Package,
+  Palette,
+  FileText,
+  Zap,
+  PenLine,
+  Check,
+  ArrowLeft,
+  ArrowRight,
+  Loader2,
+} from 'lucide-react';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const templateOptions = ['Business', 'Restaurant', 'Auto Service', 'Fitness', 'Portfolio', 'E-commerce', 'Landing'];
@@ -39,14 +47,14 @@ const commonPages = [
   { name: 'Profile', price: 600 },
 ];
 
-const steps: { titleKey: TranslationKey; icon: string }[] = [
-  { titleKey: 'builder.step.product', icon: '📦' },
-  { titleKey: 'builder.step.style', icon: '🎨' },
-  { titleKey: 'builder.step.pages', icon: '📄' },
-  { titleKey: 'builder.step.features', icon: '⚡' },
-  { titleKey: 'builder.step.details', icon: '✍️' },
-  { titleKey: 'builder.step.review', icon: '✓' },
-];
+const steps = [
+  { titleKey: 'builder.step.product', icon: Package, color1: '#8B5CF6', color2: '#A855F7' },
+  { titleKey: 'builder.step.style', icon: Palette, color1: '#3B82F6', color2: '#06B6D4' },
+  { titleKey: 'builder.step.pages', icon: FileText, color1: '#EC4899', color2: '#F43F5E' },
+  { titleKey: 'builder.step.features', icon: Zap, color1: '#10B981', color2: '#14B8A6' },
+  { titleKey: 'builder.step.details', icon: PenLine, color1: '#F59E0B', color2: '#F97316' },
+  { titleKey: 'builder.step.review', icon: Check, color1: '#D946EF', color2: '#A855F7' },
+] as const;
 
 export default function BuilderPage() {
   const router = useRouter();
@@ -191,9 +199,9 @@ export default function BuilderPage() {
             </p>
 
             {productsLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="skeleton-card p-5 md:p-6">
+                  <div key={i} className="skeleton-card p-5">
                     <div className="skeleton" style={{ height: '48px', width: '48px', borderRadius: '12px' }} />
                     <div className="skeleton skeleton-line mt-4" style={{ width: '40%' }} />
                     <div className="skeleton skeleton-line" style={{ width: '90%' }} />
@@ -201,30 +209,30 @@ export default function BuilderPage() {
                 ))}
               </div>
             ) : availableProducts.length === 0 ? (
-              <Card hover={false} className="text-center py-12 md:py-16">
+              <div className="card no-hover text-center py-12">
                 <p className="text-[var(--text-muted)]">{t('builder.noProducts')}</p>
-              </Card>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {availableProducts.map((p) => {
                   const isSelected = selectedProduct === p.id;
                   return (
                     <button
                       key={p.id}
                       onClick={() => setSelectedProduct(p.id)}
-                      className={`text-left rounded-2xl border p-4 md:p-6 transition-all duration-300 relative overflow-hidden group ${
+                      className={`text-left rounded-2xl border p-5 transition-all relative ${
                         isSelected
-                          ? 'border-[var(--purple)] bg-gradient-to-br from-[var(--purple)]/[0.08] to-transparent shadow-[0_0_0_4px_rgba(139,92,246,0.1)]'
-                          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)] md:hover:-translate-y-0.5'
+                          ? 'border-[var(--purple)] bg-[var(--purple-soft)] shadow-[0_0_0_4px_rgba(139,92,246,0.1)]'
+                          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
                       }`}
                     >
                       {isSelected && (
-                        <div className="absolute top-3 right-3 w-6 h-6 md:w-7 md:h-7 rounded-full bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] flex items-center justify-center text-white text-xs md:text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.6)]">
-                          ✓
+                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] flex items-center justify-center text-white text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.6)]">
+                          <Check size={14} strokeWidth={3} />
                         </div>
                       )}
 
-                      <div className="text-3xl md:text-4xl mb-3 md:mb-4 transition-transform group-hover:scale-110">
+                      <div className="text-3xl mb-3">
                         {p.category === 'websites' ? '🌐' :
                          p.category === 'web-apps' ? '⚡' :
                          p.category === 'software' ? '💻' :
@@ -235,27 +243,25 @@ export default function BuilderPage() {
                         {p.category.replace('-', ' ')}
                       </div>
 
-                      <h3 className="text-lg md:text-xl font-bold mb-1.5 md:mb-2 leading-tight">
-                        {p.title}
-                      </h3>
-                      <p className="text-xs md:text-sm text-[var(--text-muted)] mb-4 md:mb-5 line-clamp-2 leading-relaxed">
+                      <h3 className="text-lg font-bold mb-2">{p.title}</h3>
+                      <p className="text-xs text-[var(--text-muted)] mb-4 line-clamp-2 leading-relaxed">
                         {p.shortDescription}
                       </p>
 
-                      <div className="flex items-end justify-between pt-3 md:pt-4 border-t border-[var(--border)]">
+                      <div className="flex items-end justify-between pt-3 border-t border-[var(--border)]">
                         <div>
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">
+                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
                             {t('common.from')}
                           </div>
-                          <div className="text-base md:text-lg font-bold gradient-text">
+                          <div className="text-base font-bold gradient-text">
                             {p.startingPrice.toLocaleString('uk-UA')} ₴
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-0.5">
+                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
                             {t('common.estimated')}
                           </div>
-                          <div className="text-xs md:text-sm font-medium">{p.estimatedTime}</div>
+                          <div className="text-xs font-medium">{p.estimatedTime}</div>
                         </div>
                       </div>
                     </button>
@@ -268,31 +274,31 @@ export default function BuilderPage() {
 
       case 1:
         return (
-          <div className="space-y-8 md:space-y-10">
+          <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
                 {t('builder.designStyle')}
               </h2>
-              <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
+              <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6">
                 {t('builder.designStyleDesc')}
               </p>
             </div>
 
             <div>
-              <div className="flex items-center gap-3 mb-3 md:mb-4">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--border-purple)] flex items-center justify-center text-xs md:text-sm font-bold text-[var(--purple-bright)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
                   1
                 </div>
                 <label className="text-sm font-semibold uppercase tracking-wider">
                   {t('builder.template')}
                 </label>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
                 {templateOptions.map((tp) => (
                   <button
                     key={tp}
                     onClick={() => setTemplate(tp)}
-                    className={`px-3 md:px-4 py-3 md:py-3.5 rounded-xl border text-xs md:text-sm font-medium transition-all ${
+                    className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
                       template === tp
                         ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
                         : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
@@ -305,20 +311,20 @@ export default function BuilderPage() {
             </div>
 
             <div>
-              <div className="flex items-center gap-3 mb-3 md:mb-4">
-                <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[var(--purple)]/15 border border-[var(--border-purple)] flex items-center justify-center text-xs md:text-sm font-bold text-[var(--purple-bright)]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
                   2
                 </div>
                 <label className="text-sm font-semibold uppercase tracking-wider">
                   {t('builder.design')}
                 </label>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
                 {designOptions.map((d) => (
                   <button
                     key={d}
                     onClick={() => setDesign(d)}
-                    className={`px-3 md:px-4 py-3 md:py-3.5 rounded-xl border text-xs md:text-sm font-medium transition-all ${
+                    className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
                       design === d
                         ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
                         : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
@@ -342,7 +348,7 @@ export default function BuilderPage() {
               {t('builder.pagesDesc')}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               {commonPages.map((page) => {
                 const isSelected = selectedPages.includes(page.name);
                 const isRequired = page.name === 'Home';
@@ -351,29 +357,25 @@ export default function BuilderPage() {
                     key={page.name}
                     onClick={() => !isRequired && toggleSelection(selectedPages, setSelectedPages, page.name)}
                     disabled={isRequired}
-                    className={`flex items-center justify-between p-3.5 md:p-4 rounded-xl border text-left transition-all ${
+                    className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
                       isSelected
-                        ? 'border-[var(--purple)] bg-[var(--purple)]/[0.06] shadow-[0_0_0_4px_rgba(139,92,246,0.08)]'
+                        ? 'border-[var(--purple)] bg-[var(--purple-soft)]'
                         : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
-                    } ${isRequired ? 'opacity-90 cursor-default' : 'cursor-pointer'}`}
+                    } ${isRequired ? 'cursor-default' : 'cursor-pointer'}`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 md:w-6 md:h-6 rounded-md border flex items-center justify-center transition-all ${
+                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                           isSelected
                             ? 'bg-[var(--purple)] border-[var(--purple)]'
                             : 'border-[var(--border-strong)]'
                         }`}
                       >
-                        {isSelected && (
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        )}
+                        {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                       </div>
-                      <span className="text-sm md:text-[15px] font-semibold">{page.name}</span>
+                      <span className="text-sm font-semibold">{page.name}</span>
                     </div>
-                    <div className="text-[11px] md:text-xs font-medium text-[var(--text-muted)]">
+                    <div className="text-xs font-medium text-[var(--text-muted)]">
                       {page.price === 0 ? t('builder.free') : `+${page.price} ₴`}
                     </div>
                   </button>
@@ -396,20 +398,20 @@ export default function BuilderPage() {
             {featuresLoading ? (
               <p className="text-[var(--text-muted)]">{t('builder.loadingFeatures')}</p>
             ) : availableFeatures.length === 0 ? (
-              <Card hover={false} className="text-center py-12 md:py-16">
+              <div className="card no-hover text-center py-12">
                 <p className="text-[var(--text-muted)]">{t('builder.noFeatures')}</p>
-              </Card>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {availableFeatures.map((feature) => {
                   const isSelected = selectedFeatures.includes(feature.id!);
                   return (
                     <button
                       key={feature.id}
                       onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
-                      className={`text-left p-4 md:p-5 rounded-xl border transition-all ${
+                      className={`text-left p-4 rounded-xl border transition-all ${
                         isSelected
-                          ? 'border-[var(--purple)] bg-[var(--purple)]/[0.06] shadow-[0_0_0_4px_rgba(139,92,246,0.08)]'
+                          ? 'border-[var(--purple)] bg-[var(--purple-soft)]'
                           : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
                       }`}
                     >
@@ -418,24 +420,20 @@ export default function BuilderPage() {
                           {feature.name}
                         </h3>
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
                             isSelected
                               ? 'bg-[var(--purple)] border-[var(--purple)]'
                               : 'border-[var(--border-strong)]'
                           }`}
                         >
-                          {isSelected && (
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
+                          {isSelected && <Check size={10} strokeWidth={3} className="text-white" />}
                         </div>
                       </div>
-                      <p className="text-xs md:text-sm text-[var(--text-muted)] mb-3 md:mb-4 leading-relaxed">
+                      <p className="text-xs text-[var(--text-muted)] mb-3 leading-relaxed">
                         {feature.description}
                       </p>
                       <div className="flex items-center gap-3 text-xs">
-                        <span className="font-bold text-[var(--purple-bright)] text-xs md:text-sm">
+                        <span className="font-bold text-[var(--purple-bright)]">
                           +{feature.price} ₴
                         </span>
                         <span className="text-[var(--text-faint)]">·</span>
@@ -459,9 +457,9 @@ export default function BuilderPage() {
               {t('builder.tellMoreDesc')}
             </p>
 
-            <div className="space-y-5 md:space-y-7">
+            <div className="space-y-6">
               <div>
-                <label className="text-xs md:text-sm font-semibold uppercase tracking-wider mb-2.5 md:mb-3 block">
+                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
                   {t('builder.requirements')}
                 </label>
                 <Textarea
@@ -472,7 +470,7 @@ export default function BuilderPage() {
               </div>
 
               <div>
-                <label className="text-xs md:text-sm font-semibold uppercase tracking-wider mb-2.5 md:mb-3 block">
+                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
                   {t('builder.references')}
                 </label>
                 <Textarea
@@ -480,7 +478,7 @@ export default function BuilderPage() {
                   onChange={(e) => setReferences(e.target.value)}
                   placeholder={t('builder.referencesPlaceholder')}
                 />
-                <p className="text-[11px] md:text-xs text-[var(--text-faint)] mt-2">
+                <p className="text-xs text-[var(--text-faint)] mt-2">
                   {t('builder.referencesNote')}
                 </p>
               </div>
@@ -498,94 +496,107 @@ export default function BuilderPage() {
               {t('builder.reviewDesc')}
             </p>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">
-              <div className="lg:col-span-2 space-y-3 md:space-y-4">
-                <Card hover={false}>
-                  <div className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-4 md:mb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="card no-hover">
+                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
                     {t('builder.projectSummary')}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 md:gap-x-8 gap-y-3.5 md:gap-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                     <ReviewRow label={t('builder.step.product')} value={product?.title || '—'} />
                     <ReviewRow label={t('builder.template')} value={template || '—'} />
                     <ReviewRow label={t('builder.design')} value={design || '—'} />
                     <ReviewRow label={t('common.estimated')} value={product?.estimatedTime || '—'} />
                   </div>
-                </Card>
+                </div>
 
-                <Card hover={false}>
-                  <div className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-4 md:mb-5">
+                <div className="card no-hover">
+                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
                     {t('builder.step.pages')} ({selectedPages.length})
                   </div>
-                  <div className="flex flex-wrap gap-1.5 md:gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {selectedPages.map((p) => (
                       <span
                         key={p}
-                        className="px-2.5 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[11px] md:text-xs text-[var(--text-secondary)]"
+                        className="px-2.5 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-xs"
                       >
                         {p}
                       </span>
                     ))}
                   </div>
-                </Card>
+                </div>
 
                 {selectedFeatures.length > 0 && (
-                  <Card hover={false}>
-                    <div className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-4 md:mb-5">
+                  <div className="card no-hover">
+                    <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
                       {t('builder.step.features')} ({selectedFeatures.length})
                     </div>
-                    <div className="flex flex-wrap gap-1.5 md:gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {availableFeatures
                         .filter((f) => selectedFeatures.includes(f.id!))
                         .map((f) => (
                           <span
                             key={f.id}
-                            className="px-2.5 md:px-3 py-1 md:py-1.5 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] text-[11px] md:text-xs text-[var(--purple-bright)] font-medium"
+                            className="px-2.5 py-1 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] text-xs text-[var(--purple-bright)]"
                           >
                             {f.name}
                           </span>
                         ))}
                     </div>
-                  </Card>
+                  </div>
                 )}
               </div>
 
               <div className="lg:col-span-1">
-                <Card hover={false} className="border-[var(--border-purple)] bg-gradient-to-b from-[var(--purple)]/[0.06] to-transparent lg:sticky lg:top-24">
-                  <div className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-4 md:mb-5">
-                    {t('builder.totalEstimate')}
-                  </div>
+                <div
+                  className="color-card lg:sticky lg:top-24"
+                  style={
+                    {
+                      '--card-color-1': '#D946EF',
+                      '--card-color-2': '#8B5CF6',
+                      '--card-glow': 'rgba(217,70,239,0.5)',
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner">
+                    <div className="color-card-content">
+                      <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
+                        {t('builder.totalEstimate')}
+                      </div>
 
-                  <div className="space-y-2.5 md:space-y-3 mb-5 md:mb-6 text-xs md:text-sm">
-                    <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>{t('builder.baseProduct')}</span>
-                      <span>{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span>
-                    </div>
-                    <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>
-                        {t('builder.step.pages')} ({selectedPages.length})
-                      </span>
-                      <span>+{pagesPrice.toLocaleString('uk-UA')} ₴</span>
-                    </div>
-                    <div className="flex justify-between text-[var(--text-muted)]">
-                      <span>
-                        {t('builder.step.features')} ({selectedFeatures.length})
-                      </span>
-                      <span>+{featuresPrice.toLocaleString('uk-UA')} ₴</span>
-                    </div>
-                  </div>
+                      <div className="space-y-2.5 mb-5 text-sm">
+                        <div className="flex justify-between text-[var(--text-muted)]">
+                          <span>{t('builder.baseProduct')}</span>
+                          <span>{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span>
+                        </div>
+                        <div className="flex justify-between text-[var(--text-muted)]">
+                          <span>
+                            {t('builder.step.pages')} ({selectedPages.length})
+                          </span>
+                          <span>+{pagesPrice.toLocaleString('uk-UA')} ₴</span>
+                        </div>
+                        <div className="flex justify-between text-[var(--text-muted)]">
+                          <span>
+                            {t('builder.step.features')} ({selectedFeatures.length})
+                          </span>
+                          <span>+{featuresPrice.toLocaleString('uk-UA')} ₴</span>
+                        </div>
+                      </div>
 
-                  <div className="pt-5 md:pt-6 border-t border-[var(--border)]">
-                    <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">
-                      {t('builder.total')}
+                      <div className="pt-5 border-t border-[var(--border)]">
+                        <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">
+                          {t('builder.total')}
+                        </div>
+                        <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
+                          {totalPrice.toLocaleString('uk-UA')} ₴
+                        </div>
+                        <p className="text-xs text-[var(--text-faint)] leading-relaxed">
+                          {t('product.finalNote')}
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
-                      {totalPrice.toLocaleString('uk-UA')} ₴
-                    </div>
-                    <p className="text-[11px] md:text-xs text-[var(--text-faint)] leading-relaxed">
-                      {t('product.finalNote')}
-                    </p>
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -597,6 +608,8 @@ export default function BuilderPage() {
   };
 
   const progressPercent = ((step + 1) / steps.length) * 100;
+  const currentStep = steps[step];
+  const CurrentIcon = currentStep.icon;
 
   return (
     <>
@@ -604,12 +617,25 @@ export default function BuilderPage() {
       <main className="container py-8 md:py-16 pb-40 md:pb-16">
         <Reveal>
           <div className="max-w-3xl mb-8 md:mb-12">
-            <Badge>{t('builder.step.product')}</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mt-4 md:mt-5 tracking-tight leading-[1.05]">
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
+                style={{
+                  background: `linear-gradient(135deg, ${currentStep.color1}, ${currentStep.color2})`,
+                  boxShadow: `0 8px 24px -8px ${currentStep.color1}88`,
+                }}
+              >
+                <CurrentIcon size={24} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
+                Крок {step + 1} з {steps.length}
+              </span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
               {t('builder.title')}{' '}
               <span className="gradient-text">{t('builder.title2')}</span>
             </h1>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mt-3 md:mt-4">
+            <p className="text-sm md:text-lg text-[var(--text-muted)] mt-4">
               {t('builder.subtitle')}
             </p>
           </div>
@@ -625,6 +651,7 @@ export default function BuilderPage() {
             />
             <div className="relative grid grid-cols-6 gap-4">
               {steps.map((s, i) => {
+                const Icon = s.icon;
                 const active = i === step;
                 const done = i < step;
                 return (
@@ -635,15 +662,22 @@ export default function BuilderPage() {
                     className={`flex flex-col items-center text-center ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
                   >
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                         active
-                          ? 'bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-white shadow-[0_0_24px_rgba(139,92,246,0.5)] scale-110'
+                          ? 'text-white shadow-[0_0_24px_rgba(139,92,246,0.5)] scale-110'
                           : done
-                          ? 'bg-[var(--purple)]/20 text-[var(--purple-bright)] border border-[var(--border-purple)]'
+                          ? 'text-white'
                           : 'bg-[var(--surface)] text-[var(--text-faint)] border border-[var(--border)]'
                       }`}
+                      style={
+                        active || done
+                          ? {
+                              background: `linear-gradient(135deg, ${s.color1}, ${s.color2})`,
+                            }
+                          : {}
+                      }
                     >
-                      {done ? '✓' : i + 1}
+                      {done ? <Check size={16} strokeWidth={3} /> : <Icon size={16} />}
                     </div>
                     <div
                       className={`mt-3 text-xs font-semibold ${
@@ -663,26 +697,30 @@ export default function BuilderPage() {
           </div>
         </div>
 
-        {/* Mobile step indicator */}
+        {/* Mobile progress */}
         <div className="md:hidden mb-6">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[11px] font-semibold text-[var(--purple-bright)] uppercase tracking-wider">
               {step + 1} / {steps.length}
             </span>
             <span className="text-[11px] text-[var(--text-muted)]">
-              {t(steps[step].titleKey)}
+              {t(currentStep.titleKey)}
             </span>
           </div>
           <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${progressPercent}%`,
+                background: `linear-gradient(90deg, ${currentStep.color1}, ${currentStep.color2})`,
+              }}
             />
           </div>
 
           {/* Mini step dots */}
           <div className="flex justify-between mt-3 px-1">
             {steps.map((s, i) => {
+              const Icon = s.icon;
               const active = i === step;
               const done = i < step;
               return (
@@ -690,19 +728,26 @@ export default function BuilderPage() {
                   key={s.titleKey}
                   onClick={() => i <= step && setStep(i)}
                   disabled={i > step}
-                  className={`flex flex-col items-center ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
+                  className="flex flex-col items-center"
                   aria-label={t(s.titleKey)}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
                       active
-                        ? 'bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-white scale-110'
+                        ? 'text-white scale-110'
                         : done
-                        ? 'bg-[var(--purple)]/20 text-[var(--purple-bright)] border border-[var(--border-purple)]'
+                        ? 'text-white'
                         : 'bg-[var(--surface)] text-[var(--text-faint)] border border-[var(--border)]'
                     }`}
+                    style={
+                      active || done
+                        ? {
+                            background: `linear-gradient(135deg, ${s.color1}, ${s.color2})`,
+                          }
+                        : {}
+                    }
                   >
-                    {done ? '✓' : i + 1}
+                    {done ? <Check size={12} strokeWidth={3} /> : <Icon size={12} />}
                   </div>
                 </button>
               );
@@ -711,8 +756,8 @@ export default function BuilderPage() {
         </div>
 
         {error && (
-          <div className="mb-4 md:mb-6 p-3 md:p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs md:text-sm flex items-start gap-2 md:gap-3">
-            <span className="text-base md:text-lg leading-none">⚠</span>
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs md:text-sm flex items-start gap-2">
+            <span className="text-base leading-none">⚠</span>
             <span>{error}</span>
           </div>
         )}
@@ -721,10 +766,10 @@ export default function BuilderPage() {
           {renderStep()}
         </div>
 
-        {/* Sticky bottom bar — mobile + desktop */}
+        {/* Sticky bottom bar */}
         <div className="fixed md:sticky bottom-0 md:bottom-4 left-0 right-0 md:left-auto md:right-auto z-40 md:z-30 px-3 pb-3 md:px-0 md:pb-0 pointer-events-none">
           <div className="container md:container pointer-events-auto">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 md:gap-4 p-3 md:p-5 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)]/95 backdrop-blur-xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 md:p-5 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)]/95 backdrop-blur-xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
               <div className="flex items-center justify-between gap-3 w-full sm:w-auto">
                 <div className="flex items-center gap-3 md:gap-5">
                   <div>
@@ -752,22 +797,29 @@ export default function BuilderPage() {
                   <Button
                     variant="outline"
                     onClick={handleBack}
-                    className="flex-1 sm:flex-none !px-3 md:!px-6"
+                    className="flex-1 sm:flex-none"
                   >
-                    ←<span className="hidden md:inline"> {t('common.back')}</span>
+                    <ArrowLeft size={16} />
+                    <span className="hidden md:inline">{t('common.back')}</span>
                   </Button>
                 )}
                 {step < steps.length - 1 ? (
                   <Button onClick={handleNext} className="flex-1 sm:flex-none">
-                    {t('common.continue')} →
+                    {t('common.continue')} <ArrowRight size={16} />
                   </Button>
                 ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="flex-1 sm:flex-none"
-                  >
-                    {loading ? t('common.loading') : t('common.create')}
+                  <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-none">
+                    {loading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        {t('common.loading')}
+                      </>
+                    ) : (
+                      <>
+                        <Check size={16} />
+                        {t('common.create')}
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
@@ -783,7 +835,7 @@ export default function BuilderPage() {
 function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-0.5 md:mb-1">
+      <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1">
         {label}
       </div>
       <div className="text-sm font-medium">{value}</div>
