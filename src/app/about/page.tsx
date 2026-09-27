@@ -4,20 +4,47 @@ import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
-import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import Counter from '@/components/ui/Counter';
 import { useLanguage } from '@/context/LanguageContext';
-import { Sparkles, Zap, Eye, Heart } from 'lucide-react';
-
-const valueIcons = [Sparkles, Zap, Eye, Heart];
+import { Sparkles, Zap, Eye, Heart, ArrowRight } from 'lucide-react';
 
 const values = [
-  { key: 'v1', icon: valueIcons[0] },
-  { key: 'v2', icon: valueIcons[1] },
-  { key: 'v3', icon: valueIcons[2] },
-  { key: 'v4', icon: valueIcons[3] },
+  {
+    key: 'v1',
+    icon: Sparkles,
+    color1: '#8B5CF6',
+    color2: '#A855F7',
+    glow: 'rgba(139,92,246,0.5)',
+  },
+  {
+    key: 'v2',
+    icon: Zap,
+    color1: '#3B82F6',
+    color2: '#06B6D4',
+    glow: 'rgba(59,130,246,0.5)',
+  },
+  {
+    key: 'v3',
+    icon: Eye,
+    color1: '#EC4899',
+    color2: '#F43F5E',
+    glow: 'rgba(236,72,153,0.5)',
+  },
+  {
+    key: 'v4',
+    icon: Heart,
+    color1: '#10B981',
+    color2: '#14B8A6',
+    glow: 'rgba(16,185,129,0.5)',
+  },
+] as const;
+
+const stats = [
+  { value: 50, suffix: '+', color: '#A78BFA', labelKey: 'about.projects' },
+  { value: 14, prefix: '7–', color: '#F472B6', labelKey: 'about.days' },
+  { value: 100, suffix: '%', color: '#34D399', labelKey: 'about.custom' },
 ];
 
 export default function AboutPage() {
@@ -40,36 +67,27 @@ export default function AboutPage() {
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
-          <Reveal delay={0}>
-            <Card hover={false} className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold gradient-text">
-                <Counter value={50} suffix="+" />
+          {stats.map((s, i) => (
+            <Reveal key={i} delay={i * 80}>
+              <div className="relative rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 text-center overflow-hidden">
+                <div
+                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle, ${s.color}30, transparent 70%)`,
+                    filter: 'blur(40px)',
+                  }}
+                />
+                <div className="relative">
+                  <div className="text-4xl md:text-5xl font-bold" style={{ color: s.color }}>
+                    <Counter value={s.value} suffix={s.suffix} prefix={s.prefix} />
+                  </div>
+                  <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
+                    {t(s.labelKey as any)}
+                  </div>
+                </div>
               </div>
-              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                {t('about.projects')}
-              </div>
-            </Card>
-          </Reveal>
-          <Reveal delay={80}>
-            <Card hover={false} className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold gradient-text">
-                <Counter value={14} prefix="7–" />
-              </div>
-              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                {t('about.days')}
-              </div>
-            </Card>
-          </Reveal>
-          <Reveal delay={160}>
-            <Card hover={false} className="text-center py-8">
-              <div className="text-4xl md:text-5xl font-bold gradient-text">
-                <Counter value={100} suffix="%" />
-              </div>
-              <div className="text-xs text-[var(--text-muted)] mt-2 uppercase tracking-wider">
-                {t('about.custom')}
-              </div>
-            </Card>
-          </Reveal>
+            </Reveal>
+          ))}
         </div>
 
         <Reveal>
@@ -86,21 +104,30 @@ export default function AboutPage() {
             const Icon = v.icon;
             return (
               <Reveal key={v.key} delay={i * 80}>
-                <Card hover={false} className="h-full group">
-                  <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-xl bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-[var(--purple-bright)] shrink-0 group-hover:scale-110 transition-transform">
-                      <Icon size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">
+                <div
+                  className="color-card h-full"
+                  style={
+                    {
+                      '--card-color-1': v.color1,
+                      '--card-color-2': v.color2,
+                      '--card-glow': v.glow,
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner">
+                    <div className="color-card-content">
+                      <div className="color-icon">
+                        <Icon size={28} className="text-white" strokeWidth={2.2} />
+                      </div>
+                      <h3 className="text-lg font-bold mb-2">
                         {t(`about.${v.key}` as any)}
                       </h3>
-                      <p className="text-[var(--text-muted)] leading-relaxed">
+                      <p className="text-[var(--text-muted)] leading-relaxed text-sm">
                         {t(`about.${v.key}d` as any)}
                       </p>
                     </div>
                   </div>
-                </Card>
+                </div>
               </Reveal>
             );
           })}
@@ -116,7 +143,9 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/builder">
-                <Button>{t('about.startProject')}</Button>
+                <Button>
+                  {t('about.startProject')} <ArrowRight size={18} />
+                </Button>
               </Link>
               <Link href="/contact">
                 <Button variant="outline">{t('about.contactUs')}</Button>

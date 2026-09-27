@@ -10,10 +10,8 @@ import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
-import { Mail, Send, Clock } from 'lucide-react';
+import { Mail, Send, Clock, ArrowRight } from 'lucide-react';
 
-// Іконка Instagram — вставляється ПІСЛЯ імпортів
-// і ПЕРЕД функцією ContactPage (на верхньому рівні файлу)
 const InstagramIcon = ({ size = 18 }: { size?: number }) => (
   <svg
     width={size}
@@ -56,24 +54,36 @@ export default function ContactPage() {
       label: 'Email',
       value: 'kostex.official@gmail.com',
       href: 'mailto:kostex.official@gmail.com',
+      color1: '#8B5CF6',
+      color2: '#A855F7',
+      glow: 'rgba(139,92,246,0.5)',
     },
     {
       icon: Send,
       label: 'Telegram',
       value: '@kostex_official',
       href: 'https://t.me/kostex_official',
+      color1: '#3B82F6',
+      color2: '#06B6D4',
+      glow: 'rgba(59,130,246,0.5)',
     },
     {
       icon: InstagramIcon,
       label: 'Instagram',
       value: '@kostex.studio',
       href: 'https://instagram.com/kostex.studio',
+      color1: '#EC4899',
+      color2: '#F43F5E',
+      glow: 'rgba(236,72,153,0.5)',
     },
     {
       icon: Clock,
       label: t('contact.responseTime'),
       value: t('contact.responseDesc'),
       href: null,
+      color1: '#10B981',
+      color2: '#14B8A6',
+      glow: 'rgba(16,185,129,0.5)',
     },
   ];
 
@@ -131,6 +141,7 @@ export default function ContactPage() {
                   />
                   <Button type="submit" disabled={sending} className="w-full sm:w-auto">
                     {sending ? t('contact.sending') : t('contact.send')}
+                    <ArrowRight size={18} />
                   </Button>
                 </form>
               )}
@@ -140,30 +151,55 @@ export default function ContactPage() {
           <Reveal delay={200} className="lg:col-span-2 space-y-4">
             {contacts.map((c, i) => {
               const Icon = c.icon;
-              const content = (
-                <Card hover={false} className="group hover:border-[var(--border-purple)] transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-[var(--purple-bright)] shrink-0 group-hover:scale-110 transition-transform">
-                      <Icon size={18} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-0.5">
-                        {c.label}
+              const card = (
+                <div
+                  className="color-card"
+                  style={
+                    {
+                      '--card-color-1': c.color1,
+                      '--card-color-2': c.color2,
+                      '--card-glow': c.glow,
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner !p-4">
+                    <div className="color-card-content">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${c.color1}, ${c.color2})`,
+                            boxShadow: `0 8px 24px -8px ${c.glow}`,
+                          }}
+                        >
+                          <Icon size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-0.5">
+                            {c.label}
+                          </div>
+                          <div className="text-sm font-medium truncate">{c.value}</div>
+                        </div>
                       </div>
-                      <div className="text-sm font-medium truncate">{c.value}</div>
                     </div>
                   </div>
-                </Card>
+                </div>
               );
 
               if (c.href) {
                 return (
-                  <a key={i} href={c.href} target="_blank" rel="noopener noreferrer" className="block">
-                    {content}
+                  <a
+                    key={i}
+                    href={c.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    {card}
                   </a>
                 );
               }
-              return <div key={i}>{content}</div>;
+              return <div key={i}>{card}</div>;
             })}
           </Reveal>
         </div>
