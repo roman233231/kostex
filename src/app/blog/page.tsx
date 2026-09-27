@@ -4,10 +4,18 @@ import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
-import Card from '@/components/ui/Card';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
 import { blogPosts } from '@/data/blog';
+import { ArrowRight, Calendar, Clock } from 'lucide-react';
+
+const categoryColors: Record<string, { color1: string; color2: string; glow: string }> = {
+  Business: { color1: '#8B5CF6', color2: '#A855F7', glow: 'rgba(139,92,246,0.5)' },
+  Tips: { color1: '#3B82F6', color2: '#06B6D4', glow: 'rgba(59,130,246,0.5)' },
+  Guide: { color1: '#EC4899', color2: '#F43F5E', glow: 'rgba(236,72,153,0.5)' },
+  Design: { color1: '#10B981', color2: '#14B8A6', glow: 'rgba(16,185,129,0.5)' },
+  Tech: { color1: '#F59E0B', color2: '#F97316', glow: 'rgba(245,158,11,0.5)' },
+};
 
 export default function BlogPage() {
   const { lang } = useLanguage();
@@ -15,14 +23,14 @@ export default function BlogPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-12 md:py-16">
+      <main className="container py-16">
         <Reveal>
-          <div className="mb-10 md:mb-14 max-w-3xl">
+          <div className="mb-14 max-w-3xl">
             <Badge>Blog</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-4 tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mt-4 tracking-tight leading-[1.05]">
               {lang === 'uk' ? 'Корисні статті' : 'Useful articles'}
             </h1>
-            <p className="text-base md:text-lg text-[var(--text-muted)] mt-3 md:mt-4">
+            <p className="text-lg text-[var(--text-muted)] mt-5">
               {lang === 'uk'
                 ? 'Поради для бізнесу, кейси та ідеї від KOSTEX.'
                 : 'Business tips, cases and ideas from KOSTEX.'}
@@ -30,36 +38,73 @@ export default function BlogPage() {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-          {blogPosts.map((post, i) => (
-            <Reveal key={post.slug} delay={i * 80}>
-              <Link href={`/blog/${post.slug}`} className="block h-full">
-                <Card className="h-full flex flex-col group">
-                  <div className="inline-flex self-start px-2.5 py-1 rounded-full bg-[var(--purple-soft)] border border-[var(--border-purple)] text-[var(--purple-bright)] text-[11px] md:text-xs font-medium mb-3 md:mb-4">
-                    {post.category}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+          {blogPosts.map((post, i) => {
+            const colors =
+              categoryColors[post.category] || categoryColors.Business;
+            return (
+              <Reveal key={post.slug} delay={i * 60}>
+                <Link href={`/blog/${post.slug}`} className="block h-full">
+                  <div
+                    className="color-card h-full"
+                    style={
+                      {
+                        '--card-color-1': colors.color1,
+                        '--card-color-2': colors.color2,
+                        '--card-glow': colors.glow,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <div className="color-card-inner">
+                      <div className="color-card-content">
+                        {/* Category chip */}
+                        <div className="mb-5">
+                          <span
+                            className="inline-flex px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider"
+                            style={{
+                              background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
+                              boxShadow: `0 8px 20px -8px ${colors.glow}`,
+                            }}
+                          >
+                            {post.category}
+                          </span>
+                        </div>
+
+                        <h2 className="text-lg md:text-xl font-bold mb-3 leading-snug">
+                          {lang === 'uk' ? post.titleUk : post.titleEn}
+                        </h2>
+
+                        <p className="text-sm text-[var(--text-muted)] flex-1 line-clamp-3 leading-relaxed mb-5">
+                          {lang === 'uk' ? post.excerptUk : post.excerptEn}
+                        </p>
+
+                        <div className="mt-5 pt-4 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-faint)]">
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center gap-1">
+                              <Calendar size={12} />
+                              {new Date(post.date).toLocaleDateString(
+                                lang === 'uk' ? 'uk-UA' : 'en-US',
+                                { year: 'numeric', month: 'short', day: 'numeric' }
+                              )}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock size={12} />
+                              {post.readingTime} min
+                            </span>
+                          </div>
+                          <ArrowRight
+                            size={14}
+                            style={{ color: colors.color1 }}
+                            className="color-arrow"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  <h2 className="text-base md:text-xl font-bold mb-2.5 md:mb-3 group-hover:text-[var(--purple)] transition-colors leading-snug">
-                    {lang === 'uk' ? post.titleUk : post.titleEn}
-                  </h2>
-
-                  <p className="text-xs md:text-sm text-[var(--text-muted)] flex-1 leading-relaxed line-clamp-3">
-                    {lang === 'uk' ? post.excerptUk : post.excerptEn}
-                  </p>
-
-                  <div className="mt-4 md:mt-5 pt-3.5 md:pt-4 border-t border-[var(--border)] flex items-center justify-between text-[11px] md:text-xs text-[var(--text-faint)]">
-                    <span>
-                      {new Date(post.date).toLocaleDateString(
-                        lang === 'uk' ? 'uk-UA' : 'en-US',
-                        { year: 'numeric', month: 'short', day: 'numeric' }
-                      )}
-                    </span>
-                    <span>{post.readingTime} min</span>
-                  </div>
-                </Card>
-              </Link>
-            </Reveal>
-          ))}
+                </Link>
+              </Reveal>
+            );
+          })}
         </div>
       </main>
       <Footer />
