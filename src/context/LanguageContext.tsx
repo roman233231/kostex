@@ -8,6 +8,11 @@ interface LanguageContextType {
   setLang: (lang: Language) => void;
   toggleLang: () => void;
   t: (key: TranslationKey) => string;
+  tProduct: (
+    slug: string,
+    field: 'title' | 'shortDescription' | 'description',
+    fallback: string
+  ) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType>({
@@ -15,6 +20,7 @@ const LanguageContext = createContext<LanguageContextType>({
   setLang: () => {},
   toggleLang: () => {},
   t: (key) => key,
+  tProduct: (_, __, fallback) => fallback,
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -40,8 +46,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return translations[lang][key] || translations.uk[key] || key;
   };
 
+  // Спеціальна функція для перекладу продуктів з Firestore
+  const tProduct = (
+    slug: string,
+    field: 'title' | 'shortDescription' | 'description',
+    fallback: string
+  ): string => {
+    const key = `product.${slug}.${field}`;
+    const value = translations[lang][key as TranslationKey];
+    return value || fallback;
+  };
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, toggleLang, t, tProduct }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -14,7 +14,7 @@ import { getProductBySlug } from '@/services/product';
 import { Product } from '@/types/product';
 
 export default function ProductPage() {
-  const { t } = useLanguage();
+  const { t, tProduct } = useLanguage();
   const params = useParams();
   const slug = params?.slug as string;
   const [product, setProduct] = useState<Product | null>(null);
@@ -42,7 +42,6 @@ export default function ProductPage() {
         <main className="container py-16">
           <div className="skeleton skeleton-line" style={{ width: '200px' }} />
           <div className="skeleton mt-6" style={{ height: '60px', maxWidth: '600px' }} />
-          <div className="skeleton skeleton-line mt-6" style={{ maxWidth: '400px' }} />
           <div className="skeleton mt-10" style={{ height: '400px' }} />
         </main>
         <Footer />
@@ -53,6 +52,9 @@ export default function ProductPage() {
   if (!product) {
     notFound();
   }
+
+  const title = tProduct(product.slug, 'title', product.title);
+  const description = tProduct(product.slug, 'description', product.description);
 
   return (
     <>
@@ -69,10 +71,10 @@ export default function ProductPage() {
           <div className="mt-8 mb-12">
             <Badge>{product.category.replace('-', ' ')}</Badge>
             <h1 className="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
-              {product.title}
+              {title}
             </h1>
             <p className="text-lg text-[var(--text-muted)] mt-4 max-w-3xl">
-              {product.description}
+              {description}
             </p>
           </div>
         </Reveal>

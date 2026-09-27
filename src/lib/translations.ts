@@ -328,6 +328,31 @@ export const translations = {
     'reviews.r3name': 'Дмитро',
     'reviews.r3role': 'Директор компанії',
 
+        // Products (seed)
+    'product.auto-service-pro.title': 'Auto Service Pro',
+    'product.auto-service-pro.shortDescription': 'Сучасний сайт для автосервісів та СТО.',
+    'product.auto-service-pro.description': 'Повноцінний сайт для автосервісів з онлайн-записом, каталогом послуг та цінами. Сучасний дизайн та оптимізація під локальний SEO.',
+    
+    'product.restaurant-pro.title': 'Restaurant Pro',
+    'product.restaurant-pro.shortDescription': 'Елегантний сайт для ресторанів та кафе.',
+    'product.restaurant-pro.description': 'Презентація меню, галерея страв, бронювання столиків та контактна інформація. Ідеально для ресторанів, кафе та барів.',
+    
+    'product.fitness-pro.title': 'Fitness Pro',
+    'product.fitness-pro.shortDescription': 'Сайт для спортзалу або фітнес-тренера.',
+    'product.fitness-pro.description': 'Вітрина фітнес-програм, тренерів, розкладу та абонементів. Підходить для спортзалів, йога-студій та персональних тренерів.',
+    
+    'product.crm-system.title': 'CRM System',
+    'product.crm-system.shortDescription': 'Панель управління взаєминами з клієнтами.',
+    'product.crm-system.description': 'Керуйте клієнтами, угодами, задачами та комунікацією в одному місці. Кастомна CRM під ваші процеси.',
+    
+    'product.booking-system.title': 'Booking System',
+    'product.booking-system.shortDescription': 'Онлайн-платформа для запису на прийом.',
+    'product.booking-system.description': 'Дозвольте клієнтам записуватись онлайн, керувати розкладом та отримувати сповіщення. Ідеально для салонів, клінік та сервісів.',
+    
+    'product.telegram-support-bot.title': 'Telegram Support Bot',
+    'product.telegram-support-bot.shortDescription': 'Автоматизований бот підтримки для Telegram.',
+    'product.telegram-support-bot.description': 'Відповідає на часті питання, збирає запити та сповіщає адмінів. Працює 24/7 для вашого бізнесу.',
+
     // Common
     'common.loading': 'Завантаження...',
     'common.viewDetails': 'Детальніше',
@@ -683,6 +708,31 @@ export const translations = {
     'reviews.r3': 'We ordered a CRM — now all work is automated. Highly recommend!',
     'reviews.r3name': 'Dmytro',
     'reviews.r3role': 'Company Director',
+
+        // Products (seed)
+    'product.auto-service-pro.title': 'Auto Service Pro',
+    'product.auto-service-pro.shortDescription': 'Modern website for automotive businesses.',
+    'product.auto-service-pro.description': 'A complete website for auto service stations with online booking, services catalog, and pricing. Modern design and local SEO optimization.',
+    
+    'product.restaurant-pro.title': 'Restaurant Pro',
+    'product.restaurant-pro.shortDescription': 'Elegant website for restaurants and cafes.',
+    'product.restaurant-pro.description': 'Menu presentation, gallery, table reservation, and contact information. Perfect for restaurants, cafes, and bars.',
+    
+    'product.fitness-pro.title': 'Fitness Pro',
+    'product.fitness-pro.shortDescription': 'Website for gym or fitness coach.',
+    'product.fitness-pro.description': 'Showcase fitness programs, trainers, schedules, and membership plans. Great for gyms, yoga studios, and personal trainers.',
+    
+    'product.crm-system.title': 'CRM System',
+    'product.crm-system.shortDescription': 'Customer relationship management dashboard.',
+    'product.crm-system.description': 'Manage clients, deals, tasks, and communication in one place. Custom CRM tailored to your workflow.',
+    
+    'product.booking-system.title': 'Booking System',
+    'product.booking-system.shortDescription': 'Online booking platform for appointments.',
+    'product.booking-system.description': 'Allow customers to book appointments, manage schedules, and receive notifications. Perfect for salons, clinics, and services.',
+    
+    'product.telegram-support-bot.title': 'Telegram Support Bot',
+    'product.telegram-support-bot.shortDescription': 'Automated support bot for Telegram.',
+    'product.telegram-support-bot.description': 'Answer common questions, collect requests, and notify admins. Works 24/7 for your business.',
 
     // Common
     'common.loading': 'Loading...',
