@@ -6,12 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { createFeature } from '@/services/feature';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import { ArrowLeft, Save, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewFeaturePage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -49,7 +49,7 @@ export default function NewFeaturePage() {
       router.push('/admin/features');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to create feature');
+      setError(err.message || 'Помилка створення');
     } finally {
       setSaving(false);
     }
@@ -59,10 +59,32 @@ export default function NewFeaturePage() {
     <>
       <Navbar />
       <main className="container py-12 max-w-2xl">
+        <Link
+          href="/admin/features"
+          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-6"
+        >
+          <ArrowLeft size={16} /> Назад до функцій
+        </Link>
+
         <Reveal>
           <div className="mb-8">
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4 tracking-tight">Add Feature</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
+                style={{
+                  background: 'linear-gradient(135deg, #10B981, #14B8A6)',
+                  boxShadow: '0 8px 24px -8px rgba(16,185,129,0.6)',
+                }}
+              >
+                <Zap size={24} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
+                Нова функція
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Додати функцію
+            </h1>
           </div>
         </Reveal>
 
@@ -73,61 +95,86 @@ export default function NewFeaturePage() {
         )}
 
         <Reveal delay={80}>
-          <Card hover={false}>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input
-                label="Name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="Online Booking"
-                required
-              />
+          <div
+            className="color-card"
+            style={
+              {
+                '--card-color-1': '#10B981',
+                '--card-color-2': '#14B8A6',
+                '--card-glow': 'rgba(16,185,129,0.5)',
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner">
+              <div className="color-card-content">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <Input
+                    label="Назва"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="Online Booking"
+                    required
+                  />
 
-              <Textarea
-                label="Description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Allow customers to book appointments online."
-                required
-              />
+                  <Textarea
+                    label="Опис"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Дозвольте клієнтам записуватись онлайн..."
+                    required
+                  />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  label="Price (₴)"
-                  type="number"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                  required
-                />
-                <Input
-                  label="Estimated Time"
-                  value={form.estimatedTime}
-                  onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
-                  placeholder="1–2 days"
-                  required
-                />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input
+                      label="Ціна (₴)"
+                      type="number"
+                      value={form.price}
+                      onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                      required
+                    />
+                    <Input
+                      label="Термін"
+                      value={form.estimatedTime}
+                      onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
+                      placeholder="1–2 дні"
+                      required
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-3 cursor-pointer py-2">
+                    <input
+                      type="checkbox"
+                      checked={form.active}
+                      onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                      className="w-4 h-4 accent-[var(--purple)]"
+                    />
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      Активна
+                    </span>
+                  </label>
+
+                  <div className="flex gap-3 pt-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? (
+                        'Створюємо...'
+                      ) : (
+                        <>
+                          <Save size={16} /> Створити
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push('/admin/features')}
+                    >
+                      Скасувати
+                    </Button>
+                  </div>
+                </form>
               </div>
-
-              <label className="flex items-center gap-3 cursor-pointer py-2">
-                <input
-                  type="checkbox"
-                  checked={form.active}
-                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                  className="w-4 h-4 accent-[var(--purple)]"
-                />
-                <span className="text-sm text-[var(--text-secondary)]">Active</span>
-              </label>
-
-              <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving ? 'Creating...' : 'Create Feature'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => router.push('/admin/features')}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </Card>
+            </div>
+          </div>
         </Reveal>
       </main>
       <Footer />

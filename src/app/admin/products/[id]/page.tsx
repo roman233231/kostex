@@ -6,12 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { getProductById, updateProduct } from '@/services/product';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import { ArrowLeft, Save, Tag } from 'lucide-react';
+import Link from 'next/link';
 
 const categories = ['websites', 'web-apps', 'software', 'bots'];
 
@@ -88,7 +88,7 @@ export default function EditProductPage() {
       router.push('/admin/products');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to update product');
+      setError(err.message || 'Помилка оновлення');
     } finally {
       setSaving(false);
     }
@@ -98,10 +98,32 @@ export default function EditProductPage() {
     <>
       <Navbar />
       <main className="container py-12 max-w-3xl">
+        <Link
+          href="/admin/products"
+          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-6"
+        >
+          <ArrowLeft size={16} /> Назад до продуктів
+        </Link>
+
         <Reveal>
           <div className="mb-8">
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4 tracking-tight">Edit Product</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
+                style={{
+                  background: 'linear-gradient(135deg, #EC4899, #F43F5E)',
+                  boxShadow: '0 8px 24px -8px rgba(236,72,153,0.6)',
+                }}
+              >
+                <Tag size={24} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
+                Редагування
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              {form.title || 'Продукт'}
+            </h1>
           </div>
         </Reveal>
 
@@ -112,116 +134,137 @@ export default function EditProductPage() {
         )}
 
         <Reveal delay={80}>
-          <Card hover={false}>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input
-                label="Title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                required
-              />
+          <div
+            className="color-card"
+            style={
+              {
+                '--card-color-1': '#EC4899',
+                '--card-color-2': '#F43F5E',
+                '--card-glow': 'rgba(236,72,153,0.5)',
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner">
+              <div className="color-card-content">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <Input
+                    label="Назва"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    required
+                  />
 
-              <Input
-                label="Slug"
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-              />
+                  <Input
+                    label="Slug"
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[var(--text-secondary)]">
-                  Category
-                </label>
-                <select
-                  value={form.category}
-                  onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="input"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-[var(--text-secondary)]">
+                      Категорія
+                    </label>
+                    <select
+                      value={form.category}
+                      onChange={(e) => setForm({ ...form, category: e.target.value })}
+                      className="input"
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <Textarea
+                    label="Короткий опис"
+                    value={form.shortDescription}
+                    onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
+                    required
+                  />
+
+                  <Textarea
+                    label="Повний опис"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    required
+                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input
+                      label="Ціна від (₴)"
+                      type="number"
+                      value={form.startingPrice}
+                      onChange={(e) => setForm({ ...form, startingPrice: Number(e.target.value) })}
+                      required
+                    />
+                    <Input
+                      label="Термін"
+                      value={form.estimatedTime}
+                      onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <Input
+                    label="Теги (через кому)"
+                    value={form.tags}
+                    onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                  />
+
+                  <Input
+                    label="Функції (через кому)"
+                    value={form.features}
+                    onChange={(e) => setForm({ ...form, features: e.target.value })}
+                  />
+
+                  <Input
+                    label="Сторінки (через кому)"
+                    value={form.pages}
+                    onChange={(e) => setForm({ ...form, pages: e.target.value })}
+                  />
+
+                  <Input
+                    label="Demo URL"
+                    value={form.demoUrl}
+                    onChange={(e) => setForm({ ...form, demoUrl: e.target.value })}
+                  />
+
+                  <label className="flex items-center gap-3 cursor-pointer py-2">
+                    <input
+                      type="checkbox"
+                      checked={form.published}
+                      onChange={(e) => setForm({ ...form, published: e.target.checked })}
+                      className="w-4 h-4 accent-[var(--purple)]"
+                    />
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      Опубліковано
+                    </span>
+                  </label>
+
+                  <div className="flex gap-3 pt-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? (
+                        'Зберігаємо...'
+                      ) : (
+                        <>
+                          <Save size={16} /> Зберегти
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push('/admin/products')}
+                    >
+                      Скасувати
+                    </Button>
+                  </div>
+                </form>
               </div>
-
-              <Textarea
-                label="Short Description"
-                value={form.shortDescription}
-                onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
-                required
-              />
-
-              <Textarea
-                label="Full Description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                required
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  label="Starting Price (₴)"
-                  type="number"
-                  value={form.startingPrice}
-                  onChange={(e) => setForm({ ...form, startingPrice: Number(e.target.value) })}
-                  required
-                />
-                <Input
-                  label="Estimated Time"
-                  value={form.estimatedTime}
-                  onChange={(e) => setForm({ ...form, estimatedTime: e.target.value })}
-                  required
-                />
-              </div>
-
-              <Input
-                label="Tags (comma separated)"
-                value={form.tags}
-                onChange={(e) => setForm({ ...form, tags: e.target.value })}
-              />
-
-              <Input
-                label="Features (comma separated)"
-                value={form.features}
-                onChange={(e) => setForm({ ...form, features: e.target.value })}
-              />
-
-              <Input
-                label="Pages (comma separated)"
-                value={form.pages}
-                onChange={(e) => setForm({ ...form, pages: e.target.value })}
-              />
-
-              <Input
-                label="Demo URL"
-                value={form.demoUrl}
-                onChange={(e) => setForm({ ...form, demoUrl: e.target.value })}
-              />
-
-              <label className="flex items-center gap-3 cursor-pointer py-2">
-                <input
-                  type="checkbox"
-                  checked={form.published}
-                  onChange={(e) => setForm({ ...form, published: e.target.checked })}
-                  className="w-4 h-4 accent-[var(--purple)]"
-                />
-                <span className="text-sm text-[var(--text-secondary)]">Published</span>
-              </label>
-
-              <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push('/admin/products')}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </Card>
+            </div>
+          </div>
         </Reveal>
       </main>
       <Footer />
