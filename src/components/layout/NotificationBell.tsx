@@ -3,14 +3,12 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { useLanguage } from '@/context/LanguageContext';
 import { getUserNotifications, getUnreadCount, markNotificationRead } from '@/services/notification';
 import { Notification } from '@/types/notification';
-import { Bell, Check } from 'lucide-react';
+import { Bell } from 'lucide-react';
 
 export default function NotificationBell() {
   const { currentUser } = useAuth();
-  const { t } = useLanguage();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
   const [open, setOpen] = useState(false);
@@ -67,20 +65,20 @@ export default function NotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={handleOpen}
-        className="relative w-11 h-11 rounded-xl flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all active:scale-95"
+        className="relative w-10 h-10 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-all active:scale-95"
         aria-label="Сповіщення"
       >
-        <Bell size={20} />
+        <Bell size={18} />
         {unread > 0 && (
-          <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--purple-neon)] text-white text-[10px] font-bold flex items-center justify-center shadow-[0_0_10px_rgba(192,38,255,0.6)]">
+          <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-[var(--purple-neon)] text-white text-[9px] font-bold flex items-center justify-center">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[340px] sm:w-80 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-50 overflow-hidden">
-          <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--surface-2)]/50">
+        <div className="absolute right-0 mt-2 w-[320px] sm:w-80 rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-50 overflow-hidden">
+          <div className="p-4 border-b border-[var(--border)] flex justify-between items-center">
             <span className="text-sm font-semibold">Сповіщення</span>
             <Link
               href="/account/notifications"
@@ -107,7 +105,7 @@ export default function NotificationBell() {
                 >
                   <div className="flex items-start gap-3">
                     {!n.read && (
-                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[var(--purple-bright)] flex-shrink-0 shadow-[0_0_8px_var(--purple-bright)]" />
+                      <span className="mt-1.5 w-2 h-2 rounded-full bg-[var(--purple-bright)] flex-shrink-0" />
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium text-[var(--text)] leading-snug">
