@@ -6,11 +6,11 @@ import { useAuth } from '@/context/AuthContext';
 import { createCategory } from '@/services/category';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import { ArrowLeft, Save, FolderTree } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewCategoryPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -40,7 +40,7 @@ export default function NewCategoryPage() {
       router.push('/admin/categories');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to create category');
+      setError(err.message || 'Помилка створення');
     } finally {
       setSaving(false);
     }
@@ -50,10 +50,32 @@ export default function NewCategoryPage() {
     <>
       <Navbar />
       <main className="container py-12 max-w-md">
+        <Link
+          href="/admin/categories"
+          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-6"
+        >
+          <ArrowLeft size={16} /> Назад до категорій
+        </Link>
+
         <Reveal>
           <div className="mb-8">
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4 tracking-tight">Add Category</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
+                style={{
+                  background: 'linear-gradient(135deg, #F59E0B, #F97316)',
+                  boxShadow: '0 8px 24px -8px rgba(245,158,11,0.6)',
+                }}
+              >
+                <FolderTree size={24} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
+                Нова категорія
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Додати категорію
+            </h1>
           </div>
         </Reveal>
 
@@ -64,31 +86,54 @@ export default function NewCategoryPage() {
         )}
 
         <Reveal delay={80}>
-          <Card hover={false}>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input
-                label="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Websites"
-                required
-              />
-              <Input
-                label="Slug (optional)"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="websites"
-              />
-              <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving ? 'Creating...' : 'Create Category'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => router.push('/admin/categories')}>
-                  Cancel
-                </Button>
+          <div
+            className="color-card"
+            style={
+              {
+                '--card-color-1': '#F59E0B',
+                '--card-color-2': '#F97316',
+                '--card-glow': 'rgba(245,158,11,0.5)',
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner">
+              <div className="color-card-content">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <Input
+                    label="Назва"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Websites"
+                    required
+                  />
+                  <Input
+                    label="Slug (опційно)"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="websites"
+                  />
+                  <div className="flex gap-3 pt-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? (
+                        'Створюємо...'
+                      ) : (
+                        <>
+                          <Save size={16} /> Створити
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push('/admin/categories')}
+                    >
+                      Скасувати
+                    </Button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </Card>
+            </div>
+          </div>
         </Reveal>
       </main>
       <Footer />

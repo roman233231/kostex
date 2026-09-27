@@ -6,12 +6,12 @@ import { useAuth } from '@/context/AuthContext';
 import { createPortfolioItem } from '@/services/portfolio';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import { ArrowLeft, Save, Image as ImageIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NewPortfolioPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -57,7 +57,7 @@ export default function NewPortfolioPage() {
       router.push('/admin/portfolio');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Failed to create item');
+      setError(err.message || 'Помилка створення');
     } finally {
       setSaving(false);
     }
@@ -67,10 +67,32 @@ export default function NewPortfolioPage() {
     <>
       <Navbar />
       <main className="container py-12 max-w-3xl">
+        <Link
+          href="/admin/portfolio"
+          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-6"
+        >
+          <ArrowLeft size={16} /> Назад до портфоліо
+        </Link>
+
         <Reveal>
           <div className="mb-8">
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4 tracking-tight">Add Portfolio Item</h1>
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
+                style={{
+                  background: 'linear-gradient(135deg, #D946EF, #A855F7)',
+                  boxShadow: '0 8px 24px -8px rgba(217,70,239,0.6)',
+                }}
+              >
+                <ImageIcon size={24} />
+              </div>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
+                Новий кейс
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Додати кейс
+            </h1>
           </div>
         </Reveal>
 
@@ -81,78 +103,103 @@ export default function NewPortfolioPage() {
         )}
 
         <Reveal delay={80}>
-          <Card hover={false}>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <Input
-                label="Title"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Auto Service Website"
-                required
-              />
-              <Input
-                label="Slug (optional)"
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                placeholder="auto-service-website"
-              />
-              <Input
-                label="Category"
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                placeholder="websites"
-                required
-              />
-              <Textarea
-                label="Description"
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Short description of the project..."
-                required
-              />
-              <Input
-                label="Image URL"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                placeholder="https://..."
-              />
-              <Input
-                label="Demo URL"
-                value={form.demoUrl}
-                onChange={(e) => setForm({ ...form, demoUrl: e.target.value })}
-                placeholder="https://..."
-              />
-              <Input
-                label="Technologies (comma separated)"
-                value={form.technologies}
-                onChange={(e) => setForm({ ...form, technologies: e.target.value })}
-                placeholder="Next.js, Firebase, Tailwind"
-              />
-              <Input
-                label="Features (comma separated)"
-                value={form.features}
-                onChange={(e) => setForm({ ...form, features: e.target.value })}
-                placeholder="Online Booking, Contact Form"
-              />
-              <label className="flex items-center gap-3 cursor-pointer py-2">
-                <input
-                  type="checkbox"
-                  checked={form.published}
-                  onChange={(e) => setForm({ ...form, published: e.target.checked })}
-                  className="w-4 h-4 accent-[var(--purple)]"
-                />
-                <span className="text-sm text-[var(--text-secondary)]">Published</span>
-              </label>
-              <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={saving}>
-                  {saving ? 'Creating...' : 'Create Item'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => router.push('/admin/portfolio')}>
-                  Cancel
-                </Button>
+          <div
+            className="color-card"
+            style={
+              {
+                '--card-color-1': '#D946EF',
+                '--card-color-2': '#A855F7',
+                '--card-glow': 'rgba(217,70,239,0.5)',
+              } as React.CSSProperties
+            }
+          >
+            <div className="color-card-inner">
+              <div className="color-card-content">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <Input
+                    label="Назва"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    placeholder="Auto Service Modern"
+                    required
+                  />
+                  <Input
+                    label="Slug (опційно)"
+                    value={form.slug}
+                    onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                    placeholder="auto-service-modern"
+                  />
+                  <Input
+                    label="Категорія"
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    placeholder="websites"
+                    required
+                  />
+                  <Textarea
+                    label="Опис"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Короткий опис проєкту..."
+                    required
+                  />
+                  <Input
+                    label="URL зображення"
+                    value={form.image}
+                    onChange={(e) => setForm({ ...form, image: e.target.value })}
+                    placeholder="https://..."
+                  />
+                  <Input
+                    label="Demo URL"
+                    value={form.demoUrl}
+                    onChange={(e) => setForm({ ...form, demoUrl: e.target.value })}
+                    placeholder="https://..."
+                  />
+                  <Input
+                    label="Технології (через кому)"
+                    value={form.technologies}
+                    onChange={(e) => setForm({ ...form, technologies: e.target.value })}
+                    placeholder="Next.js, Firebase, Tailwind"
+                  />
+                  <Input
+                    label="Функції (через кому)"
+                    value={form.features}
+                    onChange={(e) => setForm({ ...form, features: e.target.value })}
+                    placeholder="Online Booking, Contact Form"
+                  />
+                  <label className="flex items-center gap-3 cursor-pointer py-2">
+                    <input
+                      type="checkbox"
+                      checked={form.published}
+                      onChange={(e) => setForm({ ...form, published: e.target.checked })}
+                      className="w-4 h-4 accent-[var(--purple)]"
+                    />
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      Опубліковано
+                    </span>
+                  </label>
+                  <div className="flex gap-3 pt-2">
+                    <Button type="submit" disabled={saving}>
+                      {saving ? (
+                        'Створюємо...'
+                      ) : (
+                        <>
+                          <Save size={16} /> Створити
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.push('/admin/portfolio')}
+                    >
+                      Скасувати
+                    </Button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </Card>
+            </div>
+          </div>
         </Reveal>
       </main>
       <Footer />
