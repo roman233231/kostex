@@ -7,15 +7,24 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import {
+  LayoutDashboard,
+  Package,
+  Bell,
+  MessageSquare,
+  FolderOpen,
+  User,
+  Settings,
+} from 'lucide-react';
 
 const navItems = [
-  { href: '/account', labelKey: 'account.dashboard' as const, icon: '📊' },
-  { href: '/account/orders', labelKey: 'account.orders' as const, icon: '📦' },
-  { href: '/account/notifications', labelKey: 'account.notifications' as const, icon: '🔔' },
-  { href: '/account/messages', labelKey: 'account.messages' as const, icon: '💬' },
-  { href: '/account/files', labelKey: 'account.files' as const, icon: '📁' },
-  { href: '/account/profile', labelKey: 'account.profile' as const, icon: '👤' },
-  { href: '/account/settings', labelKey: 'account.settings' as const, icon: '⚙️' },
+  { href: '/account', labelKey: 'account.dashboard' as const, icon: LayoutDashboard },
+  { href: '/account/orders', labelKey: 'account.orders' as const, icon: Package },
+  { href: '/account/notifications', labelKey: 'account.notifications' as const, icon: Bell },
+  { href: '/account/messages', labelKey: 'account.messages' as const, icon: MessageSquare },
+  { href: '/account/files', labelKey: 'account.files' as const, icon: FolderOpen },
+  { href: '/account/profile', labelKey: 'account.profile' as const, icon: User },
+  { href: '/account/settings', labelKey: 'account.settings' as const, icon: Settings },
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -44,9 +53,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
       {/* Mobile horizontal nav */}
       <div className="md:hidden border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-xl sticky top-16 z-30">
-        <div className="-mx-5 px-5 overflow-x-auto scrollbar-hide">
+        <div className="px-5 overflow-x-auto scrollbar-hide">
           <nav className="flex gap-1 py-3 min-w-max">
             {navItems.map((item) => {
+              const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
                 <Link
@@ -58,7 +68,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                       : 'text-[var(--text-muted)] hover:text-[var(--text)] border border-transparent'
                   }`}
                 >
-                  <span className="text-sm">{item.icon}</span>
+                  <Icon size={14} />
                   {t(item.labelKey)}
                 </Link>
               );
@@ -73,19 +83,23 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           <div className="sticky top-24">
             <nav className="space-y-1">
               {navItems.map((item) => {
+                const Icon = item.icon;
                 const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm transition-all ${
+                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all relative overflow-hidden group ${
                       isActive
                         ? 'bg-[var(--purple-soft)] text-[var(--purple-bright)] border border-[var(--border-purple)] font-medium'
                         : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] border border-transparent'
                     }`}
                   >
-                    <span className="text-base">{item.icon}</span>
+                    <Icon size={18} className="shrink-0" />
                     {t(item.labelKey)}
+                    {isActive && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--purple-bright)] shadow-[0_0_8px_var(--purple-bright)]" />
+                    )}
                   </Link>
                 );
               })}
