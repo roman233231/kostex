@@ -8,9 +8,8 @@ import { getAllOrders } from '@/services/admin';
 import { Order } from '@/types/order';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
+import { Search, ArrowRight, Package } from 'lucide-react';
 
 const statusLabels: Record<string, string> = {
   'NEW': 'Нове',
@@ -23,15 +22,15 @@ const statusLabels: Record<string, string> = {
   'CANCELLED': 'Скасовано',
 };
 
-const statusColors: Record<string, string> = {
-  'NEW': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  'REVIEW': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  'ACCEPTED': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-  'IN DEVELOPMENT': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-  'CLIENT REVIEW': 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-  'REVISION': 'bg-pink-500/10 text-pink-400 border-pink-500/30',
-  'COMPLETED': 'bg-green-500/10 text-green-400 border-green-500/30',
-  'CANCELLED': 'bg-red-500/10 text-red-400 border-red-500/30',
+const statusColors: Record<string, { color1: string; color2: string; glow: string }> = {
+  'NEW': { color1: '#3B82F6', color2: '#06B6D4', glow: 'rgba(59,130,246,0.5)' },
+  'REVIEW': { color1: '#F59E0B', color2: '#F97316', glow: 'rgba(245,158,11,0.5)' },
+  'ACCEPTED': { color1: '#06B6D4', color2: '#14B8A6', glow: 'rgba(6,182,212,0.5)' },
+  'IN DEVELOPMENT': { color1: '#8B5CF6', color2: '#A855F7', glow: 'rgba(139,92,246,0.5)' },
+  'CLIENT REVIEW': { color1: '#F97316', color2: '#F43F5E', glow: 'rgba(249,115,22,0.5)' },
+  'REVISION': { color1: '#EC4899', color2: '#F43F5E', glow: 'rgba(236,72,153,0.5)' },
+  'COMPLETED': { color1: '#10B981', color2: '#14B8A6', glow: 'rgba(16,185,129,0.5)' },
+  'CANCELLED': { color1: '#EF4444', color2: '#F43F5E', glow: 'rgba(239,68,68,0.5)' },
 };
 
 export default function AdminOrdersPage() {
@@ -94,8 +93,9 @@ export default function AdminOrdersPage() {
       <main className="container py-12">
         <Reveal>
           <div className="mb-8">
-            <Badge>Admin</Badge>
-            <h1 className="text-4xl font-bold mt-4 tracking-tight">Orders</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Замовлення
+            </h1>
             <p className="text-[var(--text-muted)] mt-2">
               {orders.length} {orders.length === 1 ? 'замовлення' : 'замовлень'} всього
             </p>
@@ -105,13 +105,19 @@ export default function AdminOrdersPage() {
         {/* Filters */}
         <Reveal delay={80}>
           <div className="flex flex-col md:flex-row gap-4 mb-8">
-            <input
-              type="text"
-              placeholder="Пошук за назвою або ID..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input md:max-w-xs"
-            />
+            <div className="relative md:max-w-xs w-full">
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]"
+              />
+              <input
+                type="text"
+                placeholder="Пошук за назвою або ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="input pl-10"
+              />
+            </div>
             <div className="flex flex-wrap gap-2">
               {statuses.map((s) => (
                 <button
@@ -120,7 +126,7 @@ export default function AdminOrdersPage() {
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                     filter === s
                       ? 'bg-[var(--purple)] text-white border-[var(--purple)]'
-                      : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--purple)] hover:text-[var(--purple)]'
+                      : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)]'
                   }`}
                 >
                   {s === 'ALL' ? 'Усі' : statusLabels[s] || s}
@@ -131,49 +137,71 @@ export default function AdminOrdersPage() {
         </Reveal>
 
         {filtered.length === 0 ? (
-          <p className="text-[var(--text-muted)]">Нічого не знайдено.</p>
+          <div className="card no-hover text-center py-14">
+            <Package size={48} className="text-[var(--text-faint)] mx-auto mb-4" />
+            <p className="text-[var(--text-muted)]">Нічого не знайдено.</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map((order, i) => (
-              <Reveal key={order.id} delay={i * 30}>
-                <Link href={`/admin/orders/${order.id}`} className="block">
-                  <Card
-                    hover={false}
-                    className="transition-all duration-300 hover:border-[var(--border-purple)] hover:-translate-y-0.5 cursor-pointer"
-                  >
-                    <div className="flex justify-between items-start gap-4 flex-wrap">
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-base font-semibold">
-                          {order.productTitle || 'Замовлення'}
-                        </h3>
-                        <p className="text-xs text-[var(--text-faint)] mt-1">
-                          #{order.id?.slice(0, 8)}
-                        </p>
-                        <p className="text-xs text-[var(--text-faint)] mt-1">
-                          {order.createdAt
-                            ? new Date(order.createdAt).toLocaleDateString('uk-UA')
-                            : ''}
-                        </p>
-                      </div>
-                      <div className="text-right flex items-center gap-3">
-                        <span
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
-                            statusColors[order.status] || ''
-                          }`}
-                        >
-                          {statusLabels[order.status] || order.status}
-                        </span>
-                        <div className="text-sm font-medium">
-                          {order.finalPrice
-                            ? `${order.finalPrice.toLocaleString('uk-UA')} ₴`
-                            : `${order.estimatedPrice.toLocaleString('uk-UA')} ₴`}
+            {filtered.map((order, i) => {
+              const colors = statusColors[order.status] || statusColors.NEW;
+              return (
+                <Reveal key={order.id} delay={i * 30}>
+                  <Link href={`/admin/orders/${order.id}`} className="block group">
+                    <div
+                      className="color-card"
+                      style={
+                        {
+                          '--card-color-1': colors.color1,
+                          '--card-color-2': colors.color2,
+                          '--card-glow': colors.glow,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <div className="color-card-inner">
+                        <div className="color-card-content">
+                          <div className="flex justify-between items-start gap-4 flex-wrap">
+                            <div className="min-w-0 flex-1">
+                              <h3 className="text-base font-semibold">
+                                {order.productTitle || 'Замовлення'}
+                              </h3>
+                              <p className="text-xs text-[var(--text-faint)] mt-1">
+                                #{order.id?.slice(0, 8)}
+                              </p>
+                              <p className="text-xs text-[var(--text-faint)] mt-1">
+                                {order.createdAt
+                                  ? new Date(order.createdAt).toLocaleDateString('uk-UA')
+                                  : ''}
+                              </p>
+                            </div>
+                            <div className="text-right flex items-center gap-3">
+                              <span
+                                className="px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+                                style={{
+                                  background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
+                                  boxShadow: `0 6px 16px -6px ${colors.glow}`,
+                                }}
+                              >
+                                {statusLabels[order.status] || order.status}
+                              </span>
+                              <div className="text-sm font-bold">
+                                {order.finalPrice
+                                  ? `${order.finalPrice.toLocaleString('uk-UA')} ₴`
+                                  : `${order.estimatedPrice.toLocaleString('uk-UA')} ₴`}
+                              </div>
+                              <ArrowRight
+                                size={18}
+                                className="text-[var(--text-faint)] group-hover:text-[var(--purple-bright)] group-hover:translate-x-1 transition-all"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </Card>
-                </Link>
-              </Reveal>
-            ))}
+                  </Link>
+                </Reveal>
+              );
+            })}
           </div>
         )}
       </main>
