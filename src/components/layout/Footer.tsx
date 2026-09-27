@@ -44,7 +44,10 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-16">
             <div className="flex-shrink-0 md:max-w-xs">
-              <Link href="/" className="inline-flex items-center gap-2.5 group footer-brand-text">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2.5 group footer-brand-text"
+              >
                 <Logo
                   size={28}
                   className="w-7 h-7 transition-transform duration-500 group-hover:rotate-12"
@@ -56,38 +59,107 @@ export default function Footer() {
                 {t('footer.tagline')}
               </p>
 
-              <div className="flex items-center gap-1">
+              {/* Socials with colorful hover */}
+              <div className="flex items-center gap-2">
                 <a
                   href="https://instagram.com/kostex.studio"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-faint)] transition-all hover:-translate-y-1"
+                  style={{ background: 'var(--surface-2)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      'linear-gradient(135deg, #EC4899, #F43F5E)';
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.boxShadow =
+                      '0 8px 24px -8px rgba(236,72,153,0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-2)';
+                    e.currentTarget.style.color = '';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
                 >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                   </svg>
                 </a>
+
                 <a
-                  href="https://t.me/kostex"
+                  href="https://t.me/kostex_official"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Telegram"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-faint)] transition-all hover:-translate-y-1"
+                  style={{ background: 'var(--surface-2)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      'linear-gradient(135deg, #3B82F6, #06B6D4)';
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.boxShadow =
+                      '0 8px 24px -8px rgba(59,130,246,0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-2)';
+                    e.currentTarget.style.color = '';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
                 >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M21 3L3 10.5l6 2.5 2.5 7L21 3z" />
                     <path d="M9 13l11-10" />
                   </svg>
                 </a>
+
                 <a
-                  href="mailto:hello@kostex.com"
+                  href="mailto:kostex.official@gmail.com"
                   aria-label="Email"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-[var(--text-faint)] transition-all hover:-translate-y-1"
+                  style={{ background: 'var(--surface-2)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background =
+                      'linear-gradient(135deg, #8B5CF6, #A855F7)';
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.boxShadow =
+                      '0 8px 24px -8px rgba(139,92,246,0.6)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-2)';
+                    e.currentTarget.style.color = '';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
                 >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                     <polyline points="22,6 12,13 2,6" />
                   </svg>

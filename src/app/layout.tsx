@@ -6,6 +6,8 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import FloatingChat from '@/components/chat/FloatingChat';
 import CursorGlow from '@/components/ui/CursorGlow';
+import ScrollProgress from '@/components/ui/ScrollProgress';
+import BackToTop from '@/components/ui/BackToTop';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
     template: '%s | KOSTEX',
   },
   description:
-    'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
+    'Ми створюємо сайти, веб-додатки, софт, ботів та кастомні цифрові рішення. Налаштуйте свій продукт у конструкторі та побачте ціну одразу.',
   keywords: [
     'KOSTEX',
     'digital products',
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
     'CRM',
     'e-commerce',
     'automation',
-    'Ukraine',
+    'Україна',
   ],
   authors: [{ name: 'KOSTEX' }],
   creator: 'KOSTEX',
@@ -44,13 +46,13 @@ export const metadata: Metadata = {
     siteName: 'KOSTEX',
     title: 'KOSTEX — Digital Products Studio',
     description:
-      'We build websites, web apps, software, bots and custom digital solutions.',
+      'Ми створюємо сайти, веб-додатки, софт, ботів та кастомні цифрові рішення.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'KOSTEX — Digital Products Studio',
     description:
-      'We build websites, web apps, software, bots and custom digital solutions.',
+      'Ми створюємо сайти, веб-додатки, софт, ботів та кастомні цифрові рішення.',
   },
   robots: {
     index: true,
@@ -82,8 +84,10 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
+              <ScrollProgress />
               <CursorGlow />
               {children}
+              <BackToTop />
               <FloatingChat />
             </AuthProvider>
           </LanguageProvider>
