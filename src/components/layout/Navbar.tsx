@@ -103,8 +103,8 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden xl:flex items-center gap-0.5">
+          {/* Desktop nav — БІЛЬШЕ ВІДСТУПІВ */}
+          <nav className="hidden xl:flex items-center gap-1">
             {navLinks.map((link) => {
               const active =
                 pathname === link.href || pathname?.startsWith(link.href + '/');
@@ -112,15 +112,15 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3 py-2 text-sm transition-colors group ${
+                  className={`relative px-3.5 py-2 text-sm transition-colors group ${
                     active
                       ? 'text-[var(--text)]'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                      : 'text-[var(--text-3)] hover:text-[var(--text)]'
                   }`}
                 >
                   {t(link.key)}
                   <span
-                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] transition-all duration-300 ${
+                    className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-3)] transition-all duration-300 ${
                       active
                         ? 'w-5 opacity-100'
                         : 'w-0 opacity-0 group-hover:w-5 group-hover:opacity-100'
@@ -131,10 +131,8 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right side */}
-          <div className="flex items-center gap-1">
-            {/* Language + Theme — показуємо з 640px і вище */}
-            <div className="hidden sm:flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            <div className="hidden sm:flex items-center gap-1.5">
               <LanguageSwitcher />
               <ThemeToggle />
             </div>
@@ -158,7 +156,7 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Mobile burger */}
+            {/* Burger */}
             <button
               className="xl:hidden w-10 h-10 rounded-lg flex items-center justify-center text-[var(--text)] hover:bg-[var(--surface-2)] transition-all active:scale-95 ml-0.5"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -183,15 +181,12 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* ============================================================
-          FULL-SCREEN MOBILE MENU
-          ============================================================ */}
+      {/* Full-screen mobile menu */}
       {menuOpen && (
         <div
           className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] overflow-y-auto"
           style={{ animation: 'menuFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}
         >
-          {/* Ambient glows — subtle */}
           <div
             className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full pointer-events-none"
             style={{
@@ -208,7 +203,6 @@ export default function Navbar() {
           />
 
           <div className="relative flex flex-col min-h-full">
-            {/* Top bar */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
               <Link
                 href="/"
@@ -227,7 +221,6 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Nav links */}
             <nav className="flex-1 px-4 py-4 flex flex-col">
               {navLinks.map((link, i) => {
                 const Icon = link.icon;
@@ -244,8 +237,8 @@ export default function Navbar() {
                       <div
                         className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                           active
-                            ? 'bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]'
-                            : 'bg-[var(--surface-2)] text-[var(--text-muted)] group-hover:text-[var(--purple-bright)]'
+                            ? 'bg-gradient-to-br from-[var(--accent)] to-[var(--accent-3)] text-white shadow-[0_0_20px_rgba(139,92,246,0.5)]'
+                            : 'bg-[var(--surface-2)] text-[var(--text-3)] group-hover:text-[var(--accent-2)]'
                         }`}
                       >
                         <Icon size={19} />
@@ -253,8 +246,8 @@ export default function Navbar() {
                       <span
                         className={`text-lg font-semibold tracking-tight transition-colors ${
                           active
-                            ? 'text-[var(--purple-bright)]'
-                            : 'text-[var(--text)] group-hover:text-[var(--purple-bright)]'
+                            ? 'text-[var(--accent-2)]'
+                            : 'text-[var(--text)] group-hover:text-[var(--accent-2)]'
                         }`}
                       >
                         {t(link.key)}
@@ -262,18 +255,16 @@ export default function Navbar() {
                     </div>
                     <ArrowRight
                       size={18}
-                      className="text-[var(--text-faint)] group-hover:text-[var(--purple-bright)] group-hover:translate-x-1 transition-all shrink-0"
+                      className="text-[var(--text-4)] group-hover:text-[var(--accent-2)] group-hover:translate-x-1 transition-all shrink-0"
                     />
                   </Link>
                 );
               })}
             </nav>
 
-            {/* Bottom section */}
             <div className="px-4 pt-4 pb-6 space-y-4 border-t border-[var(--border)] bg-[var(--bg)]/80 backdrop-blur-xl">
-              {/* Theme + Language */}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[11px] uppercase tracking-[0.15em] text-[var(--text-faint)] font-medium">
+                <span className="text-[11px] uppercase tracking-[0.15em] text-[var(--text-4)] font-medium">
                   Налаштування
                 </span>
                 <div className="flex items-center gap-2">
@@ -282,13 +273,12 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Actions — компактна сітка 2x2 */}
               {currentUser ? (
                 <div className="grid grid-cols-4 gap-2">
                   <Link
                     href="/account"
                     onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.96]"
+                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent-2)] transition-all active:scale-[0.96]"
                   >
                     <User size={18} />
                     <span>Акаунт</span>
@@ -296,7 +286,7 @@ export default function Navbar() {
                   <Link
                     href="/account/orders"
                     onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.96]"
+                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent-2)] transition-all active:scale-[0.96]"
                   >
                     <Package size={18} />
                     <span>Замовлення</span>
@@ -304,7 +294,7 @@ export default function Navbar() {
                   <Link
                     href="/account/messages"
                     onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.96]"
+                    className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[10px] font-medium text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent-2)] transition-all active:scale-[0.96]"
                   >
                     <MessageSquare size={18} />
                     <span>Чати</span>
@@ -313,7 +303,7 @@ export default function Navbar() {
                     <Link
                       href="/admin"
                       onClick={() => setMenuOpen(false)}
-                      className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--border-purple)] bg-[var(--purple-soft)] text-[10px] font-semibold text-[var(--purple-bright)] hover:bg-[var(--purple)]/20 transition-all active:scale-[0.96]"
+                      className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border border-[var(--accent-border)] bg-[var(--accent-soft)] text-[10px] font-semibold text-[var(--accent-2)] hover:bg-[var(--accent)]/20 transition-all active:scale-[0.96]"
                     >
                       <Shield size={18} />
                       <span>Адмін</span>
@@ -322,7 +312,7 @@ export default function Navbar() {
                     <Link
                       href="/builder"
                       onClick={() => setMenuOpen(false)}
-                      className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] text-[10px] font-semibold text-white shadow-[0_4px_16px_rgba(139,92,246,0.35)] active:scale-[0.96]"
+                      className="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-3)] text-[10px] font-semibold text-white shadow-[0_4px_16px_rgba(139,92,246,0.35)] active:scale-[0.96]"
                     >
                       <ArrowRight size={18} />
                       <span>Проєкт</span>
@@ -334,7 +324,7 @@ export default function Navbar() {
                   <Link
                     href="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 py-3.5 rounded-xl border border-[var(--border)] text-sm font-semibold text-[var(--text-secondary)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)] transition-all active:scale-[0.98]"
+                    className="flex items-center justify-center gap-2 py-3.5 rounded-xl border border-[var(--border)] text-sm font-semibold text-[var(--text-2)] hover:border-[var(--accent)] hover:text-[var(--accent-2)] transition-all active:scale-[0.98]"
                   >
                     <LogIn size={18} />
                     {t('nav.login')}
@@ -342,7 +332,7 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-[var(--purple)] to-[var(--purple-bright)] text-sm font-semibold text-white shadow-[0_4px_16px_rgba(139,92,246,0.35)] hover:brightness-110 transition-all active:scale-[0.98]"
+                    className="flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-sm font-semibold text-white shadow-[0_4px_16px_rgba(139,92,246,0.35)] hover:brightness-110 transition-all active:scale-[0.98]"
                   >
                     <UserPlus size={18} />
                     {t('nav.register')}

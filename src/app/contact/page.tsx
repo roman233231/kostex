@@ -9,7 +9,6 @@ import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
-import ContactCopy from '@/components/ContactCopy';
 import { useLanguage } from '@/context/LanguageContext';
 import { Mail, Send, Clock, ArrowRight } from 'lucide-react';
 
@@ -58,7 +57,6 @@ export default function ContactPage() {
       color1: '#8B5CF6',
       color2: '#A855F7',
       glow: 'rgba(139,92,246,0.5)',
-      copyable: true,
     },
     {
       icon: Send,
@@ -68,7 +66,6 @@ export default function ContactPage() {
       color1: '#3B82F6',
       color2: '#06B6D4',
       glow: 'rgba(59,130,246,0.5)',
-      copyable: false,
     },
     {
       icon: InstagramIcon,
@@ -78,7 +75,6 @@ export default function ContactPage() {
       color1: '#EC4899',
       color2: '#F43F5E',
       glow: 'rgba(236,72,153,0.5)',
-      copyable: false,
     },
     {
       icon: Clock,
@@ -88,7 +84,6 @@ export default function ContactPage() {
       color1: '#10B981',
       color2: '#14B8A6',
       glow: 'rgba(16,185,129,0.5)',
-      copyable: false,
     },
   ];
 
@@ -114,12 +109,8 @@ export default function ContactPage() {
               {sent ? (
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4">✅</div>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {t('contact.sent')}
-                  </h2>
-                  <p className="text-[var(--text-muted)] mb-6">
-                    {t('contact.sentDesc')}
-                  </p>
+                  <h2 className="text-xl font-semibold mb-2">{t('contact.sent')}</h2>
+                  <p className="text-[var(--text-muted)] mb-6">{t('contact.sentDesc')}</p>
                   <Button variant="outline" onClick={() => setSent(false)}>
                     {t('contact.sendAnother')}
                   </Button>
@@ -148,11 +139,7 @@ export default function ContactPage() {
                     placeholder="Tell us about your project..."
                     required
                   />
-                  <Button
-                    type="submit"
-                    disabled={sending}
-                    className="w-full sm:w-auto"
-                  >
+                  <Button type="submit" disabled={sending} className="w-full sm:w-auto">
                     {sending ? t('contact.sending') : t('contact.send')}
                     <ArrowRight size={18} />
                   </Button>
@@ -164,9 +151,17 @@ export default function ContactPage() {
           <Reveal delay={200} className="lg:col-span-2 space-y-4">
             {contacts.map((c, i) => {
               const Icon = c.icon;
-
-              const innerContent = (
-                <div className="color-card">
+              const card = (
+                <div
+                  className="color-card"
+                  style={
+                    {
+                      '--card-color-1': c.color1,
+                      '--card-color-2': c.color2,
+                      '--card-glow': c.glow,
+                    } as React.CSSProperties
+                  }
+                >
                   <div className="color-card-inner !p-4">
                     <div className="color-card-content">
                       <div className="flex items-center gap-3">
@@ -179,17 +174,11 @@ export default function ContactPage() {
                         >
                           <Icon size={18} />
                         </div>
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0">
                           <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-0.5">
                             {c.label}
                           </div>
-                          {c.copyable ? (
-                            <ContactCopy value={c.value} label={c.label} />
-                          ) : (
-                            <div className="text-sm font-medium truncate">
-                              {c.value}
-                            </div>
-                          )}
+                          <div className="text-sm font-medium truncate">{c.value}</div>
                         </div>
                       </div>
                     </div>
@@ -206,11 +195,11 @@ export default function ContactPage() {
                     rel="noopener noreferrer"
                     className="block"
                   >
-                    {innerContent}
+                    {card}
                   </a>
                 );
               }
-              return <div key={i}>{innerContent}</div>;
+              return <div key={i}>{card}</div>;
             })}
           </Reveal>
         </div>
