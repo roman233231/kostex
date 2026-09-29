@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   KOSTEX — Premium Design System v3
+   KOSTEX — Premium Design System v3 (spacious)
    Inspired by Linear · Vercel · Raycast · Arc
    ============================================================ */
 
@@ -10,20 +10,17 @@
    ============================================================ */
 :root,
 html.dark {
-  /* Backgrounds — deep obsidian with subtle blue undertone */
   --bg: #050508;
   --bg-2: #09090D;
   --surface: #0D0D13;
   --surface-2: #14141C;
   --surface-3: #1C1C27;
 
-  /* Text — high-contrast hierarchy */
   --text: #F8F8FB;
   --text-2: #AEAEC0;
   --text-3: #75758C;
   --text-4: #47475A;
 
-  /* Accent — deep amethyst */
   --accent: #8452FF;
   --accent-2: #9A6BFF;
   --accent-3: #C6AAFF;
@@ -31,23 +28,19 @@ html.dark {
   --accent-border: rgba(132, 82, 255, 0.28);
   --accent-glow: rgba(132, 82, 255, 0.4);
 
-  /* Gold — reserved, used sparingly */
   --gold: #F0C265;
   --gold-2: #FFD98A;
   --gold-soft: rgba(240, 194, 101, 0.12);
   --gold-glow: rgba(240, 194, 101, 0.35);
 
-  /* Borders — very thin */
   --border: rgba(255, 255, 255, 0.07);
   --border-2: rgba(255, 255, 255, 0.11);
   --border-3: rgba(255, 255, 255, 0.16);
 
-  /* Glass */
   --glass-bg: rgba(255, 255, 255, 0.025);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: rgba(255, 255, 255, 0.05);
 
-  /* Multi-layer shadows — depth like Linear */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-sm:
     0 1px 2px rgba(0, 0, 0, 0.35),
@@ -64,7 +57,6 @@ html.dark {
     0 40px 80px -20px rgba(0, 0, 0, 0.6),
     0 20px 40px -10px rgba(0, 0, 0, 0.4);
 
-  /* Easing */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -187,7 +179,7 @@ img { max-width: 100%; display: block; }
 ::selection { background: var(--accent); color: #fff; }
 
 /* ============================================================
-   TYPOGRAPHY — refined fluid scale
+   TYPOGRAPHY
    ============================================================ */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text);
@@ -225,53 +217,69 @@ h4 {
 
 p {
   color: var(--text-2);
-  line-height: 1.65;
+  line-height: 1.7;
   text-wrap: pretty;
 }
 
 /* ============================================================
-   CONTAINER
+   CONTAINER — spacious
    ============================================================ */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+@media (max-width: 1024px) {
+  .container { padding-left: 32px; padding-right: 32px; }
 }
 
 @media (max-width: 768px) {
+  .container { padding-left: 24px; padding-right: 24px; }
+}
+
+@media (max-width: 480px) {
   .container { padding-left: 20px; padding-right: 20px; }
 }
 
 /* ============================================================
-   SECTION SPACING
+   SECTION SPACING — щедро
    ============================================================ */
-.section { padding-top: 104px; padding-bottom: 104px; }
-.section-sm { padding-top: 64px; padding-bottom: 64px; }
-.section-lg { padding-top: 144px; padding-bottom: 144px; }
+.section { padding-top: 140px; padding-bottom: 140px; }
+.section-sm { padding-top: 88px; padding-bottom: 88px; }
+.section-lg { padding-top: 180px; padding-bottom: 180px; }
 
 main > section:not(.section):not(.section-sm):not(.section-lg) {
-  padding-top: 104px;
-  padding-bottom: 104px;
+  padding-top: 140px;
+  padding-bottom: 140px;
 }
 
 @media (max-width: 1024px) {
-  .section { padding-top: 80px; padding-bottom: 80px; }
-  .section-lg { padding-top: 104px; padding-bottom: 104px; }
+  .section { padding-top: 112px; padding-bottom: 112px; }
+  .section-lg { padding-top: 140px; padding-bottom: 140px; }
   main > section:not(.section):not(.section-sm):not(.section-lg) {
-    padding-top: 80px;
-    padding-bottom: 80px;
+    padding-top: 112px;
+    padding-bottom: 112px;
   }
 }
 
 @media (max-width: 768px) {
-  .section { padding-top: 64px; padding-bottom: 64px; }
-  .section-sm { padding-top: 40px; padding-bottom: 40px; }
-  .section-lg { padding-top: 80px; padding-bottom: 80px; }
+  .section { padding-top: 88px; padding-bottom: 88px; }
+  .section-sm { padding-top: 56px; padding-bottom: 56px; }
+  .section-lg { padding-top: 112px; padding-bottom: 112px; }
   main > section:not(.section):not(.section-sm):not(.section-lg) {
-    padding-top: 64px;
-    padding-bottom: 64px;
+    padding-top: 88px;
+    padding-bottom: 88px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section { padding-top: 72px; padding-bottom: 72px; }
+  main > section:not(.section):not(.section-sm):not(.section-lg) {
+    padding-top: 72px;
+    padding-bottom: 72px;
   }
 }
 
@@ -369,26 +377,22 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
   50% { filter: blur(70px) hue-rotate(25deg); }
 }
 
-/* New: shine sweeps across cards */
 @keyframes cardShine {
   0% { transform: translateX(-100%) rotate(25deg); }
   100% { transform: translateX(300%) rotate(25deg); }
 }
 
-/* New: gold underline sweep */
 @keyframes goldUnderline {
   0% { width: 0; left: 50%; }
   50% { width: 100%; left: 0; }
   100% { width: 0; left: 50%; }
 }
 
-/* New: subtle breathe on orbs */
 @keyframes breathe {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.15); opacity: 0.7; }
 }
 
-/* New: gradient border rotation */
 @keyframes borderRotate {
   to { transform: rotate(360deg); }
 }
@@ -431,7 +435,7 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 }
 
 /* ============================================================
-   BUTTONS — refined with shine sweep
+   BUTTONS
    ============================================================ */
 .btn {
   position: relative;
@@ -521,14 +525,14 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 }
 
 /* ============================================================
-   CARDS — subtle depth
+   CARDS
    ============================================================ */
 .card {
   position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
+  border-radius: 16px;
+  padding: 32px;
   transition:
     border-color 0.3s var(--ease-out),
     background-color 0.3s var(--ease-out),
@@ -550,20 +554,24 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
   box-shadow: none;
 }
 
+@media (max-width: 768px) {
+  .card { padding: 26px; }
+}
+
 @media (max-width: 640px) {
-  .card { padding: 20px; border-radius: 12px; }
+  .card { padding: 22px; border-radius: 14px; }
   .card:hover { transform: none; }
 }
 
 /* ============================================================
-   COLOR CARD — refined with gradient line + glow
+   COLOR CARD
    ============================================================ */
 .color-card {
   position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
+  border-radius: 16px;
+  padding: 32px;
   transition:
     border-color 0.35s var(--ease-out),
     background-color 0.35s var(--ease-out),
@@ -572,7 +580,6 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
   overflow: hidden;
 }
 
-/* Top gradient line (visible always but subtle, brighter on hover) */
 .color-card::before {
   content: '';
   position: absolute;
@@ -587,7 +594,6 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 
 .color-card:hover::before { opacity: 1; }
 
-/* Shine sweep on hover */
 .color-card::after {
   content: '';
   position: absolute;
@@ -635,14 +641,14 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 }
 
 .color-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 11px;
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  margin-bottom: 18px;
+  font-size: 24px;
+  margin-bottom: 24px;
   background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
   transition:
     transform 0.4s var(--ease-spring),
@@ -663,13 +669,17 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 .color-arrow { transition: transform 0.2s ease; }
 .color-card:hover .color-arrow { transform: translateX(3px); }
 
+@media (max-width: 768px) {
+  .color-card { padding: 26px; }
+}
+
 @media (max-width: 640px) {
-  .color-card { padding: 20px; border-radius: 12px; }
-  .color-icon { width: 40px; height: 40px; font-size: 20px; margin-bottom: 14px; }
+  .color-card { padding: 22px; border-radius: 14px; }
+  .color-icon { width: 42px; height: 42px; font-size: 20px; margin-bottom: 16px; }
 }
 
 /* ============================================================
-   BADGE — refined with gold accent
+   BADGE
    ============================================================ */
 .badge {
   display: inline-flex;
@@ -766,29 +776,29 @@ select.input:focus {
    SECTION TITLES
    ============================================================ */
 .section-title {
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-size: clamp(1.875rem, 4vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.05;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   text-wrap: balance;
 }
 
 .section-subtitle {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   color: var(--text-3);
-  max-width: 620px;
-  line-height: 1.65;
+  max-width: 640px;
+  line-height: 1.7;
   text-wrap: pretty;
 }
 
 @media (max-width: 640px) {
-  .section-title { font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: 12px; }
+  .section-title { font-size: clamp(1.5rem, 6vw, 2rem); margin-bottom: 16px; }
   .section-subtitle { font-size: 0.9375rem; }
 }
 
 /* ============================================================
-   EFFECTS — grid, orbs
+   EFFECTS
    ============================================================ */
 .grid-bg {
   position: absolute;
@@ -847,7 +857,7 @@ html.light .grid-bg {
 }
 
 /* ============================================================
-   CURSOR GLOW — dual-layer aurora
+   CURSOR GLOW
    ============================================================ */
 .cursor-glow {
   position: fixed;
@@ -1150,50 +1160,54 @@ footer {
 }
 
 footer .footer-grid {
-  padding-top: 64px;
-  padding-bottom: 64px;
+  padding-top: 96px;
+  padding-bottom: 96px;
 }
 
 footer .footer-bottom {
-  padding-top: 24px;
-  padding-bottom: 24px;
+  padding-top: 32px;
+  padding-bottom: 32px;
   border-top: 1px solid var(--border);
 }
 
-footer ul li + li { margin-top: 10px; }
-footer h4 { margin-bottom: 16px; }
+footer ul li + li { margin-top: 14px; }
+footer h4 { margin-bottom: 22px; }
 
 @media (max-width: 768px) {
   footer .footer-grid {
-    padding-top: 48px;
-    padding-bottom: 48px;
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  footer .footer-bottom {
+    padding-top: 24px;
+    padding-bottom: 24px;
   }
 }
 
 /* ============================================================
    SPACING UTILITIES
    ============================================================ */
-.stack-sm > * + * { margin-top: 12px; }
-.stack > * + * { margin-top: 16px; }
-.stack-lg > * + * { margin-top: 24px; }
+.stack-sm > * + * { margin-top: 16px; }
+.stack > * + * { margin-top: 24px; }
+.stack-lg > * + * { margin-top: 32px; }
 
-.grid { gap: 16px; }
-.grid.gap-3 { gap: 12px; }
-.grid.gap-4 { gap: 16px; }
-.grid.gap-5 { gap: 20px; }
-.grid.gap-6 { gap: 20px; }
-.grid.gap-8 { gap: 24px; }
+.grid { gap: 20px; }
+.grid.gap-3 { gap: 16px; }
+.grid.gap-4 { gap: 20px; }
+.grid.gap-5 { gap: 24px; }
+.grid.gap-6 { gap: 28px; }
+.grid.gap-8 { gap: 32px; }
 
 @media (min-width: 768px) {
-  .grid { gap: 20px; }
-  .grid.gap-4 { gap: 20px; }
-  .grid.gap-5 { gap: 24px; }
-  .grid.gap-6 { gap: 24px; }
-  .grid.gap-8 { gap: 32px; }
+  .grid { gap: 28px; }
+  .grid.gap-4 { gap: 28px; }
+  .grid.gap-5 { gap: 32px; }
+  .grid.gap-6 { gap: 32px; }
+  .grid.gap-8 { gap: 40px; }
 }
 
 /* ============================================================
-   HOVER EXTRAS — micro-interactions
+   HOVER EXTRAS
    ============================================================ */
 .link-hover {
   position: relative;
@@ -1214,7 +1228,6 @@ footer h4 { margin-bottom: 16px; }
 .link-hover:hover { color: var(--accent-2); }
 .link-hover:hover::after { width: 100%; }
 
-/* Gold divider */
 .divider-gold {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
@@ -1225,7 +1238,6 @@ footer h4 { margin-bottom: 16px; }
   background: linear-gradient(90deg, transparent, var(--border-2), transparent);
 }
 
-/* Icon wrapper */
 .icon-wrap {
   display: inline-flex;
   align-items: center;
