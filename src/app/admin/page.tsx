@@ -29,6 +29,7 @@ import {
 const adminLinks = [
   { href: '/admin/orders', label: 'Замовлення', icon: Package, color1: '#3B82F6', color2: '#06B6D4' },
   { href: '/admin/messages', label: 'Повідомлення', icon: MessageSquare, color1: '#8B5CF6', color2: '#A855F7' },
+  { href: '/admin/reviews', label: 'Відгуки', icon: Star, color1: '#F0C265', color2: '#FFD98A' }, // НОВИЙ
   { href: '/admin/products', label: 'Продукти', icon: Tag, color1: '#EC4899', color2: '#F43F5E' },
   { href: '/admin/features', label: 'Функції', icon: Zap, color1: '#10B981', color2: '#14B8A6' },
   { href: '/admin/categories', label: 'Категорії', icon: FolderTree, color1: '#F59E0B', color2: '#F97316' },
