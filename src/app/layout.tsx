@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import FloatingChat from '@/components/chat/FloatingChat';
 import CursorGlow from '@/components/ui/CursorGlow';
+import Preloader from '@/components/layout/Preloader';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -22,16 +23,7 @@ export const metadata: Metadata = {
   description:
     'Build your digital product with KOSTEX. Websites, web apps, software, bots and custom digital solutions.',
   keywords: [
-    'KOSTEX',
-    'digital products',
-    'websites',
-    'web apps',
-    'software',
-    'bots',
-    'CRM',
-    'e-commerce',
-    'automation',
-    'Ukraine',
+    'KOSTEX', 'digital products', 'websites', 'web apps', 'software', 'bots', 'CRM', 'e-commerce', 'automation', 'Ukraine',
   ],
   authors: [{ name: 'KOSTEX' }],
   creator: 'KOSTEX',
@@ -43,14 +35,12 @@ export const metadata: Metadata = {
     url: 'https://kostex.vercel.app',
     siteName: 'KOSTEX',
     title: 'KOSTEX — Digital Products Studio',
-    description:
-      'We build websites, web apps, software, bots and custom digital solutions.',
+    description: 'We build websites, web apps, software, bots and custom digital solutions.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'KOSTEX — Digital Products Studio',
-    description:
-      'We build websites, web apps, software, bots and custom digital solutions.',
+    description: 'We build websites, web apps, software, bots and custom digital solutions.',
   },
   robots: {
     index: true,
@@ -82,6 +72,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
+              <Preloader />
               <CursorGlow />
               {children}
               <FloatingChat />

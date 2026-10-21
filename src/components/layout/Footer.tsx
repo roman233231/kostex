@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Logo from './Logo';
 import { useLanguage } from '@/context/LanguageContext';
-import { Instagram, Send, Mail, ArrowRight } from 'lucide-react';
+import { Globe, Send, Mail, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -27,13 +27,13 @@ export default function Footer() {
               Digital Products Studio — створюємо сайти, додатки та боти, які приносять прибуток.
             </p>
             <div className="flex items-center gap-3">
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
-                <Instagram size={18} />
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1" aria-label="Website">
+                <Globe size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1" aria-label="Telegram">
                 <Send size={18} />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1" aria-label="Email">
                 <Mail size={18} />
               </a>
             </div>
