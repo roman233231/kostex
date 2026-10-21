@@ -8,7 +8,7 @@ import { Review } from '@/types/review';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
-import { Star, Check, Trash2, MessageSquare, EyeOff, Sparkles } from 'lucide-react';
+import { Star, Check, Trash2, MessageSquare, EyeOff, Sparkles, Plus } from 'lucide-react';
 
 export default function AdminReviewsPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -55,55 +55,132 @@ export default function AdminReviewsPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-12">
+      <main className="container py-12 max-w-5xl">
         <Reveal>
-          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Відгуки</h1>
-              <p className="text-[var(--text-3)] mt-2">{reviews.length} всього{pendingCount > 0 && <span className="text-[var(--gold)]"> · {pendingCount} очікує модерації</span>}</p>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
+                Керування <span className="text-gradient-animated">Відгуками</span>
+              </h1>
+              <p className="text-[var(--text-3)] text-lg">
+                {reviews.length} всього
+                {pendingCount > 0 && <span className="text-[var(--gold)] ml-2 px-3 py-1 bg-[var(--gold)]/10 rounded-full text-sm font-semibold"> · {pendingCount} на модерації</span>}
+              </p>
             </div>
-            <button onClick={handleSeed} disabled={seeding} className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shrink-0">
-              {seeding ? 'Додаю...' : '+ Додати тестові відгуки'}
+            
+            <button 
+              onClick={handleSeed} 
+              disabled={seeding} 
+              className="btn-tactile group relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white font-semibold hover:opacity-90 disabled:opacity-50 transition-all overflow-hidden shadow-lg shadow-[var(--accent)]/30"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <Plus size={18} className="relative z-10" />
+              <span className="relative z-10">{seeding ? 'Додаю...' : 'Додати тестові'}</span>
             </button>
           </div>
         </Reveal>
 
+        {/* Filters */}
         <Reveal delay={80}>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-3 mb-8 bg-[var(--surface-2)] p-2 rounded-2xl w-fit border border-[var(--border)]">
             {([{ key: 'all', label: 'Усі' }, { key: 'pending', label: 'На модерації' }, { key: 'approved', label: 'Схвалені' }] as const).map((f) => (
-              <button key={f.key} onClick={() => setFilter(f.key)} className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all ${filter === f.key ? 'bg-[var(--accent)] text-white border-[var(--accent)]' : 'border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)]'}`}>{f.label}</button>
+              <button 
+                key={f.key} 
+                onClick={() => setFilter(f.key)} 
+                className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+                  filter === f.key 
+                    ? 'bg-[var(--surface)] text-white shadow-md border border-[var(--border)]' 
+                    : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface)]/50'
+                }`}
+              >
+                {f.label}
+              </button>
             ))}
           </div>
         </Reveal>
 
         {filtered.length === 0 ? (
-          <div className="card no-hover text-center py-14"><MessageSquare size={48} className="text-[var(--text-4)] mx-auto mb-4" /><p className="text-[var(--text-3)]">Нічого не знайдено.</p></div>
+          <div className="glass-card rounded-3xl text-center py-20 animate-float">
+            <MessageSquare size={64} className="text-[var(--text-4)] mx-auto mb-6 opacity-50" />
+            <h3 className="text-xl font-semibold mb-2">Тут поки порожньо</h3>
+            <p className="text-[var(--text-3)]">Натисніть "Додати тестові", щоб побачити приклад.</p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid gap-6">
             {filtered.map((r, i) => (
-              <Reveal key={r.id} delay={i * 30}>
-                <div className="card no-hover">
-                  <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-full text-white font-bold flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>{(r.userName?.[0] || 'U').toUpperCase()}</div>
-                      <div className="min-w-0"><div className="font-semibold text-sm">{r.userName}</div><div className="text-xs text-[var(--text-4)]">{r.userEmail || 'без email'} · {r.orderTitle || 'без замовлення'}</div></div>
+              <Reveal key={r.id} delay={i * 50}>
+                <div className="glass-card rounded-3xl p-6 md:p-8 relative overflow-hidden group">
+                  {/* Декоративне світло на фоні */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/5 rounded-full blur-3xl -mr-32 -mt-32 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+                  
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6 relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-14 h-14 rounded-2xl text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-lg" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
+                          {(r.userName?.[0] || 'U').toUpperCase()}
+                        </div>
+                        {r.approved && (
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-[var(--surface)] flex items-center justify-center">
+                            <Check size={10} strokeWidth={4} />
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-lg text-white mb-1">{r.userName}</div>
+                        <div className="text-sm text-[var(--text-3)] flex flex-wrap gap-2">
+                          <span className="bg-[var(--surface-2)] px-2 py-0.5 rounded-md border border-[var(--border)]">{r.userEmail || 'без email'}</span>
+                          <span className="bg-[var(--surface-2)] px-2 py-0.5 rounded-md border border-[var(--border)]">{r.orderTitle || 'без замовлення'}</span>
+                        </div>
+                      </div>
                     </div>
+
                     <div className="flex items-center gap-2 flex-wrap">
-                      {r.approved ? <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/30">Схвалено</span> : <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">На модерації</span>}
-                      {r.featured && <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--gold-soft)] text-[var(--gold)] border border-[var(--gold)]/30">Featured</span>}
+                      {!r.approved && (
+                        <span className="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.2)] animate-pulse">
+                          Чекає модерації
+                        </span>
+                      )}
+                      {r.featured && (
+                        <span className="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--gold-soft)] text-[var(--gold)] border border-[var(--gold)]/20 shadow-[0_0_15px_rgba(240,194,101,0.2)] flex items-center gap-1">
+                          <Sparkles size={12} /> Featured
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 mb-3">{Array.from({ length: 5 }).map((_, j) => (<Star key={j} size={14} fill={j < r.rating ? 'var(--gold)' : 'transparent'} stroke={j < r.rating ? 'var(--gold)' : 'var(--text-3)'} />))}</div>
-                  <p className="text-sm text-[var(--text-2)] leading-relaxed mb-4">{r.text}</p>
-                  <div className="text-xs text-[var(--text-4)] mb-4">{r.createdAt ? new Date(r.createdAt).toLocaleString('uk-UA') : ''}</div>
-                  <div className="flex gap-2 flex-wrap pt-4 border-t border-[var(--border)]">
-                    {!r.approved ? (
-                      <button onClick={() => handleApprove(r.id!, true)} className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-colors"><Check size={14} />Схвалити</button>
-                    ) : (
-                      <button onClick={() => handleApprove(r.id!, false)} className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-medium hover:bg-yellow-500/20 transition-colors"><EyeOff size={14} />Зняти з публікації</button>
-                    )}
-                    <button onClick={() => handleFeature(r.id!, !r.featured)} className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium transition-colors ${r.featured ? 'bg-[var(--gold-soft)] border border-[var(--gold)]/30 text-[var(--gold)]' : 'border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--gold)]/30 hover:text-[var(--gold)]'}`}><Sparkles size={14} />{r.featured ? 'Featured' : 'Зробити featured'}</button>
-                    <button onClick={() => handleDelete(r.id!)} className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-[var(--border)] text-[var(--text-3)] text-xs font-medium hover:border-red-500/40 hover:text-red-400 transition-colors"><Trash2 size={14} />Видалити</button>
+
+                  <div className="flex items-center gap-1.5 mb-4 relative z-10">
+                    {Array.from({ length: 5 }).map((_, j) => (
+                      <Star key={j} size={20} fill={j < r.rating ? 'var(--gold)' : 'transparent'} stroke={j < r.rating ? 'var(--gold)' : 'var(--text-4)'} className={j < r.rating ? 'drop-shadow-[0_0_8px_rgba(240,194,101,0.5)]' : ''} />
+                    ))}
+                    <span className="ml-2 font-bold text-lg text-[var(--gold)]">{r.rating}.0</span>
+                  </div>
+
+                  <p className="text-[var(--text-2)] text-lg leading-relaxed mb-6 relative z-10 pl-4 border-l-2 border-[var(--accent)]/30">
+                    "{r.text}"
+                  </p>
+
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-6 border-t border-[var(--border)] relative z-10">
+                    <div className="text-xs font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-3 py-1.5 rounded-lg">
+                      {r.createdAt ? new Date(r.createdAt).toLocaleString('uk-UA') : ''}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {!r.approved ? (
+                        <button onClick={() => handleApprove(r.id!, true)} className="btn-tactile flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-semibold hover:bg-green-500 hover:text-white transition-all">
+                          <Check size={16} /> Схвалити
+                        </button>
+                      ) : (
+                        <button onClick={() => handleApprove(r.id!, false)} className="btn-tactile flex items-center gap-2 px-4 py-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm font-semibold hover:bg-yellow-500 hover:text-white transition-all">
+                          <EyeOff size={16} /> Приховати
+                        </button>
+                      )}
+                      <button onClick={() => handleFeature(r.id!, !r.featured)} className={`btn-tactile flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${r.featured ? 'bg-[var(--gold-soft)] border border-[var(--gold)]/30 text-[var(--gold)]' : 'border border-[var(--border)] text-[var(--text-3)] hover:border-[var(--gold)]/30 hover:text-[var(--gold)] hover:bg-[var(--gold-soft)]'}`}>
+                        <Sparkles size={16} /> {r.featured ? 'Зняти з обраних' : 'В обране'}
+                      </button>
+                      <button onClick={() => handleDelete(r.id!)} className="btn-tactile flex items-center justify-center w-10 h-10 rounded-xl border border-[var(--border)] text-[var(--text-3)] hover:border-red-500/40 hover:text-red-400 hover:bg-red-500/10 transition-all">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </Reveal>
