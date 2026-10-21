@@ -15,36 +15,17 @@ import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
 import { Product } from '@/types/product';
 import { Feature } from '@/types/feature';
-import {
-  Package,
-  Palette,
-  FileText,
-  Zap,
-  PenLine,
-  Check,
-  ArrowLeft,
-  ArrowRight,
-  Loader2,
-} from 'lucide-react';
+import { Package, Palette, FileText, Zap, PenLine, Check, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 
 const designOptions = ['Minimal', 'Premium', 'Dark', 'Glass', 'Futuristic', 'Corporate'];
 const templateOptions = ['Business', 'Restaurant', 'Auto Service', 'Fitness', 'Portfolio', 'E-commerce', 'Landing'];
 
 const commonPages = [
-  { name: 'Home', price: 0 },
-  { name: 'About', price: 500 },
-  { name: 'Services', price: 700 },
-  { name: 'Contact', price: 0 },
-  { name: 'Gallery', price: 600 },
-  { name: 'Blog', price: 900 },
-  { name: 'FAQ', price: 400 },
-  { name: 'Catalog', price: 1200 },
-  { name: 'Team', price: 500 },
-  { name: 'Pricing', price: 800 },
-  { name: 'Reviews', price: 500 },
-  { name: 'Booking', price: 1500 },
-  { name: 'Dashboard', price: 2000 },
-  { name: 'Profile', price: 600 },
+  { name: 'Home', price: 0 }, { name: 'About', price: 500 }, { name: 'Services', price: 700 },
+  { name: 'Contact', price: 0 }, { name: 'Gallery', price: 600 }, { name: 'Blog', price: 900 },
+  { name: 'FAQ', price: 400 }, { name: 'Catalog', price: 1200 }, { name: 'Team', price: 500 },
+  { name: 'Pricing', price: 800 }, { name: 'Reviews', price: 500 }, { name: 'Booking', price: 1500 },
+  { name: 'Dashboard', price: 2000 }, { name: 'Profile', price: 600 },
 ];
 
 const steps = [
@@ -79,113 +60,58 @@ export default function BuilderPage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      try {
-        const data = await getPublishedProducts();
-        setAvailableProducts(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setProductsLoading(false);
-      }
+      try { const data = await getPublishedProducts(); setAvailableProducts(data); } 
+      catch (err) { console.error(err); } finally { setProductsLoading(false); }
     };
     const fetchFeatures = async () => {
-      try {
-        const data = await getActiveFeatures();
-        setAvailableFeatures(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setFeaturesLoading(false);
-      }
+      try { const data = await getActiveFeatures(); setAvailableFeatures(data); } 
+      catch (err) { console.error(err); } finally { setFeaturesLoading(false); }
     };
-    fetchProducts();
-    fetchFeatures();
+    fetchProducts(); fetchFeatures();
   }, []);
 
   const product = availableProducts.find((p) => p.id === selectedProduct);
 
   const pagesPrice = selectedPages.reduce((sum, pageName) => {
-    const p = commonPages.find((cp) => cp.name === pageName);
-    return sum + (p?.price || 0);
+    const p = commonPages.find((cp) => cp.name === pageName); return sum + (p?.price || 0);
   }, 0);
 
   const featuresPrice = selectedFeatures.reduce((sum, featureId) => {
-    const feature = availableFeatures.find((f) => f.id === featureId);
-    return sum + (feature?.price || 0);
+    const feature = availableFeatures.find((f) => f.id === featureId); return sum + (feature?.price || 0);
   }, 0);
 
   const totalPrice = (product?.startingPrice || 0) + pagesPrice + featuresPrice;
 
   const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
-    if (list.includes(value)) {
-      setList(list.filter((v) => v !== value));
-    } else {
-      setList([...list, value]);
-    }
+    if (list.includes(value)) { setList(list.filter((v) => v !== value)); } 
+    else { setList([...list, value]); }
   };
 
   const handleNext = () => {
-    if (step === 0 && !selectedProduct) {
-      setError(t('builder.chooseStartDesc'));
-      return;
-    }
-    if (step === 1 && (!template || !design)) {
-      setError(t('builder.designStyleDesc'));
-      return;
-    }
-    setError('');
-    setStep(step + 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (step === 0 && !selectedProduct) { setError(t('builder.chooseStartDesc')); return; }
+    if (step === 1 && (!template || !design)) { setError(t('builder.designStyleDesc')); return; }
+    setError(''); setStep(step + 1); window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
-    setError('');
-    setStep(step - 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const handleBack = () => { setError(''); setStep(step - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   const handleSubmit = async () => {
-    if (!currentUser) {
-      router.push('/login');
-      return;
-    }
-    setLoading(true);
-    setError('');
+    if (!currentUser) { router.push('/login'); return; }
+    setLoading(true); setError('');
     try {
-      const featureNames = availableFeatures
-        .filter((f) => selectedFeatures.includes(f.id!))
-        .map((f) => f.name);
-
+      const featureNames = availableFeatures.filter((f) => selectedFeatures.includes(f.id!)).map((f) => f.name);
       const orderId = await createOrder({
-        userId: currentUser.uid,
-        productId: selectedProduct,
-        productTitle: product
-          ? tProduct(product.slug, 'title', product.title)
-          : undefined,
-        template,
-        design,
-        pages: selectedPages,
-        features: featureNames,
-        requirements,
+        userId: currentUser.uid, productId: selectedProduct,
+        productTitle: product ? tProduct(product.slug, 'title', product.title) : undefined,
+        template, design, pages: selectedPages, features: featureNames, requirements,
         references: references ? references.split('\n').filter((r) => r.trim()) : [],
-        estimatedPrice: totalPrice,
-        estimatedTime: product?.estimatedTime || 'TBD',
-        status: 'NEW',
+        estimatedPrice: totalPrice, estimatedTime: product?.estimatedTime || 'TBD', status: 'NEW',
       });
-
-      await notifyAllAdmins(
-        'New order received',
-        `New order: ${product?.title || 'Project'}`,
-        `/admin/orders/${orderId}`
-      );
-
+      await notifyAllAdmins('New order received', `New order: ${product?.title || 'Project'}`, `/admin/orders/${orderId}`);
       router.push('/account/orders');
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || 'Failed to create order');
-    } finally {
-      setLoading(false);
-    }
+      console.error(err); setError(err.message || 'Failed to create order');
+    } finally { setLoading(false); }
   };
 
   const renderStep = () => {
@@ -193,80 +119,39 @@ export default function BuilderPage() {
       case 0:
         return (
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              {t('builder.chooseStart')}
-            </h2>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
-              {t('builder.chooseStartDesc')}
-            </p>
-
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.chooseStart')}</h2>
+            <p className="text-sm md:text-lg text-[var(--text-3)] mb-8">{t('builder.chooseStartDesc')}</p>
             {productsLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="skeleton-card p-5">
-                    <div className="skeleton" style={{ height: '48px', width: '48px', borderRadius: '12px' }} />
-                    <div className="skeleton skeleton-line mt-4" style={{ width: '40%' }} />
-                    <div className="skeleton skeleton-line" style={{ width: '90%' }} />
-                  </div>
-                ))}
+                {Array.from({ length: 4 }).map((_, i) => (<div key={i} className="glass-card p-5 h-40 animate-pulse" />))}
               </div>
             ) : availableProducts.length === 0 ? (
-              <div className="card no-hover text-center py-12">
-                <p className="text-[var(--text-muted)]">{t('builder.noProducts')}</p>
-              </div>
+              <div className="glass-card text-center py-12"><p className="text-[var(--text-3)]">{t('builder.noProducts')}</p></div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {availableProducts.map((p) => {
                   const isSelected = selectedProduct === p.id;
                   return (
-                    <button
-                      key={p.id}
-                      onClick={() => setSelectedProduct(p.id)}
-                      className={`text-left rounded-2xl border p-5 transition-all relative ${
-                        isSelected
-                          ? 'border-[var(--purple)] bg-[var(--purple-soft)] shadow-[0_0_0_4px_rgba(139,92,246,0.1)]'
-                          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
+                    <button key={p.id} onClick={() => setSelectedProduct(p.id)}
+                      className={`text-left rounded-3xl border p-6 transition-all duration-300 relative overflow-hidden group ${
+                        isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/10 shadow-[0_0_30px_rgba(139,92,246,0.2)]' 
+                        : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/50 hover:-translate-y-1'
                       }`}
                     >
                       {isSelected && (
-                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-gradient-to-br from-[var(--purple)] to-[var(--purple-neon)] flex items-center justify-center text-white text-sm font-bold shadow-[0_0_20px_rgba(139,92,246,0.6)]">
-                          <Check size={14} strokeWidth={3} />
+                        <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] flex items-center justify-center text-white shadow-lg animate-zoom-in">
+                          <Check size={16} strokeWidth={3} />
                         </div>
                       )}
-
-                      <div className="text-3xl mb-3">
-                        {p.category === 'websites' ? '🌐' :
-                         p.category === 'web-apps' ? '⚡' :
-                         p.category === 'software' ? '💻' :
-                         p.category === 'bots' ? '🤖' : '📦'}
+                      <div className="text-4xl mb-4 transition-transform group-hover:scale-110 group-hover:rotate-6">
+                        {p.category === 'websites' ? '🌐' : p.category === 'web-apps' ? '⚡' : p.category === 'software' ? '💻' : p.category === 'bots' ? '🤖' : '📦'}
                       </div>
-
-                      <div className="inline-flex text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)] mb-2">
-                        {p.category.replace('-', ' ')}
-                      </div>
-
-                      <h3 className="text-lg font-bold mb-2">
-                        {tProduct(p.slug, 'title', p.title)}
-                      </h3>
-                      <p className="text-xs text-[var(--text-muted)] mb-4 line-clamp-2 leading-relaxed">
-                        {tProduct(p.slug, 'shortDescription', p.shortDescription)}
-                      </p>
-
-                      <div className="flex items-end justify-between pt-3 border-t border-[var(--border)]">
-                        <div>
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                            {t('common.from')}
-                          </div>
-                          <div className="text-base font-bold gradient-text">
-                            {p.startingPrice.toLocaleString('uk-UA')} ₴
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                            {t('common.estimated')}
-                          </div>
-                          <div className="text-xs font-medium">{p.estimatedTime}</div>
-                        </div>
+                      <div className="inline-flex text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] mb-2 bg-[var(--accent)]/10 px-2 py-1 rounded-md">{p.category.replace('-', ' ')}</div>
+                      <h3 className="text-xl font-bold mb-2 text-[var(--text)]">{tProduct(p.slug, 'title', p.title)}</h3>
+                      <p className="text-sm text-[var(--text-3)] mb-6 line-clamp-2">{tProduct(p.slug, 'shortDescription', p.shortDescription)}</p>
+                      <div className="flex items-end justify-between pt-4 border-t border-[var(--border)]">
+                        <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider">{t('common.from')}</div><div className="text-lg font-bold text-[var(--accent)]">{p.startingPrice.toLocaleString('uk-UA')} ₴</div></div>
+                        <div className="text-right"><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider">{t('common.estimated')}</div><div className="text-sm font-medium text-[var(--text)]">{p.estimatedTime}</div></div>
                       </div>
                     </button>
                   );
@@ -278,64 +163,34 @@ export default function BuilderPage() {
 
       case 1:
         return (
-          <div className="space-y-8">
+          <div className="space-y-10">
             <div>
-              <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-                {t('builder.designStyle')}
-              </h2>
-              <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6">
-                {t('builder.designStyleDesc')}
-              </p>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.designStyle')}</h2>
+              <p className="text-sm md:text-lg text-[var(--text-3)] mb-6">{t('builder.designStyleDesc')}</p>
             </div>
-
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
-                  1
-                </div>
-                <label className="text-sm font-semibold uppercase tracking-wider">
-                  {t('builder.template')}
-                </label>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+              <div className="flex items-center gap-3 mb-5"><div className="w-8 h-8 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)] flex items-center justify-center text-sm font-bold text-[var(--accent)]">1</div><label className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">{t('builder.template')}</label></div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {templateOptions.map((tp) => (
-                  <button
-                    key={tp}
-                    onClick={() => setTemplate(tp)}
-                    className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
-                      template === tp
-                        ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
+                  <button key={tp} onClick={() => setTemplate(tp)}
+                    className={`px-4 py-4 rounded-2xl border text-sm font-semibold transition-all duration-300 ${
+                      template === tp ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_20px_var(--accent)] btn-tactile' 
+                      : 'glass-card border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)]'
                     }`}
-                  >
-                    {tp}
-                  </button>
+                  >{tp}</button>
                 ))}
               </div>
             </div>
-
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center text-sm font-bold text-[var(--purple-bright)]">
-                  2
-                </div>
-                <label className="text-sm font-semibold uppercase tracking-wider">
-                  {t('builder.design')}
-                </label>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <div className="flex items-center gap-3 mb-5"><div className="w-8 h-8 rounded-full bg-[var(--accent)]/20 border border-[var(--accent)] flex items-center justify-center text-sm font-bold text-[var(--accent)]">2</div><label className="text-sm font-bold uppercase tracking-wider text-[var(--text)]">{t('builder.design')}</label></div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {designOptions.map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setDesign(d)}
-                    className={`px-4 py-3.5 rounded-xl border text-sm font-medium transition-all ${
-                      design === d
-                        ? 'bg-[var(--purple)] text-white border-[var(--purple)] shadow-[0_0_24px_rgba(139,92,246,0.4)]'
-                        : 'border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
+                  <button key={d} onClick={() => setDesign(d)}
+                    className={`px-4 py-4 rounded-2xl border text-sm font-semibold transition-all duration-300 ${
+                      design === d ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_20px_var(--accent)] btn-tactile' 
+                      : 'glass-card border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)]'
                     }`}
-                  >
-                    {d}
-                  </button>
+                  >{d}</button>
                 ))}
               </div>
             </div>
@@ -345,41 +200,26 @@ export default function BuilderPage() {
       case 2:
         return (
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              {t('builder.pagesQ')}
-            </h2>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
-              {t('builder.pagesDesc')}
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.pagesQ')}</h2>
+            <p className="text-sm md:text-lg text-[var(--text-3)] mb-8">{t('builder.pagesDesc')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {commonPages.map((page) => {
                 const isSelected = selectedPages.includes(page.name);
                 const isRequired = page.name === 'Home';
                 return (
-                  <button
-                    key={page.name}
-                    onClick={() => !isRequired && toggleSelection(selectedPages, setSelectedPages, page.name)}
-                    disabled={isRequired}
-                    className={`flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
-                      isSelected
-                        ? 'border-[var(--purple)] bg-[var(--purple-soft)]'
-                        : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
-                    } ${isRequired ? 'cursor-default' : 'cursor-pointer'}`}
+                  <button key={page.name} onClick={() => !isRequired && toggleSelection(selectedPages, setSelectedPages, page.name)} disabled={isRequired}
+                    className={`flex items-center justify-between p-4 rounded-2xl border text-left transition-all duration-300 ${
+                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/10' 
+                      : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/40'
+                    } ${isRequired ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer btn-tactile'}`}
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'bg-[var(--purple)] border-[var(--purple)]'
-                            : 'border-[var(--border-strong)]'
-                        }`}
-                      >
-                        {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
+                      <div className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all ${isSelected ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-[var(--border-strong)] bg-[var(--surface)]'}`}>
+                        {isSelected && <Check size={14} strokeWidth={3} className="text-white" />}
                       </div>
-                      <span className="text-sm font-semibold">{page.name}</span>
+                      <span className={`text-sm font-semibold ${isSelected ? 'text-[var(--text)]' : 'text-[var(--text-2)]'}`}>{page.name}</span>
                     </div>
-                    <div className="text-xs font-medium text-[var(--text-muted)]">
+                    <div className={`text-xs font-bold ${isSelected ? 'text-[var(--accent)]' : 'text-[var(--text-4)]'}`}>
                       {page.price === 0 ? t('builder.free') : `+${page.price} ₴`}
                     </div>
                   </button>
@@ -392,56 +232,32 @@ export default function BuilderPage() {
       case 3:
         return (
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              {t('builder.featuresQ')}
-            </h2>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
-              {t('builder.featuresDesc')}
-            </p>
-
-            {featuresLoading ? (
-              <p className="text-[var(--text-muted)]">{t('builder.loadingFeatures')}</p>
-            ) : availableFeatures.length === 0 ? (
-              <div className="card no-hover text-center py-12">
-                <p className="text-[var(--text-muted)]">{t('builder.noFeatures')}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.featuresQ')}</h2>
+            <p className="text-sm md:text-lg text-[var(--text-3)] mb-8">{t('builder.featuresDesc')}</p>
+            {featuresLoading ? (<p className="text-[var(--text-3)]">{t('builder.loadingFeatures')}</p>) 
+            : availableFeatures.length === 0 ? (<div className="glass-card text-center py-12"><p className="text-[var(--text-3)]">{t('builder.noFeatures')}</p></div>) 
+            : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {availableFeatures.map((feature) => {
                   const isSelected = selectedFeatures.includes(feature.id!);
                   return (
-                    <button
-                      key={feature.id}
-                      onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
-                      className={`text-left p-4 rounded-xl border transition-all ${
-                        isSelected
-                          ? 'border-[var(--purple)] bg-[var(--purple-soft)]'
-                          : 'border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-purple)]'
+                    <button key={feature.id} onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
+                      className={`text-left p-5 rounded-2xl border transition-all duration-300 ${
+                        isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/10' 
+                        : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/40'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <h3 className="text-sm md:text-base font-semibold leading-tight">
-                          {feature.name}
-                        </h3>
-                        <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                            isSelected
-                              ? 'bg-[var(--purple)] border-[var(--purple)]'
-                              : 'border-[var(--border-strong)]'
-                          }`}
-                        >
-                          {isSelected && <Check size={10} strokeWidth={3} className="text-white" />}
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <h3 className={`text-base font-bold leading-tight ${isSelected ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}>{feature.name}</h3>
+                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 transition-all ${isSelected ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-[var(--border-strong)] bg-[var(--surface)]'}`}>
+                          {isSelected && <Check size={12} strokeWidth={3} className="text-white" />}
                         </div>
                       </div>
-                      <p className="text-xs text-[var(--text-muted)] mb-3 leading-relaxed">
-                        {feature.description}
-                      </p>
-                      <div className="flex items-center gap-3 text-xs">
-                        <span className="font-bold text-[var(--purple-bright)]">
-                          +{feature.price} ₴
-                        </span>
-                        <span className="text-[var(--text-faint)]">·</span>
-                        <span className="text-[var(--text-muted)]">{feature.estimatedTime}</span>
+                      <p className="text-sm text-[var(--text-3)] mb-4 leading-relaxed">{feature.description}</p>
+                      <div className="flex items-center gap-3 text-sm">
+                        <span className="font-bold text-[var(--accent)]">+{feature.price} ₴</span>
+                        <span className="text-[var(--text-4)]">·</span>
+                        <span className="text-[var(--text-3)]">{feature.estimatedTime}</span>
                       </div>
                     </button>
                   );
@@ -454,37 +270,17 @@ export default function BuilderPage() {
       case 4:
         return (
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              {t('builder.tellMore')}
-            </h2>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
-              {t('builder.tellMoreDesc')}
-            </p>
-
-            <div className="space-y-6">
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.tellMore')}</h2>
+            <p className="text-sm md:text-lg text-[var(--text-3)] mb-8">{t('builder.tellMoreDesc')}</p>
+            <div className="space-y-8">
               <div>
-                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
-                  {t('builder.requirements')}
-                </label>
-                <Textarea
-                  value={requirements}
-                  onChange={(e) => setRequirements(e.target.value)}
-                  placeholder={t('builder.requirementsPlaceholder')}
-                />
+                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">{t('builder.requirements')}</label>
+                <Textarea value={requirements} onChange={(e) => setRequirements(e.target.value)} placeholder={t('builder.requirementsPlaceholder')} className="!bg-[var(--surface)] !border-[var(--border)] min-h-[120px]" />
               </div>
-
               <div>
-                <label className="text-sm font-semibold uppercase tracking-wider mb-3 block">
-                  {t('builder.references')}
-                </label>
-                <Textarea
-                  value={references}
-                  onChange={(e) => setReferences(e.target.value)}
-                  placeholder={t('builder.referencesPlaceholder')}
-                />
-                <p className="text-xs text-[var(--text-faint)] mt-2">
-                  {t('builder.referencesNote')}
-                </p>
+                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">{t('builder.references')}</label>
+                <Textarea value={references} onChange={(e) => setReferences(e.target.value)} placeholder={t('builder.referencesPlaceholder')} className="!bg-[var(--surface)] !border-[var(--border)] min-h-[120px]" />
+                <p className="text-xs text-[var(--text-4)] mt-2">{t('builder.referencesNote')}</p>
               </div>
             </div>
           </div>
@@ -493,128 +289,55 @@ export default function BuilderPage() {
       case 5:
         return (
           <div>
-            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2">
-              {t('builder.reviewQ')}
-            </h2>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mb-6 md:mb-8">
-              {t('builder.reviewDesc')}
-            </p>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              <div className="lg:col-span-2 space-y-4">
-                <div className="card no-hover">
-                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                    {t('builder.projectSummary')}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    <ReviewRow
-                      label={t('builder.step.product')}
-                      value={
-                        product
-                          ? tProduct(product.slug, 'title', product.title)
-                          : '—'
-                      }
-                    />
+            <h2 className="text-2xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.reviewQ')}</h2>
+            <p className="text-sm md:text-lg text-[var(--text-3)] mb-8">{t('builder.reviewDesc')}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-5">
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-5">{t('builder.projectSummary')}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                    <ReviewRow label={t('builder.step.product')} value={product ? tProduct(product.slug, 'title', product.title) : '—'} />
                     <ReviewRow label={t('builder.template')} value={template || '—'} />
                     <ReviewRow label={t('builder.design')} value={design || '—'} />
                     <ReviewRow label={t('common.estimated')} value={product?.estimatedTime || '—'} />
                   </div>
                 </div>
-
-                <div className="card no-hover">
-                  <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                    {t('builder.step.pages')} ({selectedPages.length})
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedPages.map((p) => (
-                      <span
-                        key={p}
-                        className="px-2.5 py-1 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-xs"
-                      >
-                        {p}
-                      </span>
-                    ))}
+                <div className="glass-card rounded-3xl p-6">
+                  <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">{t('builder.step.pages')} ({selectedPages.length})</div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPages.map((p) => (<span key={p} className="px-3 py-1.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-xs font-medium text-[var(--text-2)]">{p}</span>))}
                   </div>
                 </div>
-
                 {selectedFeatures.length > 0 && (
-                  <div className="card no-hover">
-                    <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                      {t('builder.step.features')} ({selectedFeatures.length})
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {availableFeatures
-                        .filter((f) => selectedFeatures.includes(f.id!))
-                        .map((f) => (
-                          <span
-                            key={f.id}
-                            className="px-2.5 py-1 rounded-lg bg-[var(--purple-soft)] border border-[var(--border-purple)] text-xs text-[var(--purple-bright)]"
-                          >
-                            {f.name}
-                          </span>
-                        ))}
+                  <div className="glass-card rounded-3xl p-6">
+                    <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">{t('builder.step.features')} ({selectedFeatures.length})</div>
+                    <div className="flex flex-wrap gap-2">
+                      {availableFeatures.filter((f) => selectedFeatures.includes(f.id!)).map((f) => (
+                        <span key={f.id} className="px-3 py-1.5 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/30 text-xs font-medium text-[var(--accent)]">{f.name}</span>
+                      ))}
                     </div>
                   </div>
                 )}
               </div>
-
               <div className="lg:col-span-1">
-                <div
-                  className="color-card lg:sticky lg:top-24"
-                  style={
-                    {
-                      '--card-color-1': '#D946EF',
-                      '--card-color-2': '#8B5CF6',
-                      '--card-glow': 'rgba(217,70,239,0.5)',
-                    } as React.CSSProperties
-                  }
-                >
-                  <div className="color-card-inner">
-                    <div className="color-card-content">
-                      <div className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--text-faint)] mb-5">
-                        {t('builder.totalEstimate')}
-                      </div>
-
-                      <div className="space-y-2.5 mb-5 text-sm">
-                        <div className="flex justify-between text-[var(--text-muted)]">
-                          <span>{t('builder.baseProduct')}</span>
-                          <span>{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span>
-                        </div>
-                        <div className="flex justify-between text-[var(--text-muted)]">
-                          <span>
-                            {t('builder.step.pages')} ({selectedPages.length})
-                          </span>
-                          <span>+{pagesPrice.toLocaleString('uk-UA')} ₴</span>
-                        </div>
-                        <div className="flex justify-between text-[var(--text-muted)]">
-                          <span>
-                            {t('builder.step.features')} ({selectedFeatures.length})
-                          </span>
-                          <span>+{featuresPrice.toLocaleString('uk-UA')} ₴</span>
-                        </div>
-                      </div>
-
-                      <div className="pt-5 border-t border-[var(--border)]">
-                        <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider mb-1">
-                          {t('builder.total')}
-                        </div>
-                        <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
-                          {totalPrice.toLocaleString('uk-UA')} ₴
-                        </div>
-                        <p className="text-xs text-[var(--text-faint)] leading-relaxed">
-                          {t('product.finalNote')}
-                        </p>
-                      </div>
-                    </div>
+                <div className="glass-card rounded-3xl p-8 lg:sticky lg:top-24 border-[var(--accent)]/30 shadow-[0_0_40px_rgba(139,92,246,0.15)]">
+                  <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-6">{t('builder.totalEstimate')}</div>
+                  <div className="space-y-3 mb-6 text-sm">
+                    <div className="flex justify-between text-[var(--text-3)]"><span>{t('builder.baseProduct')}</span><span className="font-medium text-[var(--text)]">{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span></div>
+                    <div className="flex justify-between text-[var(--text-3)]"><span>{t('builder.step.pages')} ({selectedPages.length})</span><span className="font-medium text-[var(--text)]">+{pagesPrice.toLocaleString('uk-UA')} ₴</span></div>
+                    <div className="flex justify-between text-[var(--text-3)]"><span>{t('builder.step.features')} ({selectedFeatures.length})</span><span className="font-medium text-[var(--text)]">+{featuresPrice.toLocaleString('uk-UA')} ₴</span></div>
+                  </div>
+                  <div className="pt-6 border-t border-[var(--border)]">
+                    <div className="text-[10px] text-[var(--text-4)] uppercase tracking-widest mb-1 font-bold">{t('builder.total')}</div>
+                    <div className="text-4xl font-bold text-gradient-animated mb-3">{totalPrice.toLocaleString('uk-UA')} ₴</div>
+                    <p className="text-xs text-[var(--text-4)] leading-relaxed">{t('product.finalNote')}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         );
-
-      default:
-        return null;
+      default: return null;
     }
   };
 
@@ -625,82 +348,36 @@ export default function BuilderPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-8 md:py-16 pb-40 md:pb-16">
+      <main className="container py-24 md:py-32 pb-40 md:pb-32 min-h-screen">
         <Reveal>
-          <div className="max-w-3xl mb-8 md:mb-12">
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white"
-                style={{
-                  background: `linear-gradient(135deg, ${currentStep.color1}, ${currentStep.color2})`,
-                  boxShadow: `0 8px 24px -8px ${currentStep.color1}88`,
-                }}
-              >
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg" style={{ background: `linear-gradient(135deg, ${currentStep.color1}, ${currentStep.color2})`, boxShadow: `0 8px 24px -8px ${currentStep.color1}88` }}>
                 <CurrentIcon size={24} />
               </div>
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--purple-bright)]">
-                Крок {step + 1} з {steps.length}
-              </span>
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--accent)]">Крок {step + 1} з {steps.length}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-              {t('builder.title')}{' '}
-              <span className="gradient-text">{t('builder.title2')}</span>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-4 text-[var(--text)]">
+              {t('builder.title')} <span className="text-gradient-animated">{t('builder.title2')}</span>
             </h1>
-            <p className="text-sm md:text-lg text-[var(--text-muted)] mt-4">
-              {t('builder.subtitle')}
-            </p>
+            <p className="text-lg text-[var(--text-3)]">{t('builder.subtitle')}</p>
           </div>
         </Reveal>
 
-        {/* Desktop step indicator */}
-        <div className="hidden md:block mb-12">
+        {/* Desktop Progress */}
+        <div className="hidden md:block mb-16 max-w-4xl mx-auto">
           <div className="relative">
-            <div className="absolute top-5 left-0 right-0 h-px bg-[var(--border)]" />
-            <div
-              className="absolute top-5 left-0 h-px bg-gradient-to-r from-[var(--purple)] to-[var(--purple-neon)] transition-all duration-500"
-              style={{ width: `${progressPercent}%` }}
-            />
+            <div className="absolute top-6 left-0 right-0 h-1 bg-[var(--surface-2)] rounded-full" />
+            <div className="absolute top-6 left-0 h-1 bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }} />
             <div className="relative grid grid-cols-6 gap-4">
               {steps.map((s, i) => {
-                const Icon = s.icon;
-                const active = i === step;
-                const done = i < step;
+                const Icon = s.icon; const active = i === step; const done = i < step;
                 return (
-                  <button
-                    key={s.titleKey}
-                    onClick={() => i <= step && setStep(i)}
-                    disabled={i > step}
-                    className={`flex flex-col items-center text-center ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        active
-                          ? 'text-white shadow-[0_0_24px_rgba(139,92,246,0.5)] scale-110'
-                          : done
-                          ? 'text-white'
-                          : 'bg-[var(--surface)] text-[var(--text-faint)] border border-[var(--border)]'
-                      }`}
-                      style={
-                        active || done
-                          ? {
-                              background: `linear-gradient(135deg, ${s.color1}, ${s.color2})`,
-                            }
-                          : {}
-                      }
-                    >
-                      {done ? <Check size={16} strokeWidth={3} /> : <Icon size={16} />}
+                  <button key={s.titleKey} onClick={() => i <= step && setStep(i)} disabled={i > step} className={`flex flex-col items-center ${i <= step ? 'cursor-pointer group' : 'cursor-default'}`}>
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${active ? 'text-white shadow-[0_0_30px_var(--accent)] scale-110' : done ? 'text-white' : 'bg-[var(--surface)] text-[var(--text-4)] border border-[var(--border)]'}`} style={active || done ? { background: `linear-gradient(135deg, ${s.color1}, ${s.color2})` } : {}}>
+                      {done ? <Check size={20} strokeWidth={3} /> : <Icon size={20} />}
                     </div>
-                    <div
-                      className={`mt-3 text-xs font-semibold ${
-                        active
-                          ? 'text-[var(--text)]'
-                          : done
-                          ? 'text-[var(--text-secondary)]'
-                          : 'text-[var(--text-faint)]'
-                      }`}
-                    >
-                      {t(s.titleKey)}
-                    </div>
+                    <div className={`mt-4 text-xs font-bold uppercase tracking-wider text-center transition-colors ${active ? 'text-[var(--text)]' : done ? 'text-[var(--text-2)]' : 'text-[var(--text-4)]'}`}>{t(s.titleKey)}</div>
                   </button>
                 );
               })}
@@ -708,130 +385,42 @@ export default function BuilderPage() {
           </div>
         </div>
 
-        {/* Mobile progress */}
-        <div className="md:hidden mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold text-[var(--purple-bright)] uppercase tracking-wider">
-              {step + 1} / {steps.length}
-            </span>
-            <span className="text-[11px] text-[var(--text-muted)]">
-              {t(currentStep.titleKey)}
-            </span>
+        {/* Mobile Progress */}
+        <div className="md:hidden mb-8 glass-card rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">{step + 1} / {steps.length}</span>
+            <span className="text-xs font-medium text-[var(--text-3)]">{t(currentStep.titleKey)}</span>
           </div>
-          <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${progressPercent}%`,
-                background: `linear-gradient(90deg, ${currentStep.color1}, ${currentStep.color2})`,
-              }}
-            />
-          </div>
-
-          {/* Mini step dots */}
-          <div className="flex justify-between mt-3 px-1">
-            {steps.map((s, i) => {
-              const Icon = s.icon;
-              const active = i === step;
-              const done = i < step;
-              return (
-                <button
-                  key={s.titleKey}
-                  onClick={() => i <= step && setStep(i)}
-                  disabled={i > step}
-                  className="flex flex-col items-center"
-                  aria-label={t(s.titleKey)}
-                >
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
-                      active
-                        ? 'text-white scale-110'
-                        : done
-                        ? 'text-white'
-                        : 'bg-[var(--surface)] text-[var(--text-faint)] border border-[var(--border)]'
-                    }`}
-                    style={
-                      active || done
-                        ? {
-                            background: `linear-gradient(135deg, ${s.color1}, ${s.color2})`,
-                          }
-                        : {}
-                    }
-                  >
-                    {done ? <Check size={12} strokeWidth={3} /> : <Icon size={12} />}
-                  </div>
-                </button>
-              );
-            })}
+          <div className="h-2 rounded-full bg-[var(--surface-2)] overflow-hidden">
+            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progressPercent}%`, background: `linear-gradient(90deg, ${currentStep.color1}, ${currentStep.color2})` }} />
           </div>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs md:text-sm flex items-start gap-2">
-            <span className="text-base leading-none">⚠</span>
-            <span>{error}</span>
-          </div>
-        )}
+        {error && (<div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm flex items-start gap-3 animate-slide-up"><span className="text-lg leading-none">⚠</span><span>{error}</span></div>)}
 
-        <div key={step} className="mb-8 md:mb-12" style={{ animation: 'fadeUp 0.5s ease' }}>
-          {renderStep()}
-        </div>
+        <div key={step} className="mb-12 animate-slide-up">{renderStep()}</div>
 
-        {/* Sticky bottom bar */}
-        <div className="fixed md:sticky bottom-0 md:bottom-4 left-0 right-0 md:left-auto md:right-auto z-40 md:z-30 px-3 pb-3 md:px-0 md:pb-0 pointer-events-none">
-          <div className="container md:container pointer-events-auto">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 md:p-5 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface)]/95 backdrop-blur-xl shadow-[0_-8px_30px_-5px_rgba(0,0,0,0.5)] md:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
-              <div className="flex items-center justify-between gap-3 w-full sm:w-auto">
-                <div className="flex items-center gap-3 md:gap-5">
-                  <div>
-                    <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                      {t('builder.total')}
-                    </div>
-                    <div className="text-lg md:text-xl font-bold gradient-text leading-none">
-                      {totalPrice.toLocaleString('uk-UA')} ₴
-                    </div>
-                  </div>
-                  <div className="w-px h-8 md:h-10 bg-[var(--border)]" />
-                  <div>
-                    <div className="text-[10px] text-[var(--text-faint)] uppercase tracking-wider">
-                      {t('builder.step.review')}
-                    </div>
-                    <div className="text-xs md:text-sm font-semibold">
-                      {step + 1} / {steps.length}
-                    </div>
-                  </div>
+        {/* Sticky Bottom Bar */}
+        <div className="fixed md:sticky bottom-0 md:bottom-6 left-0 right-0 md:left-auto md:right-auto z-40 px-4 pb-4 md:px-0 md:pb-0 pointer-events-none">
+          <div className="container max-w-4xl pointer-events-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 md:p-5 rounded-3xl border border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
+                <div>
+                  <div className="text-[10px] text-[var(--text-4)] uppercase tracking-widest font-bold mb-1">{t('builder.total')}</div>
+                  <div className="text-2xl font-bold text-gradient-animated leading-none">{totalPrice.toLocaleString('uk-UA')} ₴</div>
+                </div>
+                <div className="w-px h-10 bg-[var(--border)]" />
+                <div>
+                  <div className="text-[10px] text-[var(--text-4)] uppercase tracking-widest font-bold mb-1">Крок</div>
+                  <div className="text-sm font-bold text-[var(--text)]">{step + 1} <span className="text-[var(--text-4)]">/ {steps.length}</span></div>
                 </div>
               </div>
-
-              <div className="flex gap-2 md:gap-3 w-full sm:w-auto">
-                {step > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={handleBack}
-                    className="flex-1 sm:flex-none"
-                  >
-                    <ArrowLeft size={16} />
-                    <span className="hidden md:inline">{t('common.back')}</span>
-                  </Button>
-                )}
+              <div className="flex gap-3 w-full sm:w-auto">
+                {step > 0 && (<Button variant="outline" onClick={handleBack} className="flex-1 sm:flex-none btn-tactile rounded-xl px-6"><ArrowLeft size={18} /><span className="hidden md:inline ml-2">{t('common.back')}</span></Button>)}
                 {step < steps.length - 1 ? (
-                  <Button onClick={handleNext} className="flex-1 sm:flex-none">
-                    {t('common.continue')} <ArrowRight size={16} />
-                  </Button>
+                  <Button onClick={handleNext} className="flex-1 sm:flex-none btn-tactile rounded-xl px-8 shadow-[0_0_20px_var(--accent)]">{t('common.continue')} <ArrowRight size={18} className="ml-2" /></Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-none">
-                    {loading ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        {t('common.loading')}
-                      </>
-                    ) : (
-                      <>
-                        <Check size={16} />
-                        {t('common.create')}
-                      </>
-                    )}
-                  </Button>
+                  <Button onClick={handleSubmit} disabled={loading} className="flex-1 sm:flex-none btn-tactile rounded-xl px-8 shadow-[0_0_20px_var(--accent)]">{loading ? (<><Loader2 size={18} className="animate-spin mr-2" />{t('common.loading')}</>) : (<><Check size={18} className="mr-2" />{t('common.create')}</>)}</Button>
                 )}
               </div>
             </div>
@@ -846,10 +435,8 @@ export default function BuilderPage() {
 function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wider text-[var(--text-faint)] mb-1">
-        {label}
-      </div>
-      <div className="text-sm font-medium">{value}</div>
+      <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-4)] mb-1">{label}</div>
+      <div className="text-sm font-semibold text-[var(--text)]">{value}</div>
     </div>
   );
 }
