@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/account', '/admin', '/builder'],
+      disallow: ['/account', '/admin', '/login', '/register', '/forgot-password', '/notifications'],
     },
     sitemap: 'https://kostex.vercel.app/sitemap.xml',
   };

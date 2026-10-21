@@ -36,7 +36,7 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
     try {
       await createReview({
         userId: currentUser.uid,
-        userName: appUser?.displayName || currentUser.email || 'KOSTEX client',
+        userName: appUser?.displayName || t('reviews.client'),
         userEmail: currentUser.email || undefined,
         orderId,
         orderTitle,
