@@ -21,21 +21,15 @@ service cloud.firestore {
         get(/databases/$(database)/documents/orders/$(orderId)).data.status == 'COMPLETED';
     }
 
-    // ===== USERS =====
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      // Клієнт може створити лише власний профіль із роллю client.
-      // Підвищити роль до admin можна тільки вручну в Firebase Console.
       allow create: if isOwner(userId) && request.resource.data.role == 'client';
       allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin();
       allow delete: if isAdmin();
     }
 
-    // ===== ORDERS =====
     match /orders/{orderId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      // Клієнт створює тільки нове замовлення зі статусом NEW.
-      // Ціну, статус і фінальну вартість змінює тільки адмін.
       allow create: if isSignedIn()
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.status == 'NEW'
@@ -45,28 +39,11 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // ===== CATALOG =====
-    match /products/{productId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
+    match /products/{productId} { allow read: if true; allow write: if isAdmin(); }
+    match /categories/{categoryId} { allow read: if true; allow write: if isAdmin(); }
+    match /features/{featureId} { allow read: if true; allow write: if isAdmin(); }
+    match /portfolio/{projectId} { allow read: if true; allow write: if isAdmin(); }
 
-    match /categories/{categoryId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /features/{featureId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /portfolio/{projectId} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // ===== ORDER MESSAGES =====
     match /messages/{messageId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
@@ -74,7 +51,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ===== FILES =====
     match /files/{fileId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
@@ -82,56 +58,31 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ===== NOTIFICATIONS =====
     match /notifications/{notificationId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isAdmin() || (isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.read == false);
-      allow update: if isAdmin() || (isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.read == false);
+      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
       allow delete: if isAdmin();
     }
 
-    // ===== SUPPORT CHAT =====
     match /supportMessages/{messageId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isAdmin() || (isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.senderId == request.auth.uid
-        && request.resource.data.senderRole == 'client'
-        && request.resource.data.read == false);
-      allow update: if isAdmin() || (isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.senderId == request.auth.uid && request.resource.data.senderRole == 'client' && request.resource.data.read == false);
+      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
       allow delete: if isAdmin();
     }
 
-    // ===== REVIEWS =====
     match /reviews/{reviewId} {
-      // Схвалені відгуки бачать усі, свій — автор, усі — адмін.
-      allow read: if resource.data.approved == true
-        || (isSignedIn() && resource.data.userId == request.auth.uid)
-        || isAdmin();
-
-      // Один відгук на одне завершене замовлення. ID документа = orderId.
-      allow create: if isSignedIn()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.orderId == reviewId
-        && request.resource.data.approved == false
-        && request.resource.data.rating is number
-        && request.resource.data.rating >= 1
-        && request.resource.data.rating <= 5
-        && request.resource.data.text is string
-        && request.resource.data.text.size() >= 10
-        && request.resource.data.text.size() <= 2000
-        && isCompletedOrderOfUser(reviewId);
-
+      allow read: if resource.data.approved == true || (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isAdmin() || (
+        isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.orderId == reviewId
+        && request.resource.data.approved == false && request.resource.data.rating is number && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && request.resource.data.text is string && request.resource.data.text.size() >= 10 && request.resource.data.text.size() <= 2000
+        && isCompletedOrderOfUser(reviewId)
+      );
       allow update, delete: if isAdmin();
     }
 
-    // Все інше закрито
     match /{document=**} {
       allow read, write: if false;
     }
