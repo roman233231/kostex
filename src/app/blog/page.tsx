@@ -23,82 +23,50 @@ export default function BlogPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16">
+      <main className="container py-24 md:py-32 min-h-screen">
         <Reveal>
-          <div className="mb-14 max-w-3xl">
+          <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge>Blog</Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mt-4 tracking-tight leading-[1.05]">
+            <h1 className="text-4xl md:text-6xl font-bold mt-6 mb-6 tracking-tight text-gradient-animated">
               {lang === 'uk' ? 'Корисні статті' : 'Useful articles'}
             </h1>
-            <p className="text-lg text-[var(--text-muted)] mt-5">
-              {lang === 'uk'
-                ? 'Поради для бізнесу, кейси та ідеї від KOSTEX.'
-                : 'Business tips, cases and ideas from KOSTEX.'}
+            <p className="text-lg md:text-xl text-[var(--text-3)]">
+              {lang === 'uk' ? 'Поради для бізнесу, кейси та ідеї від KOSTEX.' : 'Business tips, cases and ideas from KOSTEX.'}
             </p>
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogPosts.map((post, i) => {
-            const colors =
-              categoryColors[post.category] || categoryColors.Business;
+            const colors = categoryColors[post.category] || categoryColors.Business;
             return (
-              <Reveal key={post.slug} delay={i * 60}>
-                <Link href={`/blog/${post.slug}`} className="block h-full">
-                  <div
-                    className="color-card h-full"
-                    style={
-                      {
-                        '--card-color-1': colors.color1,
-                        '--card-color-2': colors.color2,
-                        '--card-glow': colors.glow,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <div className="color-card-inner">
-                      <div className="color-card-content">
-                        {/* Category chip */}
-                        <div className="mb-5">
-                          <span
-                            className="inline-flex px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider"
-                            style={{
-                              background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
-                              boxShadow: `0 8px 20px -8px ${colors.glow}`,
-                            }}
-                          >
-                            {post.category}
-                          </span>
-                        </div>
+              <Reveal key={post.slug} delay={i * 70}>
+                <Link href={`/blog/${post.slug}`} className="block h-full group">
+                  <div className="glass-card rounded-3xl p-8 h-full flex flex-col relative overflow-hidden transition-all duration-500 group-hover:-translate-y-2">
+                    {/* Декоративне світло */}
+                    <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-[60px] opacity-0 group-hover:opacity-30 transition-opacity duration-500" style={{ background: colors.glow }} />
 
-                        <h2 className="text-lg md:text-xl font-bold mb-3 leading-snug">
-                          {lang === 'uk' ? post.titleUk : post.titleEn}
-                        </h2>
+                    <div className="mb-6 relative z-10">
+                      <span className="inline-flex px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider shadow-lg"
+                        style={{ background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`, boxShadow: `0 8px 20px -8px ${colors.glow}` }}>
+                        {post.category}
+                      </span>
+                    </div>
 
-                        <p className="text-sm text-[var(--text-muted)] flex-1 line-clamp-3 leading-relaxed mb-5">
-                          {lang === 'uk' ? post.excerptUk : post.excerptEn}
-                        </p>
+                    <h2 className="text-xl font-bold mb-3 leading-snug text-[var(--text)] group-hover:text-[var(--accent)] transition-colors relative z-10">
+                      {lang === 'uk' ? post.titleUk : post.titleEn}
+                    </h2>
 
-                        <div className="mt-5 pt-4 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-faint)]">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <Calendar size={12} />
-                              {new Date(post.date).toLocaleDateString(
-                                lang === 'uk' ? 'uk-UA' : 'en-US',
-                                { year: 'numeric', month: 'short', day: 'numeric' }
-                              )}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Clock size={12} />
-                              {post.readingTime} min
-                            </span>
-                          </div>
-                          <ArrowRight
-                            size={14}
-                            style={{ color: colors.color1 }}
-                            className="color-arrow"
-                          />
-                        </div>
+                    <p className="text-sm text-[var(--text-3)] flex-1 line-clamp-3 leading-relaxed mb-6 relative z-10">
+                      {lang === 'uk' ? post.excerptUk : post.excerptEn}
+                    </p>
+
+                    <div className="pt-5 border-t border-[var(--border)] flex items-center justify-between text-xs font-medium text-[var(--text-4)] relative z-10">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1.5"><Calendar size={14} />{new Date(post.date).toLocaleDateString(lang === 'uk' ? 'uk-UA' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                        <span className="flex items-center gap-1.5"><Clock size={14} />{post.readingTime} min</span>
                       </div>
+                      <ArrowRight size={16} style={{ color: colors.color1 }} className="transition-transform duration-300 group-hover:translate-x-1" />
                     </div>
                   </div>
                 </Link>

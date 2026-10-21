@@ -33,14 +33,14 @@ export default function InspirationPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-16 max-w-5xl">
+      <main className="container py-24 md:py-32 max-w-5xl min-h-screen">
         <Reveal>
-          <div className="mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge>{t('nav.inspiration')}</Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mt-4 tracking-tight leading-[1.05]">
+            <h1 className="text-4xl md:text-6xl font-bold mt-6 mb-6 tracking-tight text-gradient-animated">
               {t('insp.title')}
             </h1>
-            <p className="text-lg text-[var(--text-muted)] mt-5 max-w-2xl">
+            <p className="text-lg md:text-xl text-[var(--text-3)]">
               {t('insp.subtitle')}
             </p>
           </div>
@@ -48,123 +48,65 @@ export default function InspirationPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <Reveal delay={100} className="lg:col-span-3">
-            <div
-              className="color-card"
-              style={
-                {
-                  '--card-color-1': '#8B5CF6',
-                  '--card-color-2': '#A855F7',
-                  '--card-glow': 'rgba(139,92,246,0.5)',
-                } as React.CSSProperties
-              }
-            >
-              <div className="color-card-inner">
-                <div className="color-card-content">
-                  {submitted ? (
-                    <div className="text-center py-12">
-                      <div className="text-5xl mb-4">✨</div>
-                      <h2 className="text-xl font-semibold mb-2">{t('insp.thanks')}</h2>
-                      <p className="text-[var(--text-muted)] mb-6">{t('insp.thanksDesc')}</p>
-                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Link href="/builder">
-                          <Button>
-                            {t('about.startProject')} <ArrowRight size={18} />
-                          </Button>
-                        </Link>
-                        <Button variant="outline" onClick={() => setSubmitted(false)}>
-                          {t('insp.addAnother')}
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                      <Input
-                        label={t('insp.url')}
-                        type="url"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        placeholder="https://example.com"
-                        required
-                      />
-                      <Textarea
-                        label={t('insp.whatLike')}
-                        value={likes}
-                        onChange={(e) => setLikes(e.target.value)}
-                        placeholder="I like the navigation and hero section..."
-                        required
-                      />
-                      <Textarea
-                        label={t('insp.notes')}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Any other details..."
-                      />
-                      <Button type="submit" className="w-full sm:w-auto">
-                        {t('insp.submit')} <ArrowRight size={18} />
+            <div className="glass-card rounded-3xl p-8 md:p-10 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[80px] pointer-events-none" />
+              
+              {submitted ? (
+                <div className="text-center py-12 relative z-10">
+                  <div className="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto mb-6 animate-zoom-in">
+                    <span className="text-4xl">✨</span>
+                  </div>
+                  <h2 className="text-2xl font-bold mb-3 text-[var(--text)]">{t('insp.thanks')}</h2>
+                  <p className="text-[var(--text-3)] mb-8">{t('insp.thanksDesc')}</p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href="/builder">
+                      <Button className="btn-tactile rounded-full px-8 shadow-[0_0_20px_var(--accent)] w-full sm:w-auto">
+                        {t('about.startProject')} <ArrowRight size={18} className="ml-2" />
                       </Button>
-                    </form>
-                  )}
+                    </Link>
+                    <Button variant="outline" onClick={() => setSubmitted(false)} className="btn-tactile rounded-full px-8 w-full sm:w-auto">
+                      {t('insp.addAnother')}
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                  <Input label={t('insp.url')} type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com" required className="!bg-[var(--surface)]" />
+                  <Textarea label={t('insp.whatLike')} value={likes} onChange={(e) => setLikes(e.target.value)} placeholder="I like the navigation and hero section..." required className="!bg-[var(--surface)] min-h-[120px]" />
+                  <Textarea label={t('insp.notes')} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any other details..." className="!bg-[var(--surface)] min-h-[100px]" />
+                  <Button type="submit" className="w-full btn-tactile rounded-xl py-4 text-lg shadow-[0_0_20px_var(--accent)]">
+                    {t('insp.submit')} <ArrowRight size={18} className="ml-2" />
+                  </Button>
+                </form>
+              )}
             </div>
           </Reveal>
 
-          <Reveal delay={200} className="lg:col-span-2 space-y-4">
-            <div
-              className="color-card"
-              style={
-                {
-                  '--card-color-1': '#3B82F6',
-                  '--card-color-2': '#06B6D4',
-                  '--card-glow': 'rgba(59,130,246,0.5)',
-                } as React.CSSProperties
-              }
-            >
-              <div className="color-card-inner">
-                <div className="color-card-content">
-                  <h3 className="text-lg font-semibold mb-4">{t('insp.howItWorks')}</h3>
-                  <ol className="space-y-4">
-                    {steps.map((step, i) => {
-                      const Icon = step.icon;
-                      return (
-                        <li key={i} className="flex gap-3 items-start">
-                          <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0"
-                            style={{
-                              background: `linear-gradient(135deg, ${step.color1}, ${step.color2})`,
-                              boxShadow: `0 8px 20px -8px ${step.glow}`,
-                            }}
-                          >
-                            <Icon size={16} />
-                          </div>
-                          <span className="text-sm text-[var(--text-muted)] leading-relaxed pt-1.5">
-                            {t(`insp.step${i + 1}` as any)}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </div>
-              </div>
+          <Reveal delay={200} className="lg:col-span-2 space-y-6">
+            <div className="glass-card rounded-3xl p-8">
+              <h3 className="text-xl font-bold mb-6 text-[var(--text)]">{t('insp.howItWorks')}</h3>
+              <ol className="space-y-6">
+                {steps.map((step, i) => {
+                  const Icon = step.icon;
+                  return (
+                    <li key={i} className="flex gap-4 items-start group">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6" style={{ background: `linear-gradient(135deg, ${step.color1}, ${step.color2})`, boxShadow: `0 8px 20px -8px ${step.glow}` }}>
+                        <Icon size={20} />
+                      </div>
+                      <span className="text-sm font-medium text-[var(--text-2)] leading-relaxed pt-3">
+                        {t(`insp.step${i + 1}` as any)}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
             </div>
 
-            <div
-              className="color-card"
-              style={
-                {
-                  '--card-color-1': '#10B981',
-                  '--card-color-2': '#14B8A6',
-                  '--card-glow': 'rgba(16,185,129,0.5)',
-                } as React.CSSProperties
-              }
-            >
-              <div className="color-card-inner">
-                <div className="color-card-content">
-                  <p className="text-sm text-[var(--text-muted)] leading-relaxed">
-                    {t('insp.note')}
-                  </p>
-                </div>
-              </div>
+            <div className="glass-card rounded-3xl p-8 border-[var(--accent)]/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--accent)]/10 rounded-full blur-[50px]" />
+              <p className="text-sm font-medium text-[var(--text-3)] leading-relaxed relative z-10">
+                {t('insp.note')}
+              </p>
             </div>
           </Reveal>
         </div>
