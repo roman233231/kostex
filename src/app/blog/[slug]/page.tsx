@@ -4,7 +4,6 @@ import { useParams, notFound } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
@@ -25,9 +24,7 @@ export default function BlogPostPage() {
   const slug = params?.slug as string;
   const post = blogPosts.find((p) => p.slug === slug);
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   const title = lang === 'uk' ? post.titleUk : post.titleEn;
   const content = lang === 'uk' ? post.contentUk : post.contentEn;
@@ -36,86 +33,62 @@ export default function BlogPostPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-12 md:py-16">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-8"
-        >
-          <ArrowLeft size={16} /> Back to Blog
-        </Link>
-
+      <main className="container py-24 md:py-32 min-h-screen">
         <Reveal>
+          <Link href="/blog" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-2)] border border-[var(--border)] text-sm font-medium text-[var(--text-3)] hover:text-[var(--accent)] hover:border-[var(--accent)]/50 transition-all mb-10 group">
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Blog
+          </Link>
+        </Reveal>
+
+        <Reveal delay={50}>
           <article className="max-w-3xl mx-auto">
-            <span
-              className="inline-flex px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider mb-5"
-              style={{
-                background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
-                boxShadow: `0 8px 20px -8px ${colors.glow}`,
-              }}
-            >
+            <span className="inline-flex px-3 py-1.5 rounded-full text-white text-[10px] font-bold uppercase tracking-wider mb-6 shadow-lg"
+              style={{ background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`, boxShadow: `0 8px 20px -8px ${colors.glow}` }}>
               {post.category}
             </span>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.15] mb-5">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.15] mb-6 text-[var(--text)]">
               {title}
             </h1>
 
-            <div className="flex items-center gap-4 text-sm text-[var(--text-faint)] flex-wrap mb-10">
-              <span className="flex items-center gap-1.5">
+            <div className="flex items-center gap-4 text-sm text-[var(--text-3)] flex-wrap mb-12 pb-8 border-b border-[var(--border)]">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--surface-2)]">
                 <Calendar size={14} />
-                {new Date(post.date).toLocaleDateString(
-                  lang === 'uk' ? 'uk-UA' : 'en-US',
-                  { year: 'numeric', month: 'long', day: 'numeric' }
-                )}
+                {new Date(post.date).toLocaleDateString(lang === 'uk' ? 'uk-UA' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
-              <span className="w-1 h-1 rounded-full bg-[var(--text-faint)]" />
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[var(--surface-2)]">
                 <Clock size={14} />
                 {post.readingTime} min read
               </span>
             </div>
 
-            <div className="space-y-5 md:space-y-6">
+            <div className="space-y-6 md:space-y-8">
               {content.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-base md:text-lg text-[var(--text-secondary)] leading-relaxed"
-                >
+                <p key={i} className="text-base md:text-lg text-[var(--text-2)] leading-[1.8] font-normal">
                   {paragraph}
                 </p>
               ))}
             </div>
 
             {/* CTA */}
-            <div
-              className="mt-12 md:mt-16 rounded-3xl overflow-hidden relative"
-              style={
-                {
-                  '--card-color-1': colors.color1,
-                  '--card-color-2': colors.color2,
-                  '--card-glow': colors.glow,
-                } as React.CSSProperties
-              }
-            >
-              <div className="color-card">
-                <div className="color-card-inner !p-8 md:!p-10">
-                  <div className="color-card-content text-center">
-                    <h3 className="text-xl md:text-2xl font-bold mb-3">
-                      {lang === 'uk' ? 'Потрібен сайт або додаток?' : 'Need a website or app?'}
-                    </h3>
-                    <p className="text-sm md:text-base text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-                      {lang === 'uk'
-                        ? 'Налаштуйте свій проєкт у конструкторі та побачте ціну одразу.'
-                        : 'Configure your project in the builder and see the price instantly.'}
-                    </p>
-                    <Link href="/builder">
-                      <Button>
-                        {lang === 'uk' ? 'Почати проєкт' : 'Start a Project'}
-                        <ArrowRight size={18} />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+            <div className="mt-16 md:mt-20">
+              <div className="glass-card rounded-[2rem] p-8 md:p-12 text-center relative overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full blur-[80px] opacity-30" style={{ background: colors.glow }} />
+                
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--text)] relative z-10">
+                  {lang === 'uk' ? 'Потрібен сайт або додаток?' : 'Need a website or app?'}
+                </h3>
+                <p className="text-base text-[var(--text-3)] mb-8 max-w-md mx-auto relative z-10">
+                  {lang === 'uk'
+                    ? 'Налаштуйте свій проєкт у конструкторі та побачте ціну одразу.'
+                    : 'Configure your project in the builder and see the price instantly.'}
+                </p>
+                <Link href="/builder" className="relative z-10">
+                  <Button className="btn-tactile rounded-full px-8 py-4 text-lg shadow-[0_0_20px_var(--accent)]">
+                    {lang === 'uk' ? 'Почати проєкт' : 'Start a Project'}
+                    <ArrowRight size={18} className="ml-2" />
+                  </Button>
+                </Link>
               </div>
             </div>
           </article>
