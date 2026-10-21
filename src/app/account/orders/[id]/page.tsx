@@ -52,6 +52,8 @@ export default function ClientOrderDetailPage() {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [existingReview, setExistingReview] = useState<Review | null>(null);
+  const [loadingReview, setLoadingReview] = useState(false);
 
   useEffect(() => {
     if (!currentUser || !id) return;
@@ -63,6 +65,17 @@ export default function ClientOrderDetailPage() {
           setOrder(found);
           const msgs = await getOrderMessages(id as string);
           setMessages(msgs);
+
+          if (found.status === 'COMPLETED') {
+            setLoadingReview(true);
+            try {
+              setExistingReview(await getReviewByOrderId(found.id!));
+            } catch (reviewError) {
+              console.error(reviewError);
+            } finally {
+              setLoadingReview(false);
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -277,6 +290,51 @@ export default function ClientOrderDetailPage() {
             </div>
           </div>
         </Reveal>
+
+        {/* Review — only for completed orders */}
+        {order.status === 'COMPLETED' && (
+          <Reveal delay={200}>
+            <div className="mt-8">
+              {loadingReview ? (
+                <div className="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+                  <div className="skeleton skeleton-line" style={{ width: '35%' }} />
+                  <div className="skeleton skeleton-line" />
+                  <div className="skeleton skeleton-line" style={{ width: '80%' }} />
+                </div>
+              ) : existingReview ? (
+                <div className="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Star size={20} fill="var(--gold)" stroke="var(--gold)" />
+                    <span className="font-semibold">{t('reviews.yourReview')}</span>
+                  </div>
+                  <div className="flex items-center gap-1 mb-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={14}
+                        fill={i < existingReview.rating ? 'var(--gold)' : 'transparent'}
+                        stroke={i < existingReview.rating ? 'var(--gold)' : 'var(--text-3)'}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-[var(--text-2)] leading-relaxed">
+                    {existingReview.text}
+                  </p>
+                  <p className="text-xs text-[var(--text-4)] mt-3">
+                    {existingReview.approved
+                      ? `✓ ${t('reviews.published')}`
+                      : `⏳ ${t('reviews.pending')}`}
+                  </p>
+                </div>
+              ) : (
+                <ReviewForm
+                  orderId={order.id!}
+                  orderTitle={order.productTitle || 'KOSTEX'}
+                />
+              )}
+            </div>
+          </Reveal>
+        )}
       </main>
       <Footer />
     </>

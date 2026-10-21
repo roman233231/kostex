@@ -78,11 +78,17 @@ export async function notifyAllAdmins(
   message: string,
   link?: string
 ): Promise<void> {
-  const q = query(collection(db, 'users'), where('role', '==', 'admin'));
-  const snap = await getDocs(q);
-  const admins: AppUser[] = [];
-  snap.forEach((d) => admins.push(d.data() as AppUser));
-  await Promise.all(
-    admins.map((admin) => createNotification(admin.uid, title, message, link))
-  );
+  // Best-effort: клієнт не має права читати список усіх адмінів.
+  // Якщо правила це забороняють — не ламаємо створення замовлення.
+  try {
+    const q = query(collection(db, 'users'), where('role', '==', 'admin'));
+    const snap = await getDocs(q);
+    const admins: AppUser[] = [];
+    snap.forEach((d) => admins.push(d.data() as AppUser));
+    await Promise.all(
+      admins.map((admin) => createNotification(admin.uid, title, message, link))
+    );
+  } catch (err) {
+    console.warn('[Notifications] Could not notify admins:', err);
+  }
 }

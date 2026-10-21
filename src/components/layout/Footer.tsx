@@ -30,7 +30,8 @@ const columns: { titleKey: TranslationKey; links: { href: string; labelKey: Tran
       { href: '/blog', labelKey: 'nav.blog' },
       { href: '/inspiration', labelKey: 'nav.inspiration' },
       { href: '/contact', labelKey: 'nav.contact' },
-      { href: '/privacy', labelKey: 'nav.about' },
+      { href: '/privacy', labelKey: 'footer.privacy' },
+      { href: '/terms', labelKey: 'footer.terms' },
     ],
   },
 ];

@@ -56,7 +56,7 @@ export default function Reviews() {
             </div>
 
             <p className="text-[var(--text-2)] leading-relaxed flex-1 mb-6">
-              "{r.text}"
+              “{r.text}”
             </p>
 
             <div className="flex items-center gap-3 pt-5 border-t border-[var(--border)]">
@@ -97,7 +97,7 @@ export default function Reviews() {
           </div>
 
           <p className="text-[var(--text-2)] leading-relaxed flex-1 mb-6">
-            "{t(r.text as any)}"
+            “{t(r.text)}”
           </p>
 
           <div className="flex items-center gap-3 pt-5 border-t border-[var(--border)]">
@@ -110,8 +110,8 @@ export default function Reviews() {
               {r.initial}
             </div>
             <div>
-              <div className="font-semibold text-sm">{t(r.name as any)}</div>
-              <div className="text-xs text-[var(--text-3)]">{t(r.role as any)}</div>
+              <div className="font-semibold text-sm">{t(r.name)}</div>
+              <div className="text-xs text-[var(--text-3)]">{t(r.role)}</div>
             </div>
           </div>
         </Card>

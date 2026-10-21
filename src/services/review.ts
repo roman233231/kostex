@@ -1,6 +1,6 @@
 import {
   collection,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -14,24 +14,25 @@ import {
 import { db } from '@/lib/firebase';
 import { Review } from '@/types/review';
 
-// Створити новий відгук (тільки для свого замовлення)
+// Створити новий відгук (тільки для свого завершеного замовлення).
+// ID документа = orderId, щоб на одне замовлення був рівно один відгук.
 export async function createReview(data: {
   userId: string;
   userName: string;
   userEmail?: string;
-  orderId?: string;
+  orderId: string;
   orderTitle?: string;
   rating: number;
   text: string;
 }): Promise<string> {
-  const docRef = await addDoc(collection(db, 'reviews'), {
+  await setDoc(doc(db, 'reviews', data.orderId), {
     ...data,
     approved: false,
     featured: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
-  return docRef.id;
+  return data.orderId;
 }
 
 // Отримати тільки схвалені відгуки (для публічних сторінок)
@@ -79,11 +80,9 @@ export async function getUserReviews(userId: string): Promise<Review[]> {
 
 // Перевірити, чи вже є відгук від цього замовлення
 export async function getReviewByOrderId(orderId: string): Promise<Review | null> {
-  const q = query(collection(db, 'reviews'), where('orderId', '==', orderId));
-  const snap = await getDocs(q);
-  if (snap.empty) return null;
-  const d = snap.docs[0];
-  return { id: d.id, ...d.data() } as Review;
+  const snap = await getDoc(doc(db, 'reviews', orderId));
+  if (snap.exists()) return { id: snap.id, ...snap.data() } as Review;
+  return null;
 }
 
 // Отримати один відгук

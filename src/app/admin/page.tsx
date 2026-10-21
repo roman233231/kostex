@@ -24,6 +24,7 @@ import {
   CheckCircle,
   DollarSign,
   AlertCircle,
+  Star,
 } from 'lucide-react';
 
 const adminLinks = [

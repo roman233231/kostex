@@ -2,87 +2,136 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Допоміжна функція: чи є користувач автентифікованим
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Чи є користувач адміністратором
     function isAdmin() {
       return isSignedIn() &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Чи належить ресурс користувачу
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Колекція users
+    function isCompletedOrderOfUser(orderId) {
+      return exists(/databases/$(database)/documents/orders/$(orderId)) &&
+        get(/databases/$(database)/documents/orders/$(orderId)).data.userId == request.auth.uid &&
+        get(/databases/$(database)/documents/orders/$(orderId)).data.status == 'COMPLETED';
+    }
+
+    // ===== USERS =====
     match /users/{userId} {
-      // Читати може сам користувач або адмін
       allow read: if isOwner(userId) || isAdmin();
-      // Створювати можна лише власний документ (при реєстрації)
-      allow create: if isOwner(userId);
-      // Оновлювати може сам користувач (але не змінювати роль) або адмін
+      // Клієнт може створити лише власний профіль із роллю client.
+      // Підвищити роль до admin можна тільки вручну в Firebase Console.
+      allow create: if isOwner(userId) && request.resource.data.role == 'client';
       allow update: if (isOwner(userId) && request.resource.data.role == resource.data.role) || isAdmin();
-      // Видаляти може лише адмін
       allow delete: if isAdmin();
     }
 
-    // Колекція orders
+    // ===== ORDERS =====
     match /orders/{orderId} {
-      // Клієнт читає свої замовлення, адмін — всі
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      // Створювати може автентифікований користувач, поле userId має відповідати йому
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      // Оновлювати може адмін, або власник у дозволених статусах (наприклад, поки статус NEW)
-      allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid && resource.data.status == 'NEW');
-      // Видаляти може лише адмін
-      allow delete: if isAdmin();
+      // Клієнт створює тільки нове замовлення зі статусом NEW.
+      // Ціну, статус і фінальну вартість змінює тільки адмін.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'NEW'
+        && request.resource.data.estimatedPrice is number
+        && request.resource.data.estimatedPrice >= 0
+        && !request.resource.data.keys().hasAny(['finalPrice']);
+      allow update, delete: if isAdmin();
     }
 
-    // Колекція products (каталог) — публічне читання, запис лише адмін
+    // ===== CATALOG =====
     match /products/{productId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Колекція categories
     match /categories/{categoryId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Колекція features
     match /features/{featureId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Колекція portfolio
     match /portfolio/{projectId} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Колекція messages — пов'язані з замовленням
+    // ===== ORDER MESSAGES =====
     match /messages/{messageId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
       allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow delete: if isAdmin();
     }
 
-    // Колекція files
+    // ===== FILES =====
     match /files/{fileId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && (isAdmin() || request.resource.data.userId == request.auth.uid);
       allow update: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
       allow delete: if isAdmin();
     }
 
-    // Інші колекції за замовчуванням — закрити
+    // ===== NOTIFICATIONS =====
+    match /notifications/{notificationId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.read == false);
+      allow update: if isAdmin() || (isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
+      allow delete: if isAdmin();
+    }
+
+    // ===== SUPPORT CHAT =====
+    match /supportMessages/{messageId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.senderRole == 'client'
+        && request.resource.data.read == false);
+      allow update: if isAdmin() || (isSignedIn()
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
+      allow delete: if isAdmin();
+    }
+
+    // ===== REVIEWS =====
+    match /reviews/{reviewId} {
+      // Схвалені відгуки бачать усі, свій — автор, усі — адмін.
+      allow read: if resource.data.approved == true
+        || (isSignedIn() && resource.data.userId == request.auth.uid)
+        || isAdmin();
+
+      // Один відгук на одне завершене замовлення. ID документа = orderId.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.orderId == reviewId
+        && request.resource.data.approved == false
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 10
+        && request.resource.data.text.size() <= 2000
+        && isCompletedOrderOfUser(reviewId);
+
+      allow update, delete: if isAdmin();
+    }
+
+    // Все інше закрито
     match /{document=**} {
       allow read, write: if false;
     }

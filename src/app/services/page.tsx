@@ -7,13 +7,25 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
+import { TranslationKey } from '@/lib/translations';
 import { ArrowRight } from 'lucide-react';
 
-const services = [
+interface ServiceCard {
+  titleKey: TranslationKey;
+  descKey: TranslationKey;
+  featureKeys: TranslationKey[];
+  href: string;
+  emoji: string;
+  color1: string;
+  color2: string;
+  glow: string;
+}
+
+const services: ServiceCard[] = [
   {
-    title: 'Websites',
-    description: 'Landing pages, business sites, e-commerce, blogs and corporate websites.',
-    features: ['Responsive design', 'SEO optimized', 'Fast loading', 'CMS integration'],
+    titleKey: 'services.websites',
+    descKey: 'services.websitesDesc',
+    featureKeys: ['services.websitesF1', 'services.websitesF2', 'services.websitesF3', 'services.websitesF4'],
     href: '/catalog/websites',
     emoji: '🌐',
     color1: '#8B5CF6',
@@ -21,9 +33,9 @@ const services = [
     glow: 'rgba(139,92,246,0.5)',
   },
   {
-    title: 'Web Apps',
-    description: 'Custom dashboards, CRM, booking systems, SaaS platforms.',
-    features: ['User accounts', 'Database', 'Admin panel', 'API integration'],
+    titleKey: 'services.webapps',
+    descKey: 'services.webappsDesc',
+    featureKeys: ['services.webappsF1', 'services.webappsF2', 'services.webappsF3', 'services.webappsF4'],
     href: '/catalog/web-apps',
     emoji: '⚡',
     color1: '#3B82F6',
@@ -31,9 +43,9 @@ const services = [
     glow: 'rgba(59,130,246,0.5)',
   },
   {
-    title: 'Software',
-    description: 'Desktop apps, business software, utilities and custom solutions.',
-    features: ['Windows/macOS', 'Offline mode', 'Cloud sync', 'Custom logic'],
+    titleKey: 'services.software',
+    descKey: 'services.softwareDesc',
+    featureKeys: ['services.softwareF1', 'services.softwareF2', 'services.softwareF3', 'services.softwareF4'],
     href: '/catalog/software',
     emoji: '💻',
     color1: '#EC4899',
@@ -41,9 +53,9 @@ const services = [
     glow: 'rgba(236,72,153,0.5)',
   },
   {
-    title: 'Bots',
-    description: 'Telegram, Discord and automation bots for business.',
-    features: ['Automation', 'Support', 'Notifications', 'Integrations'],
+    titleKey: 'services.bots',
+    descKey: 'services.botsDesc',
+    featureKeys: ['services.botsF1', 'services.botsF2', 'services.botsF3', 'services.botsF4'],
     href: '/catalog/bots',
     emoji: '🤖',
     color1: '#10B981',
@@ -51,9 +63,9 @@ const services = [
     glow: 'rgba(16,185,129,0.5)',
   },
   {
-    title: 'CRM',
-    description: 'Customer relationship management systems tailored to your workflow.',
-    features: ['Clients', 'Deals', 'Tasks', 'Reports'],
+    titleKey: 'services.crm',
+    descKey: 'services.crmDesc',
+    featureKeys: ['services.crmF1', 'services.crmF2', 'services.crmF3', 'services.crmF4'],
     href: '/catalog/web-apps',
     emoji: '📊',
     color1: '#F59E0B',
@@ -61,9 +73,9 @@ const services = [
     glow: 'rgba(245,158,11,0.5)',
   },
   {
-    title: 'E-commerce',
-    description: 'Online stores with payment integration and inventory management.',
-    features: ['Catalog', 'Cart', 'Payments', 'Shipping'],
+    titleKey: 'services.ecommerce',
+    descKey: 'services.ecommerceDesc',
+    featureKeys: ['services.ecommerceF1', 'services.ecommerceF2', 'services.ecommerceF3', 'services.ecommerceF4'],
     href: '/catalog/websites',
     emoji: '🛒',
     color1: '#D946EF',
@@ -93,7 +105,7 @@ export default function ServicesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {services.map((service, i) => (
-            <Reveal key={service.title} delay={i * 60}>
+            <Reveal key={service.titleKey} delay={i * 60}>
               <Link href={service.href} className="block h-full">
                 <div
                   className="color-card h-full"
@@ -113,13 +125,13 @@ export default function ServicesPage() {
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                      <h3 className="text-xl font-bold mb-2">{t(service.titleKey)}</h3>
                       <p className="text-sm text-[var(--text-muted)] mb-5 flex-1 leading-relaxed">
-                        {service.description}
+                        {t(service.descKey)}
                       </p>
 
                       <ul className="space-y-1.5 mb-6">
-                        {service.features.map((f, j) => (
+                        {service.featureKeys.map((f, j) => (
                           <li
                             key={j}
                             className="flex items-center gap-2 text-sm text-[var(--text-secondary)]"
@@ -128,7 +140,7 @@ export default function ServicesPage() {
                               className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                               style={{ background: service.color1 }}
                             />
-                            {f}
+                            {t(f)}
                           </li>
                         ))}
                       </ul>

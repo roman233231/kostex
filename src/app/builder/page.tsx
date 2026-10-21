@@ -59,7 +59,7 @@ const steps = [
 export default function BuilderPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const { t } = useLanguage();
+  const { t, tProduct } = useLanguage();
 
   const [step, setStep] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState('');
@@ -159,7 +159,9 @@ export default function BuilderPage() {
       const orderId = await createOrder({
         userId: currentUser.uid,
         productId: selectedProduct,
-        productTitle: product?.title,
+        productTitle: product
+          ? tProduct(product.slug, 'title', product.title)
+          : undefined,
         template,
         design,
         pages: selectedPages,
@@ -243,9 +245,11 @@ export default function BuilderPage() {
                         {p.category.replace('-', ' ')}
                       </div>
 
-                      <h3 className="text-lg font-bold mb-2">{p.title}</h3>
+                      <h3 className="text-lg font-bold mb-2">
+                        {tProduct(p.slug, 'title', p.title)}
+                      </h3>
                       <p className="text-xs text-[var(--text-muted)] mb-4 line-clamp-2 leading-relaxed">
-                        {p.shortDescription}
+                        {tProduct(p.slug, 'shortDescription', p.shortDescription)}
                       </p>
 
                       <div className="flex items-end justify-between pt-3 border-t border-[var(--border)]">
@@ -503,7 +507,14 @@ export default function BuilderPage() {
                     {t('builder.projectSummary')}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                    <ReviewRow label={t('builder.step.product')} value={product?.title || '—'} />
+                    <ReviewRow
+                      label={t('builder.step.product')}
+                      value={
+                        product
+                          ? tProduct(product.slug, 'title', product.title)
+                          : '—'
+                      }
+                    />
                     <ReviewRow label={t('builder.template')} value={template || '—'} />
                     <ReviewRow label={t('builder.design')} value={design || '—'} />
                     <ReviewRow label={t('common.estimated')} value={product?.estimatedTime || '—'} />

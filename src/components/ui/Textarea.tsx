@@ -6,6 +6,8 @@ interface TextareaProps {
   className?: string;
   required?: boolean;
   name?: string;
+  maxLength?: number;
+  rows?: number;
 }
 
 export default function Textarea({
@@ -16,6 +18,8 @@ export default function Textarea({
   className = '',
   required = false,
   name,
+  maxLength,
+  rows = 5,
 }: TextareaProps) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -31,6 +35,8 @@ export default function Textarea({
         value={value}
         onChange={onChange}
         required={required}
+        maxLength={maxLength}
+        rows={rows}
         className={`textarea ${className}`}
       />
     </div>

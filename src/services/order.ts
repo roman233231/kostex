@@ -27,7 +27,11 @@ export async function updateOrderStatusAndPrice(
   finalPrice?: number
 ): Promise<void> {
   const orderRef = doc(db, 'orders', orderId);
-  const updateData: any = { status, updatedAt: new Date().toISOString() };
+  const updateData: {
+    status: Order['status'];
+    updatedAt: string;
+    finalPrice?: number;
+  } = { status, updatedAt: new Date().toISOString() };
   if (finalPrice !== undefined) {
     updateData.finalPrice = finalPrice;
   }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { createReview } from '@/services/review';
 import Button from './Button';
 import Textarea from './Textarea';
@@ -15,6 +16,7 @@ interface ReviewFormProps {
 
 export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFormProps) {
   const { currentUser, appUser } = useAuth();
+  const { t } = useLanguage();
   const [rating, setRating] = useState(5);
   const [hovered, setHovered] = useState(0);
   const [text, setText] = useState('');
@@ -24,9 +26,9 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentUser) return;
+    if (!currentUser || sending) return;
     if (text.trim().length < 10) {
-      setError('Відгук має містити мінімум 10 символів');
+      setError(t('reviews.formMin'));
       return;
     }
     setSending(true);
@@ -34,7 +36,7 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
     try {
       await createReview({
         userId: currentUser.uid,
-        userName: appUser?.displayName || currentUser.email || 'Клієнт',
+        userName: appUser?.displayName || currentUser.email || 'KOSTEX client',
         userEmail: currentUser.email || undefined,
         orderId,
         orderTitle,
@@ -43,9 +45,9 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
       });
       setDone(true);
       onSuccess?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || 'Помилка надсилання');
+      setError(err instanceof Error ? err.message : t('reviews.formError'));
     } finally {
       setSending(false);
     }
@@ -55,10 +57,8 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
     return (
       <div className="p-6 rounded-2xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-center">
         <Check size={32} className="text-[var(--accent-2)] mx-auto mb-3" />
-        <h3 className="text-lg font-semibold mb-1">Дякуємо за відгук!</h3>
-        <p className="text-sm text-[var(--text-3)]">
-          Він з'явиться на сайті після модерації.
-        </p>
+        <h3 className="text-lg font-semibold mb-1">{t('reviews.formThanks')}</h3>
+        <p className="text-sm text-[var(--text-3)]">{t('reviews.formThanksDesc')}</p>
       </div>
     );
   }
@@ -69,16 +69,14 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
       className="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] space-y-5"
     >
       <div>
-        <h3 className="text-lg font-semibold mb-1">Залишити відгук</h3>
-        <p className="text-sm text-[var(--text-3)]">
-          Розкажіть про співпрацю з KOSTEX
-        </p>
+        <h3 className="text-lg font-semibold mb-1">{t('reviews.formTitle')}</h3>
+        <p className="text-sm text-[var(--text-3)]">{t('reviews.formSubtitle')}</p>
       </div>
 
       {/* Rating */}
       <div>
         <label className="text-xs uppercase tracking-wider text-[var(--text-4)] mb-2 block">
-          Оцінка
+          {t('reviews.formRating')}
         </label>
         <div className="flex items-center gap-1.5">
           {[1, 2, 3, 4, 5].map((i) => {
@@ -91,7 +89,7 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(0)}
                 className="transition-transform hover:scale-110"
-                aria-label={`${i} з 5`}
+                aria-label={`${i} / 5`}
               >
                 <Star
                   size={28}
@@ -108,10 +106,11 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
 
       {/* Text */}
       <Textarea
-        label="Ваш відгук"
+        label={t('reviews.formText')}
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Розкажіть, як усе пройшло, що сподобалось, що можна покращити..."
+        placeholder={t('reviews.formPlaceholder')}
+        maxLength={2000}
         required
       />
 
@@ -121,8 +120,8 @@ export default function ReviewForm({ orderId, orderTitle, onSuccess }: ReviewFor
         </div>
       )}
 
-      <Button type="submit" disabled={sending}>
-        {sending ? 'Надсилаємо...' : 'Надіслати відгук'}
+      <Button type="submit" disabled={sending || text.trim().length < 10}>
+        {sending ? t('reviews.formSending') : t('reviews.formSubmit')}
         <Send size={16} />
       </Button>
     </form>

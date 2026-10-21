@@ -127,14 +127,18 @@ html.light {
 }
 
 /* ============================================================
-   RESET
+   RESET / BASE
+   Keep these in @layer base so Tailwind utility classes can
+   override them (buttons, links, headings, paragraphs).
    ============================================================ */
+@layer base {
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
+/* Tailwind preflight already resets margin/padding.
+   Do not add an unlayered margin/padding reset here — it overrides
+   utility classes such as mx-auto, px-*, py-* and breaks layouts. */
 
 html {
   scroll-behavior: smooth;
@@ -220,10 +224,12 @@ p {
   line-height: 1.7;
   text-wrap: pretty;
 }
+}
 
 /* ============================================================
    CONTAINER — spacious
    ============================================================ */
+@layer components {
 .container {
   width: 100%;
   max-width: 1280px;
@@ -243,6 +249,7 @@ p {
 @media (max-width: 480px) {
   .container { padding-left: 20px; padding-right: 20px; }
 }
+}
 
 /* ============================================================
    SECTION SPACING — щедро
@@ -251,36 +258,19 @@ p {
 .section-sm { padding-top: 88px; padding-bottom: 88px; }
 .section-lg { padding-top: 180px; padding-bottom: 180px; }
 
-main > section:not(.section):not(.section-sm):not(.section-lg) {
-  padding-top: 140px;
-  padding-bottom: 140px;
-}
-
 @media (max-width: 1024px) {
   .section { padding-top: 112px; padding-bottom: 112px; }
   .section-lg { padding-top: 140px; padding-bottom: 140px; }
-  main > section:not(.section):not(.section-sm):not(.section-lg) {
-    padding-top: 112px;
-    padding-bottom: 112px;
-  }
 }
 
 @media (max-width: 768px) {
   .section { padding-top: 88px; padding-bottom: 88px; }
   .section-sm { padding-top: 56px; padding-bottom: 56px; }
   .section-lg { padding-top: 112px; padding-bottom: 112px; }
-  main > section:not(.section):not(.section-sm):not(.section-lg) {
-    padding-top: 88px;
-    padding-bottom: 88px;
-  }
 }
 
 @media (max-width: 480px) {
   .section { padding-top: 72px; padding-bottom: 72px; }
-  main > section:not(.section):not(.section-sm):not(.section-lg) {
-    padding-top: 72px;
-    padding-bottom: 72px;
-  }
 }
 
 /* ============================================================
@@ -437,6 +427,7 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 /* ============================================================
    BUTTONS
    ============================================================ */
+@layer components {
 .btn {
   position: relative;
   display: inline-flex;
@@ -522,6 +513,7 @@ main > section:not(.section):not(.section-sm):not(.section-lg) {
 @media (max-width: 640px) {
   .btn { padding: 10px 16px; font-size: 0.85rem; }
   .btn-lg { padding: 12px 20px; font-size: 0.9rem; }
+}
 }
 
 /* ============================================================
@@ -1190,21 +1182,6 @@ footer h4 { margin-bottom: 22px; }
 .stack-sm > * + * { margin-top: 16px; }
 .stack > * + * { margin-top: 24px; }
 .stack-lg > * + * { margin-top: 32px; }
-
-.grid { gap: 20px; }
-.grid.gap-3 { gap: 16px; }
-.grid.gap-4 { gap: 20px; }
-.grid.gap-5 { gap: 24px; }
-.grid.gap-6 { gap: 28px; }
-.grid.gap-8 { gap: 32px; }
-
-@media (min-width: 768px) {
-  .grid { gap: 28px; }
-  .grid.gap-4 { gap: 28px; }
-  .grid.gap-5 { gap: 32px; }
-  .grid.gap-6 { gap: 32px; }
-  .grid.gap-8 { gap: 40px; }
-}
 
 /* ============================================================
    HOVER EXTRAS

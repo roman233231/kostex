@@ -10,7 +10,7 @@ import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
 import { getApprovedReviews } from '@/services/review';
 import { Review } from '@/types/review';
-import { Star, Quote, ArrowRight, Users, TrendingUp } from 'lucide-react';
+import { Star, Quote, ArrowRight, MessageSquare, ThumbsUp, Award } from 'lucide-react';
 
 export default function ReviewsPage() {
   const { t } = useLanguage();
@@ -34,7 +34,46 @@ export default function ReviewsPage() {
   const avgRating =
     reviews.length > 0
       ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-      : '5.0';
+      : '—';
+  const fiveStar = reviews.filter((r) => r.rating === 5).length;
+  const recommend = reviews.length
+    ? Math.round((reviews.filter((r) => r.rating >= 4).length / reviews.length) * 100)
+    : 0;
+
+  const statCards = [
+    {
+      label: t('reviews.rating'),
+      value: avgRating,
+      icon: Star,
+      color1: '#F0C265',
+      color2: '#FFD98A',
+      glow: 'rgba(240,194,101,0.4)',
+    },
+    {
+      label: t('reviews.count'),
+      value: reviews.length,
+      icon: MessageSquare,
+      color1: '#8452FF',
+      color2: '#9A6BFF',
+      glow: 'rgba(132,82,255,0.4)',
+    },
+    {
+      label: t('reviews.fiveStar'),
+      value: fiveStar,
+      icon: Award,
+      color1: '#3B82F6',
+      color2: '#06B6D4',
+      glow: 'rgba(59,130,246,0.4)',
+    },
+    {
+      label: t('reviews.recommend'),
+      value: reviews.length ? `${recommend}%` : '—',
+      icon: ThumbsUp,
+      color1: '#10B981',
+      color2: '#14B8A6',
+      glow: 'rgba(16,185,129,0.4)',
+    },
+  ];
 
   return (
     <>
@@ -48,64 +87,46 @@ export default function ReviewsPage() {
               <br />
               <span className="gradient-text">{t('reviews.title2')}</span>
             </h1>
-            <p className="text-lg text-[var(--text-3)] mt-5">
-              {t('reviews.subtitle')}
-            </p>
+            <p className="text-lg text-[var(--text-3)] mt-5">{t('reviews.subtitle')}</p>
           </div>
         </Reveal>
 
-        {/* Stats */}
+        {/* Stats — real numbers only */}
         <Reveal delay={80}>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
-            <div className="color-card" style={{ '--card-color-1': '#F0C265', '--card-color-2': '#FFD98A', '--card-glow': 'rgba(240,194,101,0.4)' } as React.CSSProperties}>
-              <div className="flex flex-col items-center text-center">
-                <div className="flex items-center gap-1 mb-2">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={16} fill="var(--gold)" stroke="var(--gold)" />
-                  ))}
+            {statCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={card.label}
+                  className="color-card"
+                  style={
+                    {
+                      '--card-color-1': card.color1,
+                      '--card-color-2': card.color2,
+                      '--card-glow': card.glow,
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="color-card-inner !p-5">
+                    <div className="color-card-content items-center text-center">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3"
+                        style={{
+                          background: `linear-gradient(135deg, ${card.color1}, ${card.color2})`,
+                        }}
+                      >
+                        <Icon size={18} />
+                      </div>
+                      <div className="text-3xl font-bold">{card.value}</div>
+                      <div className="text-[11px] text-[var(--text-3)] mt-1 uppercase tracking-wider">
+                        {card.label}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-3xl font-bold gradient-text-color">{avgRating}</div>
-                <div className="text-xs text-[var(--text-3)] mt-1 uppercase tracking-wider">
-                  Рейтинг
-                </div>
-              </div>
-            </div>
-
-            <div className="color-card" style={{ '--card-color-1': '#8452FF', '--card-color-2': '#9A6BFF', '--card-glow': 'rgba(132,82,255,0.4)' } as React.CSSProperties}>
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-xl bg-[var(--accent-soft)] flex items-center justify-center mb-2">
-                  <Quote size={18} className="text-[var(--accent-2)]" />
-                </div>
-                <div className="text-3xl font-bold">{reviews.length || '50'}+</div>
-                <div className="text-xs text-[var(--text-3)] mt-1 uppercase tracking-wider">
-                  Відгуків
-                </div>
-              </div>
-            </div>
-
-            <div className="color-card" style={{ '--card-color-1': '#3B82F6', '--card-color-2': '#06B6D4', '--card-glow': 'rgba(59,130,246,0.4)' } as React.CSSProperties}>
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-2">
-                  <Users size={18} className="text-blue-400" />
-                </div>
-                <div className="text-3xl font-bold">50+</div>
-                <div className="text-xs text-[var(--text-3)] mt-1 uppercase tracking-wider">
-                  Клієнтів
-                </div>
-              </div>
-            </div>
-
-            <div className="color-card" style={{ '--card-color-1': '#10B981', '--card-color-2': '#14B8A6', '--card-glow': 'rgba(16,185,129,0.4)' } as React.CSSProperties}>
-              <div className="flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-2">
-                  <TrendingUp size={18} className="text-emerald-400" />
-                </div>
-                <div className="text-3xl font-bold">98%</div>
-                <div className="text-xs text-[var(--text-3)] mt-1 uppercase tracking-wider">
-                  Задоволених
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </Reveal>
 
@@ -121,15 +142,17 @@ export default function ReviewsPage() {
             ))}
           </div>
         ) : reviews.length === 0 ? (
-          <div className="card no-hover text-center py-16">
+          <div className="card no-hover text-center py-16 max-w-2xl mx-auto">
             <Quote size={48} className="text-[var(--text-4)] mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Ще немає відгуків</h2>
-            <p className="text-[var(--text-3)] mb-6 max-w-md mx-auto">
-              Станьте першим, хто залишить відгук про роботу з KOSTEX.
+            <h2 className="text-xl md:text-2xl font-semibold mb-2">
+              {t('reviews.noReviews')}
+            </h2>
+            <p className="text-[var(--text-3)] mb-7 max-w-md mx-auto">
+              {t('reviews.beFirst')}
             </p>
             <Link href="/builder">
               <Button>
-                Почати проєкт <ArrowRight size={16} />
+                {t('reviews.startProject')} <ArrowRight size={16} />
               </Button>
             </Link>
           </div>
@@ -154,7 +177,7 @@ export default function ReviewsPage() {
                   </div>
 
                   <p className="text-[var(--text-2)] leading-relaxed flex-1 mb-6 text-sm">
-                    "{r.text}"
+                    “{r.text}”
                   </p>
 
                   <div className="flex items-center gap-3 pt-5 border-t border-[var(--border)]">
@@ -169,7 +192,7 @@ export default function ReviewsPage() {
                     <div className="min-w-0">
                       <div className="font-semibold text-sm truncate">{r.userName}</div>
                       <div className="text-xs text-[var(--text-3)] truncate">
-                        {r.orderTitle || 'Клієнт KOSTEX'}
+                        {r.orderTitle || t('reviews.client')}
                       </div>
                     </div>
                   </div>
@@ -184,14 +207,14 @@ export default function ReviewsPage() {
           <div className="mt-20">
             <div className="card no-hover text-center py-12 md:py-16 max-w-3xl mx-auto">
               <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                Хочете бути наступним?
+                {t('reviews.ctaTitle')}
               </h2>
               <p className="text-[var(--text-3)] mb-7 max-w-lg mx-auto">
-                Почніть свій проєкт зараз і отримайте продукт, який працює на вас.
+                {t('reviews.ctaText')}
               </p>
               <Link href="/builder">
                 <Button className="btn-lg">
-                  Почати проєкт <ArrowRight size={18} />
+                  {t('reviews.startProject')} <ArrowRight size={18} />
                 </Button>
               </Link>
             </div>

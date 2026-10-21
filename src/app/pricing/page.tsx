@@ -42,12 +42,6 @@ const plans = [
 export default function PricingPage() {
   const { t } = useLanguage();
 
-  const sortedPlans = [...plans].sort((a, b) => {
-    if (a.popular) return -1;
-    if (b.popular) return 1;
-    return 0;
-  });
-
   return (
     <>
       <Navbar />
@@ -67,33 +61,24 @@ export default function PricingPage() {
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 md:items-stretch">
-          {sortedPlans.map((plan, i) => {
+          {plans.map((plan, i) => {
             const isPopular = plan.popular;
             return (
               <Reveal
                 key={plan.key}
                 delay={i * 100}
-                className={
+                className={`h-full ${
                   isPopular
                     ? 'md:order-2 order-1'
                     : i === 0
                     ? 'md:order-1 order-2'
                     : 'md:order-3 order-3'
-                }
+                }`}
               >
-                <div
-                  className="color-card h-full relative"
-                  style={
-                    {
-                      '--card-color-1': plan.color1,
-                      '--card-color-2': plan.color2,
-                      '--card-glow': plan.glow,
-                    } as React.CSSProperties
-                  }
-                >
+                <div className="relative h-full">
                   {isPopular && (
                     <div
-                      className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-white text-[10px] md:text-xs font-bold uppercase tracking-wider z-10 whitespace-nowrap"
+                      className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-white text-[10px] md:text-xs font-bold uppercase tracking-wider z-20 whitespace-nowrap"
                       style={{
                         background: `linear-gradient(135deg, ${plan.color1}, ${plan.color2})`,
                         boxShadow: `0 8px 24px -8px ${plan.glow}`,
@@ -103,7 +88,17 @@ export default function PricingPage() {
                     </div>
                   )}
 
-                  <div className="color-card-inner">
+                  <div
+                    className="color-card h-full relative"
+                    style={
+                      {
+                        '--card-color-1': plan.color1,
+                        '--card-color-2': plan.color2,
+                        '--card-glow': plan.glow,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <div className="color-card-inner">
                     <div className="color-card-content">
                       {/* Emoji */}
                       <div className="text-4xl mb-4">{plan.emoji}</div>
@@ -166,6 +161,7 @@ export default function PricingPage() {
                       </Link>
                     </div>
                   </div>
+                </div>
                 </div>
               </Reveal>
             );

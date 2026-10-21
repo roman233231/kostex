@@ -186,7 +186,7 @@ export default function Navbar() {
           ============================================================ */}
       {menuOpen && (
         <div
-          className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] flex flex-col"
+          className="xl:hidden fixed inset-x-0 top-0 z-[9999] h-[100dvh] bg-[var(--bg)] flex flex-col overflow-hidden"
           style={{ animation: 'menuFadeIn 0.3s ease' }}
         >
           {/* Top bar */}
@@ -209,7 +209,7 @@ export default function Navbar() {
           </div>
 
           {/* Nav links — spacious */}
-          <nav className="flex-1 overflow-y-auto px-5 py-6 space-y-1.5">
+          <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5 space-y-1">
             {navLinks.map((link, i) => {
               const Icon = link.icon;
               const active = pathname === link.href;
@@ -218,7 +218,7 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-4 py-4 px-4 rounded-xl transition-colors ${
+                  className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-colors ${
                     active
                       ? 'bg-[var(--accent-soft)] text-[var(--accent-2)]'
                       : 'text-[var(--text)] hover:bg-[var(--surface-2)]'
@@ -226,13 +226,13 @@ export default function Navbar() {
                   style={{ animation: `menuItemIn 0.3s ease ${i * 30}ms both` }}
                 >
                   <span
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                       active
                         ? 'bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-white'
                         : 'bg-[var(--surface-2)] text-[var(--text-3)]'
                     }`}
                   >
-                    <Icon size={19} />
+                    <Icon size={18} />
                   </span>
                   <span className="flex-1 text-base font-medium">
                     {t(link.key)}
@@ -247,7 +247,10 @@ export default function Navbar() {
           </nav>
 
           {/* Bottom section — spacious */}
-          <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-5 py-6 space-y-5">
+          <div
+            className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 space-y-3"
+            style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
+          >
             {/* Theme + language */}
             <div className="flex items-center justify-between gap-4">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">
@@ -264,11 +267,11 @@ export default function Navbar() {
 
             {/* User actions */}
             {currentUser ? (
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-2">
                 <Link
                   href="/account"
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
                 >
                   <User size={20} />
                   <span>Акаунт</span>
@@ -276,7 +279,7 @@ export default function Navbar() {
                 <Link
                   href="/account/orders"
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
                 >
                   <Package size={20} />
                   <span>Замовлення</span>
@@ -284,7 +287,7 @@ export default function Navbar() {
                 <Link
                   href="/account/messages"
                   onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-2 py-4 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
+                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
                 >
                   <MessageSquare size={20} />
                   <span>Чати</span>
@@ -293,7 +296,7 @@ export default function Navbar() {
                   <Link
                     href="/admin"
                     onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-2 py-4 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[11px] font-semibold text-[var(--accent-2)]"
+                    className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[11px] font-semibold text-[var(--accent-2)]"
                   >
                     <Shield size={20} />
                     <span>Адмін</span>
@@ -302,7 +305,7 @@ export default function Navbar() {
                   <Link
                     href="/builder"
                     onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-[11px] font-semibold text-white"
+                    className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-[11px] font-semibold text-white"
                   >
                     <ArrowRight size={20} />
                     <span>Проєкт</span>
@@ -310,11 +313,11 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-4 rounded-xl border border-[var(--border)] text-sm font-medium text-[var(--text)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[var(--border)] text-sm font-medium text-[var(--text)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
                 >
                   <LogIn size={18} />
                   {t('nav.login')}
@@ -322,7 +325,7 @@ export default function Navbar() {
                 <Link
                   href="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-4 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-sm font-semibold text-white"
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-sm font-semibold text-white"
                 >
                   <UserPlus size={18} />
                   {t('nav.register')}

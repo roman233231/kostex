@@ -8,7 +8,7 @@ import { Review } from '@/types/review';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
-import { Star, Check, X, Trash2, MessageSquare, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Star, Check, Trash2, MessageSquare, EyeOff, Sparkles } from 'lucide-react';
 
 export default function AdminReviewsPage() {
   const { currentUser, appUser, loading } = useAuth();
@@ -39,25 +39,40 @@ export default function AdminReviewsPage() {
   }, [appUser]);
 
   const handleApprove = async (id: string, approved: boolean) => {
-    await updateReview(id, { approved });
-    load();
+    try {
+      await updateReview(id, { approved });
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Не вдалося оновити відгук. Перевірте права доступу.');
+    }
   };
 
   const handleFeature = async (id: string, featured: boolean) => {
-    await updateReview(id, { featured });
-    load();
+    try {
+      await updateReview(id, { featured });
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Не вдалося оновити відгук. Перевірте права доступу.');
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Видалити цей відгук?')) return;
-    await deleteReview(id);
-    load();
+    try {
+      await deleteReview(id);
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Не вдалося видалити відгук. Перевірте права доступу.');
+    }
   };
 
   if (loading || loadingData) {
     return (
       <div className="container py-16 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2-[var(--accent)] border-t-transparent animate-spin" />
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
       </div>
     );
   }
