@@ -8,10 +8,9 @@ export default function Preloader() {
   const [fade, setFade] = useState(false);
 
   useEffect(() => {
-    // Штучна затримка для краси (1.5 секунди)
     const timer1 = setTimeout(() => {
       setFade(true);
-      setTimeout(() => setLoading(false), 500); // Час на анімацію зникнення
+      setTimeout(() => setLoading(false), 500);
     }, 1500);
 
     return () => clearTimeout(timer1);
@@ -37,17 +36,17 @@ export default function Preloader() {
       </div>
 
       <div className="mt-8 flex flex-col items-center gap-4">
-        <h1 className="text-2xl font-bold tracking-[0.3em] text-white animate-pulse">
+        {/* Використовуємо var(--text) замість text-white */}
+        <h1 className="text-2xl font-bold tracking-[0.3em] text-[var(--text)] animate-pulse">
           KOSTEX
         </h1>
         
         {/* Лінія завантаження */}
-        <div className="w-48 h-1 bg-[var(--surface-2)] rounded-full overflow-hidden">
+        <div className="w-48 h-1 bg-[var(--border)] rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] rounded-full animate-[loading_1.5s_ease-in-out_forwards]" />
         </div>
       </div>
 
-      {/* Стилі для анімації лінії завантаження */}
       <style jsx>{`
         @keyframes loading {
           0% { width: 0%; }
