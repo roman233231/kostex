@@ -349,7 +349,7 @@ export default function BuilderPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-24 md:py-32 min-h-screen pb-32 md:pb-24">
+      <main className="container py-24 md:py-32 min-h-screen pb-40 lg:pb-24">
         {/* Заголовок сторінки */}
         <Reveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -360,25 +360,33 @@ export default function BuilderPage() {
           </div>
         </Reveal>
 
-        {/* Прогрес-бар зверху */}
-        <div className="mb-12 max-w-4xl mx-auto">
-          <div className="flex items-center justify-between relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[var(--surface-2)] rounded-full -z-10" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--accent)] rounded-full transition-all duration-500 -z-10" style={{ width: `${(step / (steps.length - 1)) * 100}%` }} />
+        {/* Новий Stepper (Капсули) */}
+        <div className="mb-12 max-w-5xl mx-auto overflow-x-auto pb-4 scrollbar-hide">
+          <div className="flex items-center gap-2 min-w-max px-2">
             {steps.map((s, i) => {
               const Icon = s.icon;
               const active = i === step;
               const done = i < step;
               return (
-                <button key={i} onClick={() => i <= step && setStep(i)} disabled={i > step} className={`flex flex-col items-center gap-2 ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}>
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
-                    active ? 'bg-[var(--bg)] border-[var(--accent)] text-[var(--accent)] shadow-[0_0_20px_var(--accent)] scale-110' 
-                    : done ? 'bg-[var(--accent)] border-[var(--accent)] text-white' 
-                    : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-4)]'
+                <button 
+                  key={i} 
+                  onClick={() => i <= step && setStep(i)} 
+                  disabled={i > step} 
+                  className={`flex items-center gap-2.5 px-5 py-3 rounded-full transition-all duration-300 border ${
+                    active 
+                      ? 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white border-transparent shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105 z-10' 
+                      : done 
+                        ? 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--text)] hover:border-[var(--accent)]/50' 
+                        : 'bg-[var(--surface)]/50 border-transparent text-[var(--text-4)] opacity-70'
+                  } ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                    active ? 'bg-white/20' : done ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-[var(--surface-2)]'
                   }`}>
-                    {done ? <Check size={18} strokeWidth={3} /> : <Icon size={18} />}
+                    {done ? <Check size={14} strokeWidth={3} /> : <Icon size={14} />}
                   </div>
-                  <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:block ${active ? 'text-[var(--accent)]' : done ? 'text-[var(--text-2)]' : 'text-[var(--text-4)]'}`}>{s.title}</span>
+                  <span className="text-sm font-bold whitespace-nowrap pr-1">{s.title}</span>
+                  {active && <div className="absolute inset-0 rounded-full animate-pulse bg-white/10 pointer-events-none" />}
                 </button>
               );
             })}
@@ -395,7 +403,7 @@ export default function BuilderPage() {
             {renderStep()}
           </div>
 
-          {/* Права частина - Панель підсумку (Sticky) */}
+          {/* Права частина - Панель підсумку (Sticky для ПК) */}
           <div className="lg:col-span-4 hidden lg:block sticky top-28">
             <div className="glass-card rounded-[2rem] p-8 border-[var(--accent)]/20 shadow-[0_10px_40px_-10px_rgba(139,92,246,0.1)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--accent)]/10 rounded-full blur-[60px]" />
@@ -447,9 +455,9 @@ export default function BuilderPage() {
           </div>
         </div>
 
-        {/* Мобільна панель знизу (тільки для телефонів) */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-[var(--bg)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe">
-          <div className="flex items-center justify-between gap-4">
+        {/* Мобільна / Планшетна панель знизу */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-[var(--bg)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
+          <div className="flex items-center justify-between gap-4 max-w-2xl mx-auto">
             <div>
               <div className="text-[10px] text-[var(--text-4)] uppercase font-bold tracking-wider mb-0.5">Разом</div>
               <div className="text-xl font-bold text-gradient-animated">{totalPrice.toLocaleString('uk-UA')} ₴</div>
