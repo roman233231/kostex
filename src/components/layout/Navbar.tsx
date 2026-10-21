@@ -13,26 +13,7 @@ import SupportMessagesBell from './SupportMessagesBell';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { TranslationKey } from '@/lib/translations';
-import {
-  Menu,
-  X,
-  Home,
-  Layers,
-  Tag,
-  Briefcase,
-  Lightbulb,
-  BookOpen,
-  Info,
-  Mail,
-  LogIn,
-  UserPlus,
-  User,
-  MessageSquare,
-  Shield,
-  Star,
-  Package,
-  ArrowRight,
-} from 'lucide-react';
+import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight } from 'lucide-react';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
 
@@ -66,9 +47,7 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
   const isAdmin = appUser?.role === 'admin';
@@ -76,62 +55,42 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? 'border-b border-[var(--border)] bg-[var(--bg)]/85 backdrop-blur-xl'
-            : 'border-b border-transparent'
+            ? 'py-2 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
+            : 'py-4 bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="container flex items-center justify-between h-16 md:h-20">
+        <div className="container flex items-center justify-between">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 shrink-0 group"
-            onClick={(e) => {
-              if (e.shiftKey) {
-                e.preventDefault();
-                window.location.href = '/admin';
-              }
-            }}
-          >
-            <Logo
-              size={32}
-              className="w-8 h-8 transition-transform duration-500 group-hover:scale-110"
-            />
-            <span className="hidden sm:block text-lg font-bold tracking-tight">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+            <Logo size={32} className="w-8 h-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
+            <span className="hidden sm:block text-lg font-bold tracking-tight text-gradient-animated">
               KOSTEX
             </span>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden xl:flex items-center gap-0.5">
+          <nav className="hidden xl:flex items-center gap-1 bg-[var(--surface-2)]/50 px-2 py-1.5 rounded-full border border-[var(--border)]/50 backdrop-blur-md">
             {navLinks.map((link) => {
-              const active =
-                pathname === link.href || pathname?.startsWith(link.href + '/');
+              const active = pathname === link.href || pathname?.startsWith(link.href + '/');
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3 py-2 text-sm transition-colors group ${
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${
                     active
-                      ? 'text-[var(--text)]'
-                      : 'text-[var(--text-3)] hover:text-[var(--text)]'
+                      ? 'text-white bg-[var(--accent)] shadow-[0_0_15px_var(--accent)]'
+                      : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface)]'
                   }`}
                 >
                   {t(link.key)}
-                  <span
-                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-[var(--accent)] transition-all duration-300 ${
-                      active
-                        ? 'w-5 opacity-100'
-                        : 'w-0 opacity-0 group-hover:w-5 group-hover:opacity-100'
-                    }`}
-                  />
                 </Link>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-1">
               <LanguageSwitcher />
               <ThemeToggle />
@@ -147,69 +106,39 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button variant="outline" href="/login" className="hidden md:inline-flex">
+                <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full">
                   {t('nav.login')}
                 </Button>
-                <Button href="/register" className="hidden md:inline-flex">
+                <Button href="/register" className="hidden md:inline-flex btn-tactile rounded-full shadow-[0_0_15px_var(--accent)]">
                   {t('nav.register')}
                 </Button>
               </>
             )}
 
-            {/* Mobile burger */}
             <button
-              className="xl:hidden w-10 h-10 rounded-lg flex items-center justify-center text-[var(--text)] hover:bg-[var(--surface-2)] transition-all"
+              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all"
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Меню"
             >
-              <div className="relative w-5 h-5 flex items-center justify-center">
-                <Menu
-                  size={20}
-                  className={`absolute transition-all duration-300 ${
-                    menuOpen ? 'opacity-0 rotate-90 scale-50' : 'opacity-100 rotate-0'
-                  }`}
-                />
-                <X
-                  size={20}
-                  className={`absolute transition-all duration-300 ${
-                    menuOpen ? 'opacity-100 rotate-0' : 'opacity-0 -rotate-90 scale-50'
-                  }`}
-                />
-              </div>
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ============================================================
-          FULL-SCREEN MOBILE MENU — spacious version
-          ============================================================ */}
+      {/* Mobile menu */}
       {menuOpen && (
-        <div
-          className="xl:hidden fixed inset-x-0 top-0 z-[9999] h-[100dvh] bg-[var(--bg)] flex flex-col overflow-hidden"
-          style={{ animation: 'menuFadeIn 0.3s ease' }}
-        >
-          {/* Top bar */}
+        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)]/95 backdrop-blur-2xl flex flex-col" style={{ animation: 'menuFadeIn 0.3s ease' }}>
           <div className="flex items-center justify-between px-6 h-16 border-b border-[var(--border)] shrink-0">
-            <Link
-              href="/"
-              className="flex items-center gap-2.5"
-              onClick={() => setMenuOpen(false)}
-            >
+            <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               <Logo size={28} className="w-7 h-7" />
               <span className="text-base font-bold tracking-tight">KOSTEX</span>
             </Link>
-            <button
-              onClick={() => setMenuOpen(false)}
-              className="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--text)] hover:bg-[var(--surface-2)] transition-all"
-              aria-label="Закрити"
-            >
+            <button onClick={() => setMenuOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface-2)] border border-[var(--border)]">
               <X size={20} />
             </button>
           </div>
 
-          {/* Nav links — spacious */}
-          <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-5 space-y-1">
+          <nav className="flex-1 overflow-y-auto px-5 py-6 space-y-2">
             {navLinks.map((link, i) => {
               const Icon = link.icon;
               const active = pathname === link.href;
@@ -218,118 +147,41 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-4 py-3 px-4 rounded-xl transition-colors ${
-                    active
-                      ? 'bg-[var(--accent-soft)] text-[var(--accent-2)]'
-                      : 'text-[var(--text)] hover:bg-[var(--surface-2)]'
+                  className={`flex items-center gap-4 py-3 px-4 rounded-2xl transition-all ${
+                    active ? 'bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent)]/30' : 'text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent'
                   }`}
-                  style={{ animation: `menuItemIn 0.3s ease ${i * 30}ms both` }}
                 >
-                  <span
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      active
-                        ? 'bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-white'
-                        : 'bg-[var(--surface-2)] text-[var(--text-3)]'
-                    }`}
-                  >
+                  <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${active ? 'bg-[var(--accent)] text-white shadow-[0_0_10px_var(--accent)]' : 'bg-[var(--surface-2)] text-[var(--text-3)]'}`}>
                     <Icon size={18} />
                   </span>
-                  <span className="flex-1 text-base font-medium">
-                    {t(link.key)}
-                  </span>
-                  <ArrowRight
-                    size={16}
-                    className={active ? 'text-[var(--accent-2)]' : 'text-[var(--text-4)]'}
-                  />
+                  <span className="flex-1 text-base font-medium">{t(link.key)}</span>
+                  <ArrowRight size={16} className={active ? 'text-[var(--accent)]' : 'text-[var(--text-4)]'} />
                 </Link>
               );
             })}
           </nav>
 
-          {/* Bottom section — spacious */}
-          <div
-            className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-5 py-3.5 space-y-3"
-            style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
-          >
-            {/* Theme + language */}
+          <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-5 py-4 space-y-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">
-                Налаштування
-              </span>
-              <div className="flex items-center gap-2.5">
-                <LanguageSwitcher />
-                <ThemeToggle />
-              </div>
+              <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">Налаштування</span>
+              <div className="flex items-center gap-2.5"><LanguageSwitcher /><ThemeToggle /></div>
             </div>
-
-            {/* Divider */}
             <div className="h-px bg-[var(--border)]" />
-
-            {/* User actions */}
             {currentUser ? (
               <div className="grid grid-cols-4 gap-2">
-                <Link
-                  href="/account"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
-                >
-                  <User size={20} />
-                  <span>Акаунт</span>
-                </Link>
-                <Link
-                  href="/account/orders"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
-                >
-                  <Package size={20} />
-                  <span>Замовлення</span>
-                </Link>
-                <Link
-                  href="/account/messages"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl border border-[var(--border)] text-[11px] font-medium text-[var(--text-3)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
-                >
-                  <MessageSquare size={20} />
-                  <span>Чати</span>
-                </Link>
+                <Link href="/account" onClick={() => setMenuOpen(false)} className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--surface-2)] text-[11px] font-medium text-[var(--text-3)]"><User size={20} /><span>Акаунт</span></Link>
+                <Link href="/account/orders" onClick={() => setMenuOpen(false)} className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--surface-2)] text-[11px] font-medium text-[var(--text-3)]"><Package size={20} /><span>Замовлення</span></Link>
+                <Link href="/account/messages" onClick={() => setMenuOpen(false)} className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--surface-2)] text-[11px] font-medium text-[var(--text-3)]"><MessageSquare size={20} /><span>Чати</span></Link>
                 {isAdmin ? (
-                  <Link
-                    href="/admin"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[11px] font-semibold text-[var(--accent-2)]"
-                  >
-                    <Shield size={20} />
-                    <span>Адмін</span>
-                  </Link>
+                  <Link href="/admin" onClick={() => setMenuOpen(false)} className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-border)] text-[11px] font-semibold text-[var(--accent-2)]"><Shield size={20} /><span>Адмін</span></Link>
                 ) : (
-                  <Link
-                    href="/builder"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-[11px] font-semibold text-white"
-                  >
-                    <ArrowRight size={20} />
-                    <span>Проєкт</span>
-                  </Link>
+                  <Link href="/builder" onClick={() => setMenuOpen(false)} className="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-[11px] font-semibold text-white"><ArrowRight size={20} /><span>Проєкт</span></Link>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[var(--border)] text-sm font-medium text-[var(--text)] hover:border-[var(--accent-border)] hover:text-[var(--accent-2)] transition-colors"
-                >
-                  <LogIn size={18} />
-                  {t('nav.login')}
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-sm font-semibold text-white"
-                >
-                  <UserPlus size={18} />
-                  {t('nav.register')}
-                </Link>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/login" onClick={() => setMenuOpen(false)} className="flex items-center justify-center gap-2 py-3 rounded-xl border border-[var(--border)] text-sm font-medium"><LogIn size={18} />Увійти</Link>
+                <Link href="/register" onClick={() => setMenuOpen(false)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-sm font-semibold text-white"><UserPlus size={18} />Реєстрація</Link>
               </div>
             )}
           </div>

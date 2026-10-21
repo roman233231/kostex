@@ -22,74 +22,37 @@ export default function CatalogPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [prods, cats] = await Promise.all([
-          getPublishedProducts().catch(() => []),
-          getAllCategories().catch(() => []),
-        ]);
+        const [prods, cats] = await Promise.all([getPublishedProducts().catch(() => []), getAllCategories().catch(() => [])]);
         setProducts(prods);
         setCategories(cats);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) { console.error(err); } finally { setLoading(false); }
     };
     load();
   }, []);
 
-  const filtered =
-    activeCat === 'all' ? products : products.filter((p) => p.category === activeCat);
-
-  const allCats =
-    categories.length > 0
-      ? categories
-      : [
-          { id: 'websites', name: 'Websites', slug: 'websites' },
-          { id: 'web-apps', name: 'Web Apps', slug: 'web-apps' },
-          { id: 'software', name: 'Software', slug: 'software' },
-          { id: 'bots', name: 'Bots', slug: 'bots' },
-        ];
+  const filtered = activeCat === 'all' ? products : products.filter((p) => p.category === activeCat);
+  const allCats = categories.length > 0 ? categories : [{ id: 'websites', name: 'Websites', slug: 'websites' }, { id: 'web-apps', name: 'Web Apps', slug: 'web-apps' }, { id: 'software', name: 'Software', slug: 'software' }, { id: 'bots', name: 'Bots', slug: 'bots' }];
 
   return (
     <>
       <Navbar />
-      <main className="container py-12 md:py-16">
+      <main className="container py-24 md:py-32 min-h-screen">
         <Reveal>
-          <div className="mb-8 md:mb-12">
+          <div className="mb-12 text-center">
             <Badge>{t('nav.catalog')}</Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mt-4 tracking-tight">
-              {t('catalog.title')}
-            </h1>
-            <p className="text-base md:text-lg text-[var(--text-muted)] mt-3 md:mt-4 max-w-2xl">
-              {t('catalog.subtitle')}
-            </p>
+            <h1 className="text-4xl md:text-6xl font-bold mt-6 mb-4 text-gradient-animated">{t('catalog.title')}</h1>
+            <p className="text-lg md:text-xl text-[var(--text-3)] max-w-2xl mx-auto">{t('catalog.subtitle')}</p>
           </div>
         </Reveal>
 
-        {/* Category chips — mobile: horizontal scroll */}
-        <Reveal delay={80}>
-          <div className="mb-8 md:mb-10 -mx-5 px-5 md:mx-0 md:px-0">
-            <div className="flex gap-2.5 overflow-x-auto pb-2 md:flex-wrap md:overflow-visible md:pb-0 scrollbar-hide">
-              <button
-                onClick={() => setActiveCat('all')}
-                className={`shrink-0 px-4 py-2 rounded-full border text-sm whitespace-nowrap transition-all ${
-                  activeCat === 'all'
-                    ? 'bg-[var(--purple)] text-white border-[var(--purple)]'
-                    : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)]'
-                }`}
-              >
+        <Reveal delay={100}>
+          <div className="mb-12 flex justify-center">
+            <div className="inline-flex flex-wrap justify-center gap-2 p-2 glass-card rounded-2xl">
+              <button onClick={() => setActiveCat('all')} className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${activeCat === 'all' ? 'bg-[var(--accent)] text-white shadow-[0_0_15px_var(--accent)] btn-tactile' : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface-2)]'}`}>
                 {t('common.search') === 'Search' ? 'All' : 'Усі'}
               </button>
               {allCats.map((cat: any) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCat(cat.slug || cat.id)}
-                  className={`shrink-0 px-4 py-2 rounded-full border text-sm whitespace-nowrap transition-all capitalize ${
-                    activeCat === (cat.slug || cat.id)
-                      ? 'bg-[var(--purple)] text-white border-[var(--purple)]'
-                      : 'border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-purple)] hover:text-[var(--purple-bright)]'
-                  }`}
-                >
+                <button key={cat.id} onClick={() => setActiveCat(cat.slug || cat.id)} className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 capitalize ${activeCat === (cat.slug || cat.id) ? 'bg-[var(--accent)] text-white shadow-[0_0_15px_var(--accent)] btn-tactile' : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface-2)]'}`}>
                   {cat.name.replace('-', ' ')}
                 </button>
               ))}
@@ -97,26 +60,22 @@ export default function CatalogPage() {
           </div>
         </Reveal>
 
-        {/* Products */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="skeleton-card">
-                <div className="skeleton skeleton-image" />
-                <div className="p-4 md:p-5">
-                  <div className="skeleton skeleton-line" style={{ width: '100px' }} />
-                  <div className="skeleton skeleton-title mt-3" />
-                  <div className="skeleton skeleton-line" />
-                </div>
+              <div key={i} className="glass-card rounded-3xl p-6 h-80 animate-pulse">
+                <div className="h-40 bg-[var(--surface-2)] rounded-xl mb-4" />
+                <div className="h-6 bg-[var(--surface-2)] rounded w-2/3 mb-2" />
+                <div className="h-4 bg-[var(--surface-2)] rounded w-1/3" />
               </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-[var(--text-muted)] py-12 text-center">{t('catalog.noProducts')}</p>
+          <p className="text-[var(--text-3)] py-20 text-center text-lg">{t('catalog.noProducts')}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((product, i) => (
-              <Reveal key={product.id} delay={i * 60}>
+              <Reveal key={product.id} delay={i * 50}>
                 <ProductCard product={product} index={i} />
               </Reveal>
             ))}
