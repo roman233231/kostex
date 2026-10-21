@@ -3,135 +3,105 @@
 import Link from 'next/link';
 import Logo from './Logo';
 import { useLanguage } from '@/context/LanguageContext';
-import { TranslationKey } from '@/lib/translations';
-
-const columns: { titleKey: TranslationKey; links: { href: string; labelKey: TranslationKey }[] }[] = [
-  {
-    titleKey: 'footer.products',
-    links: [
-      { href: '/catalog/websites', labelKey: 'catalog.websites' },
-      { href: '/catalog/web-apps', labelKey: 'catalog.webapps' },
-      { href: '/catalog/software', labelKey: 'catalog.software' },
-      { href: '/catalog/bots', labelKey: 'catalog.bots' },
-    ],
-  },
-  {
-    titleKey: 'footer.company',
-    links: [
-      { href: '/services', labelKey: 'nav.services' },
-      { href: '/pricing', labelKey: 'pricing.badge' },
-      { href: '/portfolio', labelKey: 'nav.portfolio' },
-      { href: '/about', labelKey: 'nav.about' },
-    ],
-  },
-  {
-    titleKey: 'footer.more',
-    links: [
-      { href: '/blog', labelKey: 'nav.blog' },
-      { href: '/inspiration', labelKey: 'nav.inspiration' },
-      { href: '/contact', labelKey: 'nav.contact' },
-      { href: '/privacy', labelKey: 'footer.privacy' },
-      { href: '/terms', labelKey: 'footer.terms' },
-    ],
-  },
-];
+import { Instagram, Send, Mail, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-[var(--border)]">
-      <div className="container">
-        <div className="footer-grid">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10 md:gap-16">
-            <div className="flex-shrink-0 md:max-w-xs">
-              <Link href="/" className="inline-flex items-center gap-2.5 group footer-brand-text">
-                <Logo
-                  size={28}
-                  className="w-7 h-7 transition-transform duration-500 group-hover:rotate-12"
-                />
-                <span className="text-base font-bold tracking-tight">KOSTEX</span>
-              </Link>
+    <footer className="relative mt-20 border-t border-[var(--border)] bg-[var(--surface)]/30 backdrop-blur-xl overflow-hidden">
+      {/* Світіння на фоні футера */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[var(--accent)]/5 rounded-full blur-[100px] pointer-events-none" />
 
-              <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-5">
-                {t('footer.tagline')}
-              </p>
-
-              <div className="flex items-center gap-1">
-                <a
-                  href="https://instagram.com/kostex.studio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                </a>
-                <a
-                  href="https://t.me/kostex"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Telegram"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 3L3 10.5l6 2.5 2.5 7L21 3z" />
-                    <path d="M9 13l11-10" />
-                  </svg>
-                </a>
-                <a
-                  href="mailto:hello@kostex.com"
-                  aria-label="Email"
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-[var(--text-faint)] hover:text-[var(--purple-bright)] hover:bg-[var(--surface-2)] transition-all"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                </a>
-              </div>
+      <div className="container relative z-10 py-16 md:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          
+          {/* Logo & Info */}
+          <div className="lg:col-span-1">
+            <Link href="/" className="flex items-center gap-3 mb-6 group w-fit">
+              <Logo size={40} className="w-10 h-10 transition-transform duration-500 group-hover:rotate-12" />
+              <span className="text-2xl font-bold tracking-tight text-white">KOSTEX</span>
+            </Link>
+            <p className="text-[var(--text-3)] text-sm leading-relaxed mb-8 max-w-xs">
+              Digital Products Studio — створюємо сайти, додатки та боти, які приносять прибуток.
+            </p>
+            <div className="flex items-center gap-3">
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
+                <Instagram size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
+                <Send size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-white hover:border-[var(--accent)] hover:bg-[var(--accent)]/10 transition-all hover:-translate-y-1">
+                <Mail size={18} />
+              </a>
             </div>
+          </div>
 
-            <div className="grid grid-cols-3 gap-8 md:gap-12 flex-1 md:max-w-xl">
-              {columns.map((col) => (
-                <div key={col.titleKey}>
-                  <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--text)]">
-                    {t(col.titleKey)}
-                  </h4>
-                  <ul>
-                    {col.links.map((link, idx) => (
-                      <li key={`${link.href}-${idx}`}>
-                        <Link
-                          href={link.href}
-                          className="text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors"
-                        >
-                          {t(link.labelKey)}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          {/* Links */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">Продукти</h3>
+            <ul className="space-y-4">
+              {['Сайти', 'Веб-додатки', 'Софт', 'Боти'].map((item) => (
+                <li key={item}>
+                  <Link href="/catalog" className="text-[var(--text-3)] text-sm hover:text-[var(--accent)] transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {item}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">Компанія</h3>
+            <ul className="space-y-4">
+              {[
+                { name: 'Послуги', href: '/services' },
+                { name: 'Ціни', href: '/pricing' },
+                { name: 'Портфоліо', href: '/portfolio' },
+                { name: 'Про нас', href: '/about' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-[var(--text-3)] text-sm hover:text-[var(--accent)] transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">Більше</h3>
+            <ul className="space-y-4">
+              {[
+                { name: 'Блог', href: '/blog' },
+                { name: 'Натхнення', href: '/inspiration' },
+                { name: 'Контакти', href: '/contact' },
+                { name: 'Приватність', href: '/privacy' },
+                { name: 'Умови', href: '/terms' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-[var(--text-3)] text-sm hover:text-[var(--accent)] transition-colors flex items-center gap-2 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        <div className="border-t border-[var(--border)] footer-bottom flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[var(--text-faint)]">
-            © {new Date().getFullYear()} KOSTEX. {t('footer.copyright')}
+        {/* Bottom */}
+        <div className="mt-16 pt-8 border-t border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[var(--text-4)] text-sm">
+            © {currentYear} KOSTEX. Всі права захищені.
           </p>
-
-          <div className="flex items-center gap-2 text-xs text-[var(--text-faint)]">
-            <span className="relative flex w-1.5 h-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75 animate-ping" />
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
-            </span>
-            <span>{t('footer.available')}</span>
-          </div>
+          <Link href="/builder" className="flex items-center gap-2 text-sm font-semibold text-[var(--accent)] hover:text-white transition-colors group">
+            Створити проєкт <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
     </footer>

@@ -1400,3 +1400,7 @@ button:active, .btn:active {
 .text-glow {
   text-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
 }
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
