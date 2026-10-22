@@ -54,18 +54,12 @@ export default function Navbar() {
 
   return (
     <>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'py-2 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
-            : 'py-4 bg-transparent border-b border-transparent'
-        }`}
-      >
-        <div className="container flex items-center justify-between">
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-2 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]' : 'py-3 md:py-4 bg-transparent border-b border-transparent'}`}>
+        <div className="container flex items-center justify-between px-4 md:px-0">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <Logo size={32} className="w-8 h-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
-            <span className="hidden sm:block text-lg font-bold tracking-tight text-gradient-animated">
+          <Link href="/" className="flex items-center gap-2 shrink-0 group">
+            <Logo size={32} className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
+            <span className="text-lg md:text-xl font-bold tracking-tight text-gradient-animated">
               KOSTEX
             </span>
           </Link>
@@ -75,15 +69,7 @@ export default function Navbar() {
             {navLinks.map((link) => {
               const active = pathname === link.href || pathname?.startsWith(link.href + '/');
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${
-                    active
-                      ? 'text-white bg-[var(--accent)] shadow-[0_0_15px_var(--accent)]'
-                      : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface)]'
-                  }`}
-                >
+                <Link key={link.href} href={link.href} className={`relative px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${active ? 'text-white bg-[var(--accent)] shadow-[0_0_15px_var(--accent)]' : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface)]'}`}>
                   {t(link.key)}
                 </Link>
               );
@@ -106,17 +92,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full">
+                <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full text-sm">
                   {t('nav.login')}
                 </Button>
-                <Button href="/register" className="hidden md:inline-flex btn-tactile rounded-full shadow-[0_0_15px_var(--accent)]">
+                <Button href="/register" className="hidden md:inline-flex btn-tactile rounded-full shadow-[0_0_15px_var(--accent)] text-sm">
                   {t('nav.register')}
                 </Button>
               </>
             )}
 
+            {/* Mobile burger */}
             <button
-              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all"
+              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -127,8 +114,8 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)]/95 backdrop-blur-2xl flex flex-col" style={{ animation: 'menuFadeIn 0.3s ease' }}>
-          <div className="flex items-center justify-between px-6 h-16 border-b border-[var(--border)] shrink-0">
+        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)]/95 backdrop-blur-2xl flex flex-col animate-slide-up" style={{ animationDuration: '0.3s' }}>
+          <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               <Logo size={28} className="w-7 h-7" />
               <span className="text-base font-bold tracking-tight">KOSTEX</span>
@@ -138,19 +125,12 @@ export default function Navbar() {
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-5 py-6 space-y-2">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
             {navLinks.map((link, i) => {
               const Icon = link.icon;
               const active = pathname === link.href;
               return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-4 py-3 px-4 rounded-2xl transition-all ${
-                    active ? 'bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent)]/30' : 'text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent'
-                  }`}
-                >
+                <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={`flex items-center gap-4 py-3 px-4 rounded-2xl transition-all ${active ? 'bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent)]/30' : 'text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent'}`}>
                   <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${active ? 'bg-[var(--accent)] text-white shadow-[0_0_10px_var(--accent)]' : 'bg-[var(--surface-2)] text-[var(--text-3)]'}`}>
                     <Icon size={18} />
                   </span>
@@ -161,7 +141,7 @@ export default function Navbar() {
             })}
           </nav>
 
-          <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-5 py-4 space-y-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+          <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-4 py-4 space-y-4 pb-safe">
             <div className="flex items-center justify-between gap-4">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">Налаштування</span>
               <div className="flex items-center gap-2.5"><LanguageSwitcher /><ThemeToggle /></div>

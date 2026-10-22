@@ -1429,3 +1429,44 @@ button:active, .btn:active {
 :root:not(.dark) .glass-card h4 {
   color: var(--text);
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS UPGRADES
+   ========================================= */
+
+@media (max-width: 768px) {
+  /* Зменшуємо відступи в скляних картках на мобільних */
+  .glass-card, .color-card-inner {
+    padding: 1.25rem !important; /* p-5 */
+    border-radius: 1.5rem !important; /* rounded-3xl */
+  }
+
+  /* Робимо заголовки трохи меншими */
+  h1 { font-size: 2.25rem !important; line-height: 1.1 !important; }
+  h2 { font-size: 1.75rem !important; }
+  h3 { font-size: 1.25rem !important; }
+
+  /* Запобігаємо горизонтальному скролу */
+  body, html { overflow-x: hidden; }
+
+  /* Робимо всі кнопки зручними для натискання (мін. 44px) */
+  button, .btn {
+    min-height: 44px;
+  }
+
+  /* Ховаємо зайві декоративні елементи, які можуть ламати верстку */
+  .glow-orb { display: none !important; }
+
+  /* Адаптивні відступи для секцій */
+  section { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+}
+
+/* Ефект натискання для тач-екранів */
+@media (hover: none) {
+  .btn-tactile:active {
+    transform: scale(0.95);
+  }
+  .glass-card:active {
+    transform: scale(0.98);
+  }
+}
