@@ -1470,3 +1470,44 @@ button:active, .btn:active {
     transform: scale(0.98);
   }
 }
+
+/* =========================================
+   MOBILE PERFORMANCE (faster scroll)
+   ========================================= */
+
+@media (max-width: 768px) {
+  /* Полегшуємо blur на мобільних (менше навантаження на GPU) */
+  .glass-card,
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl,
+  .backdrop-blur-md {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  /* Прибираємо важкі тіні на мобільних (вони теж гальмують) */
+  .glass-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Вимикаємо "важкі" декоративні ефекти на телефоні */
+  .animate-float,
+  .animate-glow,
+  .glow-orb {
+    animation: none !important;
+  }
+
+  /* Прибираємо горизонтальний скрол */
+  body, html { overflow-x: hidden; }
+}
+
+/* Поважаємо налаштування "зменшити рух" у користувача */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

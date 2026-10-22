@@ -17,20 +17,21 @@ export default function Reveal({ children, delay = 0, className = '' }: RevealPr
     if (!el) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => setVisible(true), delay);
-            observer.unobserve(entry.target);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(el);
+        }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      {
+        threshold: 0.01, // Спрацьовує як тільки 1% елемента з'явився
+        rootMargin: '0px 0px 100px 0px', // Спрацьовує ЗА 100px до входу в екран
+      }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [delay]);
+  }, []);
 
   return (
     <div
@@ -38,8 +39,9 @@ export default function Reveal({ children, delay = 0, className = '' }: RevealPr
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(24px)',
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
+        willChange: visible ? 'auto' : 'opacity, transform',
       }}
     >
       {children}
