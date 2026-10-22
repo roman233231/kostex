@@ -11,7 +11,7 @@ import { Order } from '@/types/order';
 import { Message } from '@/types/message';
 import ReviewForm from '@/components/ui/ReviewForm';
 import { getReviewByOrderId } from '@/services/review';
-import { Star } from 'lucide-react';
+import { Star, ArrowLeft, Send, MessageSquare, Calendar, Hash } from 'lucide-react';
 import { Review } from '@/types/review';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -19,17 +19,10 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 
-import { ArrowLeft, Send, MessageSquare } from 'lucide-react';
-
 const statusLabels: Record<string, string> = {
-  'NEW': 'Нове',
-  'REVIEW': 'На розгляді',
-  'ACCEPTED': 'Прийнято',
-  'IN DEVELOPMENT': 'В розробці',
-  'CLIENT REVIEW': 'На перевірці',
-  'REVISION': 'Доопрацювання',
-  'COMPLETED': 'Завершено',
-  'CANCELLED': 'Скасовано',
+  'NEW': 'Нове', 'REVIEW': 'На розгляді', 'ACCEPTED': 'Прийнято',
+  'IN DEVELOPMENT': 'В розробці', 'CLIENT REVIEW': 'На перевірці',
+  'REVISION': 'Доопрацювання', 'COMPLETED': 'Завершено', 'CANCELLED': 'Скасовано',
 };
 
 const statusColors: Record<string, { color1: string; color2: string; glow: string }> = {
@@ -65,23 +58,13 @@ export default function ClientOrderDetailPage() {
           setOrder(found);
           const msgs = await getOrderMessages(id as string);
           setMessages(msgs);
-
           if (found.status === 'COMPLETED') {
             setLoadingReview(true);
-            try {
-              setExistingReview(await getReviewByOrderId(found.id!));
-            } catch (reviewError) {
-              console.error(reviewError);
-            } finally {
-              setLoadingReview(false);
-            }
+            try { setExistingReview(await getReviewByOrderId(found.id!)); } 
+            catch (err) { console.error(err); } finally { setLoadingReview(false); }
           }
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) { console.error(err); } finally { setLoading(false); }
     };
     fetchData();
   }, [currentUser, id]);
@@ -92,251 +75,140 @@ export default function ClientOrderDetailPage() {
     setSending(true);
     try {
       await sendMessage({
-        orderId: order.id!,
-        userId: order.userId,
-        senderId: currentUser.uid,
-        senderRole: 'client',
-        text: newMessage.trim(),
-        read: false,
+        orderId: order.id!, userId: order.userId, senderId: currentUser.uid,
+        senderRole: 'client', text: newMessage.trim(), read: false,
       });
       setNewMessage('');
-      const msgs = await getOrderMessages(order.id!);
-      setMessages(msgs);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSending(false);
-    }
+      setMessages(await getOrderMessages(order.id!));
+    } catch (err) { console.error(err); } finally { setSending(false); }
   };
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <main className="container py-16 flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
-        </main>
-        <Footer />
-      </>
+      <div className="flex items-center justify-center py-32">
+        <div className="w-10 h-10 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
+      </div>
     );
   }
 
-  if (!order) {
-    return (
-      <>
-        <Navbar />
-        <main className="container py-16 text-center">
-          <p className="text-[var(--text-muted)]">Замовлення не знайдено</p>
-        </main>
-        <Footer />
-      </>
-    );
-  }
+  if (!order) return <div className="text-center py-32 text-[var(--text-3)]">Замовлення не знайдено</div>;
 
   const colors = statusColors[order.status] || statusColors.NEW;
 
   return (
-    <>
-      <Navbar />
-      <main className="container py-8 md:py-12">
-        <Link
-          href="/account/orders"
-          className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] hover:text-[var(--purple-bright)] transition-colors mb-6"
-        >
-          <ArrowLeft size={16} /> Назад до замовлень
-        </Link>
+    <div className="animate-slide-up max-w-4xl mx-auto">
+      <Link href="/account/orders" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-2)] border border-[var(--border)] text-sm font-medium text-[var(--text-3)] hover:text-[var(--accent)] hover:border-[var(--accent)]/50 transition-all mb-6 group">
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Назад до замовлень
+      </Link>
 
-        {/* Header card */}
-        <Reveal>
-          <div
-            className="color-card mb-6"
-            style={
-              {
-                '--card-color-1': colors.color1,
-                '--card-color-2': colors.color2,
-                '--card-glow': colors.glow,
-              } as React.CSSProperties
-            }
-          >
-            <div className="color-card-inner !p-6 md:!p-8">
-              <div className="color-card-content">
-                <div className="flex items-center gap-3 flex-wrap mb-3">
-                  <span
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
-                      boxShadow: `0 6px 16px -6px ${colors.glow}`,
-                    }}
-                  >
-                    {statusLabels[order.status] || order.status}
-                  </span>
-                  <span className="text-xs text-[var(--text-faint)]">
-                    #{order.id?.slice(0, 12)}
-                  </span>
-                </div>
+      {/* Header Card */}
+      <div className="glass-card rounded-[2rem] p-8 md:p-10 mb-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[80px] pointer-events-none" />
+        
+        <div className="flex flex-wrap items-center gap-3 mb-4 relative z-10">
+          <span className="px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider border" style={{ color: colors.color1, borderColor: `${colors.color1}40`, background: `${colors.color1}10` }}>
+            {statusLabels[order.status] || order.status}
+          </span>
+          <span className="flex items-center gap-1 text-xs font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-3 py-1.5 rounded-xl">
+            <Hash size={12} /> {order.id?.slice(0, 12)}
+          </span>
+        </div>
 
-                <h1 className="text-2xl md:text-4xl font-bold tracking-tight mb-3">
-                  {order.productTitle || 'Замовлення'}
-                </h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 relative z-10 text-[var(--text)]">
+          {order.productTitle || 'Замовлення'}
+        </h1>
 
-                {order.finalPrice ? (
-                  <div className="text-base md:text-lg">
-                    <span className="text-[var(--text-faint)]">
-                      {t('common.finalPrice')}:
-                    </span>{' '}
-                    <span
-                      className="text-2xl font-bold"
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.color1}, ${colors.color2})`,
-                        WebkitBackgroundClip: 'text',
-                        backgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
-                    >
-                      {order.finalPrice.toLocaleString('uk-UA')} ₴
-                    </span>
-                  </div>
-                ) : (
-                  <div className="text-[var(--text-muted)]">
-                    {t('common.estimatedPrice')}:{' '}
-                    <strong>{order.estimatedPrice.toLocaleString('uk-UA')} ₴</strong>
-                  </div>
-                )}
-
-                <div className="text-sm text-[var(--text-faint)] mt-3">
-                  {t('common.created')}:{' '}
-                  {order.createdAt
-                    ? new Date(order.createdAt).toLocaleString('uk-UA')
-                    : ''}
-                </div>
-              </div>
+        <div className="grid grid-cols-2 gap-4 relative z-10">
+          <div className="bg-[var(--surface-2)] rounded-2xl p-4 border border-[var(--border)]">
+            <div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">
+              {order.finalPrice ? t('common.finalPrice') : t('common.estimatedPrice')}
+            </div>
+            <div className="text-xl md:text-2xl font-bold" style={{ color: colors.color1 }}>
+              {(order.finalPrice || order.estimatedPrice).toLocaleString('uk-UA')} ₴
             </div>
           </div>
-        </Reveal>
-
-        {/* Chat card */}
-        <Reveal delay={100}>
-          <div
-            className="color-card"
-            style={
-              {
-                '--card-color-1': '#8B5CF6',
-                '--card-color-2': '#A855F7',
-                '--card-glow': 'rgba(139,92,246,0.5)',
-              } as React.CSSProperties
-            }
-          >
-            <div className="color-card-inner">
-              <div className="color-card-content">
-                <div className="flex items-center gap-3 mb-5">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white"
-                    style={{
-                      background: 'linear-gradient(135deg, #8B5CF6, #A855F7)',
-                    }}
-                  >
-                    <MessageSquare size={18} />
-                  </div>
-                  <div className="font-semibold">{t('common.messages')}</div>
-                </div>
-
-                <div className="space-y-3 max-h-96 overflow-y-auto mb-4 flex flex-col">
-                  {messages.length === 0 ? (
-                    <p className="text-[var(--text-muted)] text-sm text-center py-8">
-                      {t('common.noMessages')}
-                    </p>
-                  ) : (
-                    messages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`p-3 rounded-lg max-w-[80%] ${
-                          msg.senderRole === 'admin'
-                            ? 'bg-[var(--surface-2)] border border-[var(--border)] self-start'
-                            : 'self-end ml-auto text-white'
-                        }`}
-                        style={
-                          msg.senderRole === 'client'
-                            ? {
-                                background:
-                                  'linear-gradient(135deg, #8B5CF6, #C026FF)',
-                              }
-                            : {}
-                        }
-                      >
-                        <div className="text-xs opacity-60 mb-1">
-                          {msg.senderRole === 'admin' ? 'KOSTEX' : 'Ви'} ·{' '}
-                          {msg.createdAt
-                            ? new Date(msg.createdAt).toLocaleString('uk-UA')
-                            : ''}
-                        </div>
-                        <div className="text-sm">{msg.text}</div>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <form onSubmit={handleSend} className="flex gap-2">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder={t('common.typeMessage')}
-                    className="flex-1"
-                  />
-                  <Button type="submit" disabled={sending || !newMessage.trim()}>
-                    <Send size={16} />
-                  </Button>
-                </form>
-              </div>
+          <div className="bg-[var(--surface-2)] rounded-2xl p-4 border border-[var(--border)]">
+            <div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Дата створення</div>
+            <div className="text-sm md:text-base font-semibold text-[var(--text)]">
+              {order.createdAt ? new Date(order.createdAt).toLocaleDateString('uk-UA') : '—'}
             </div>
           </div>
-        </Reveal>
+        </div>
+      </div>
 
-        {/* Review — only for completed orders */}
-        {order.status === 'COMPLETED' && (
-          <Reveal delay={200}>
-            <div className="mt-8">
-              {loadingReview ? (
-                <div className="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
-                  <div className="skeleton skeleton-line" style={{ width: '35%' }} />
-                  <div className="skeleton skeleton-line" />
-                  <div className="skeleton skeleton-line" style={{ width: '80%' }} />
-                </div>
-              ) : existingReview ? (
-                <div className="p-6 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)]">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Star size={20} fill="var(--gold)" stroke="var(--gold)" />
-                    <span className="font-semibold">{t('reviews.yourReview')}</span>
-                  </div>
-                  <div className="flex items-center gap-1 mb-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        size={14}
-                        fill={i < existingReview.rating ? 'var(--gold)' : 'transparent'}
-                        stroke={i < existingReview.rating ? 'var(--gold)' : 'var(--text-3)'}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-sm text-[var(--text-2)] leading-relaxed">
-                    {existingReview.text}
-                  </p>
-                  <p className="text-xs text-[var(--text-4)] mt-3">
-                    {existingReview.approved
-                      ? `✓ ${t('reviews.published')}`
-                      : `⏳ ${t('reviews.pending')}`}
-                  </p>
-                </div>
-              ) : (
-                <ReviewForm
-                  orderId={order.id!}
-                  orderTitle={order.productTitle || 'KOSTEX'}
-                />
-              )}
+      {/* Chat Card */}
+      <div className="glass-card rounded-[2rem] p-6 md:p-8 mb-6">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
+            <MessageSquare size={18} />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text)]">Чат з командою</h2>
+        </div>
+
+        <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2">
+          {messages.length === 0 ? (
+            <div className="text-center py-10 text-[var(--text-4)] text-sm">
+              Тут з'являться повідомлення від команди KOSTEX
             </div>
-          </Reveal>
-        )}
-      </main>
-      <Footer />
-    </>
+          ) : (
+            messages.map((msg) => {
+              const isAdmin = msg.senderRole === 'admin';
+              return (
+                <div key={msg.id} className={`flex flex-col ${isAdmin ? 'items-start' : 'items-end'}`}>
+                  <div className={`max-w-[85%] p-4 rounded-2xl ${isAdmin ? 'bg-[var(--surface-2)] border border-[var(--border)] rounded-tl-sm text-[var(--text)]' : 'bg-[var(--accent)] text-white rounded-tr-sm'}`}>
+                    <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 opacity-70 ${isAdmin ? 'text-[var(--text-3)]' : 'text-white/80'}`}>
+                      {isAdmin ? 'KOSTEX' : 'Ви'}
+                    </div>
+                    <div className="text-sm leading-relaxed">{msg.text}</div>
+                  </div>
+                  <div className="text-[10px] text-[var(--text-4)] mt-1 px-1">
+                    {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <form onSubmit={handleSend} className="flex gap-3 relative">
+          <Input value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Напишіть повідомлення..." className="flex-1 !rounded-2xl !bg-[var(--surface-2)] !border-[var(--border)]" />
+          <Button type="submit" disabled={sending || !newMessage.trim()} className="!rounded-2xl !px-6 shadow-[0_0_15px_var(--accent)] btn-tactile">
+            <Send size={18} />
+          </Button>
+        </form>
+      </div>
+
+      {/* Review Section */}
+      {order.status === 'COMPLETED' && (
+        <div className="mt-6">
+          {loadingReview ? (
+            <div className="glass-card rounded-3xl p-8 animate-pulse">
+              <div className="h-6 bg-[var(--surface-2)] rounded w-1/3 mb-4" />
+              <div className="h-4 bg-[var(--surface-2)] rounded w-full mb-2" />
+              <div className="h-4 bg-[var(--surface-2)] rounded w-2/3" />
+            </div>
+          ) : existingReview ? (
+            <div className="glass-card rounded-3xl p-8 border-[var(--gold)]/30 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--gold)]/10 rounded-full blur-[50px]" />
+              <div className="flex items-center gap-2 mb-4 relative z-10">
+                <Star size={24} fill="var(--gold)" stroke="var(--gold)" />
+                <h2 className="text-xl font-bold text-[var(--text)]">{t('reviews.yourReview')}</h2>
+              </div>
+              <div className="flex items-center gap-1 mb-4 relative z-10">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} size={18} fill={i < existingReview.rating ? 'var(--gold)' : 'transparent'} stroke={i < existingReview.rating ? 'var(--gold)' : 'var(--text-4)'} />
+                ))}
+              </div>
+              <p className="text-[var(--text-2)] leading-relaxed relative z-10 text-lg">"{existingReview.text}"</p>
+              <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--surface-2)] text-xs font-bold uppercase tracking-wider relative z-10">
+                {existingReview.approved ? <span className="text-green-500">✓ {t('reviews.published')}</span> : <span className="text-yellow-500">⏳ {t('reviews.pending')}</span>}
+              </div>
+            </div>
+          ) : (
+            <ReviewForm orderId={order.id!} orderTitle={order.productTitle || 'KOSTEX'} />
+          )}
+        </div>
+      )}
+    </div>
   );
 }

@@ -39,8 +39,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
   if (loading) {
     return (
-      <div className="container py-16 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[var(--purple)] border-t-transparent animate-spin" />
+      <div className="container py-32 flex items-center justify-center min-h-screen">
+        <div className="w-10 h-10 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -51,10 +51,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <>
       <Navbar />
 
-      {/* Mobile horizontal nav */}
+      {/* Mobile nav */}
       <div className="md:hidden border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-xl sticky top-16 z-30">
-        <div className="px-5 overflow-x-auto scrollbar-hide">
-          <nav className="flex gap-1 py-3 min-w-max">
+        <div className="px-4 overflow-x-auto scrollbar-hide">
+          <nav className="flex gap-2 py-3 min-w-max">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -62,13 +62,13 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                  className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-300 ${
                     isActive
-                      ? 'bg-[var(--purple-soft)] text-[var(--purple-bright)] border border-[var(--border-purple)]'
-                      : 'text-[var(--text-muted)] hover:text-[var(--text)] border border-transparent'
+                      ? 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_0_15px_var(--accent)]'
+                      : 'bg-[var(--surface-2)] text-[var(--text-3)] border border-[var(--border)]'
                   }`}
                 >
-                  <Icon size={14} />
+                  <Icon size={16} />
                   {t(item.labelKey)}
                 </Link>
               );
@@ -77,11 +77,11 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         </div>
       </div>
 
-      <div className="container py-6 md:py-10 flex gap-10">
+      <div className="container py-8 md:py-16 flex flex-col md:flex-row gap-8 min-h-[80vh]">
         {/* Desktop sidebar */}
-        <aside className="w-60 shrink-0 hidden md:block">
-          <div className="sticky top-24">
-            <nav className="space-y-1">
+        <aside className="w-64 shrink-0 hidden md:block">
+          <div className="glass-card rounded-3xl p-4 sticky top-28">
+            <nav className="space-y-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -89,17 +89,17 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all relative overflow-hidden group ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 relative group overflow-hidden ${
                       isActive
-                        ? 'bg-[var(--purple-soft)] text-[var(--purple-bright)] border border-[var(--border-purple)] font-medium'
-                        : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] border border-transparent'
+                        ? 'bg-[var(--accent)]/10 text-[var(--accent)]'
+                        : 'text-[var(--text-3)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
                     }`}
                   >
-                    <Icon size={18} className="shrink-0" />
-                    {t(item.labelKey)}
                     {isActive && (
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[var(--purple-bright)] shadow-[0_0_8px_var(--purple-bright)]" />
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--accent)] rounded-r-full shadow-[0_0_10px_var(--accent)]" />
                     )}
+                    <Icon size={18} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-[var(--accent)]' : ''}`} />
+                    {t(item.labelKey)}
                   </Link>
                 );
               })}
@@ -107,8 +107,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           </div>
         </aside>
 
-        {/* Main */}
-        <main className="flex-1 min-w-0">{children}</main>
+        {/* Main content */}
+        <main className="flex-1 min-w-0 animate-slide-up">
+          {children}
+        </main>
       </div>
 
       <Footer />
