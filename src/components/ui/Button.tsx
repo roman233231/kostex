@@ -37,8 +37,10 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps | L
     );
 
     if ('href' in props && props.href !== undefined) {
+      // Виправлення: витягуємо href з props, щоб не передавати його двічі
+      const { href, ...rest } = props as LinkProps;
       return (
-        <Link href={props.href} className={combinedClassName} {...(props as LinkProps)}>
+        <Link href={href} className={combinedClassName} {...rest}>
           {shine}
           <span className="relative z-10 flex items-center gap-2">{children}</span>
         </Link>
