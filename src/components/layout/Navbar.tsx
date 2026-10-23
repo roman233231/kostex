@@ -13,13 +13,14 @@ import SupportMessagesBell from './SupportMessagesBell';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { TranslationKey } from '@/lib/translations';
-import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight } from 'lucide-react';
+import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight, LayoutTemplate } from 'lucide-react';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
 
-const navLinks: { href: string; key: TranslationKey; icon: any }[] = [
+const navLinks: { href: string; key: any; icon: any }[] = [
   { href: '/services', key: 'nav.services', icon: Layers },
   { href: '/catalog', key: 'nav.catalog', icon: Tag },
+  { href: '/ready-sites', key: 'Готові сайти', icon: LayoutTemplate },
   { href: '/pricing', key: 'pricing.badge', icon: Briefcase },
   { href: '/portfolio', key: 'nav.portfolio', icon: Home },
   { href: '/reviews', key: 'reviews.badge', icon: Star },
@@ -56,21 +57,18 @@ export default function Navbar() {
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-2 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]' : 'py-3 md:py-4 bg-transparent border-b border-transparent'}`}>
         <div className="container flex items-center justify-between px-4 md:px-0">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <Logo size={32} className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
-            <span className="text-lg md:text-xl font-bold tracking-tight text-gradient-animated">
-              KOSTEX
-            </span>
+            <span className="text-lg md:text-xl font-bold tracking-tight text-gradient-animated">KOSTEX</span>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden xl:flex items-center gap-1 bg-[var(--surface-2)]/50 px-2 py-1.5 rounded-full border border-[var(--border)]/50 backdrop-blur-md">
             {navLinks.map((link) => {
               const active = pathname === link.href || pathname?.startsWith(link.href + '/');
+              const label = link.key.startsWith('nav.') || link.key.startsWith('pricing.') || link.key.startsWith('reviews.') ? t(link.key as TranslationKey) : link.key;
               return (
                 <Link key={link.href} href={link.href} className={`relative px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group ${active ? 'text-white bg-[var(--accent)] shadow-[0_0_15px_var(--accent)]' : 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface)]'}`}>
-                  {t(link.key)}
+                  {label}
                 </Link>
               );
             })}
@@ -92,27 +90,18 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full text-sm">
-                  {t('nav.login')}
-                </Button>
-                <Button href="/register" className="hidden md:inline-flex btn-tactile rounded-full shadow-[0_0_15px_var(--accent)] text-sm">
-                  {t('nav.register')}
-                </Button>
+                <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full text-sm">{t('nav.login')}</Button>
+                <Button href="/register" className="hidden md:inline-flex btn-tactile rounded-full shadow-[0_0_15px_var(--accent)] text-sm">{t('nav.register')}</Button>
               </>
             )}
 
-            {/* Mobile burger */}
-            <button
-              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
+            <button className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)]/95 backdrop-blur-2xl flex flex-col animate-slide-up" style={{ animationDuration: '0.3s' }}>
           <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0">
@@ -126,15 +115,16 @@ export default function Navbar() {
           </div>
 
           <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
-            {navLinks.map((link, i) => {
+            {navLinks.map((link) => {
               const Icon = link.icon;
               const active = pathname === link.href;
+              const label = link.key.startsWith('nav.') || link.key.startsWith('pricing.') || link.key.startsWith('reviews.') ? t(link.key as TranslationKey) : link.key;
               return (
                 <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className={`flex items-center gap-4 py-3 px-4 rounded-2xl transition-all ${active ? 'bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent)]/30' : 'text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent'}`}>
                   <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${active ? 'bg-[var(--accent)] text-white shadow-[0_0_10px_var(--accent)]' : 'bg-[var(--surface-2)] text-[var(--text-3)]'}`}>
                     <Icon size={18} />
                   </span>
-                  <span className="flex-1 text-base font-medium">{t(link.key)}</span>
+                  <span className="flex-1 text-base font-medium">{label}</span>
                   <ArrowRight size={16} className={active ? 'text-[var(--accent)]' : 'text-[var(--text-4)]'} />
                 </Link>
               );
