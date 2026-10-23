@@ -14,7 +14,7 @@ import { PortfolioItem } from '@/types/portfolio';
 import { createOrder } from '@/services/order';
 import { notifyAllAdmins } from '@/services/notification';
 import { useRouter } from 'next/navigation';
-import { ShoppingCart, ArrowRight, LayoutTemplate, Loader2, Zap, Clock, BadgeCheck } from 'lucide-react';
+import { ShoppingCart, ArrowRight, LayoutTemplate, Loader2, Zap, Clock, BadgeCheck, Eye } from 'lucide-react';
 
 export default function ReadySitesPage() {
   const { t } = useLanguage();
@@ -47,10 +47,10 @@ export default function ReadySitesPage() {
         design: 'Premium',
         pages: ['Home'],
         features: [],
-        requirements: `Клієнт купує готовий сайт "${item.title}". Потрібно лише замінити контент (тексти, фото) та налаштувати під клієнта.`,
+        requirements: `Клієнт купує готовий сайт "${item.title}". Потрібно замінити контент (тексти, фото) та налаштувати під клієнта.`,
         references: [],
         estimatedPrice: readyPrice,
-        estimatedTime: '1–2 дні',
+        estimatedTime: '3–5 днів',
         status: 'NEW',
       });
       await notifyAllAdmins('New ready-site order', `Ready site: ${item.title}`, `/admin/orders/${orderId}`);
@@ -74,7 +74,7 @@ export default function ReadySitesPage() {
               Купіть готовий сайт
             </h1>
             <p className="text-lg md:text-xl text-[var(--text-3)]">
-              Це вже розроблені сайти, які можна купити одразу. Вони <strong className="text-[var(--text)]">дешевші</strong> та <strong className="text-[var(--text)]">готові за 1–2 дні</strong>, ніж розробка з нуля.
+              Вже розроблені сайти, які можна адаптувати під ваш бізнес. <strong className="text-[var(--text)]">Дешевше</strong> та <strong className="text-[var(--text)]">швидше</strong>, ніж розробка з нуля.
             </p>
           </div>
         </Reveal>
@@ -96,7 +96,7 @@ export default function ReadySitesPage() {
               </div>
               <div>
                 <div className="font-bold text-[var(--text)] text-sm">Швидше</div>
-                <div className="text-xs text-[var(--text-3)]">Запуск за 1–2 дні</div>
+                <div className="text-xs text-[var(--text-3)]">Запуск за 3–5 днів</div>
               </div>
             </div>
             <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
@@ -105,7 +105,7 @@ export default function ReadySitesPage() {
               </div>
               <div>
                 <div className="font-bold text-[var(--text)] text-sm">Перевірено</div>
-                <div className="text-xs text-[var(--text-3)]">Вже працює</div>
+                <div className="text-xs text-[var(--text-3)]">Працюючий дизайн</div>
               </div>
             </div>
           </div>
@@ -114,8 +114,8 @@ export default function ReadySitesPage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass-card rounded-3xl p-6 h-80 animate-pulse">
-                <div className="h-40 bg-[var(--surface-2)] rounded-xl mb-4" />
+              <div key={i} className="glass-card rounded-3xl p-6 h-96 animate-pulse">
+                <div className="h-44 bg-[var(--surface-2)] rounded-xl mb-4" />
                 <div className="h-6 bg-[var(--surface-2)] rounded w-2/3 mb-2" />
                 <div className="h-4 bg-[var(--surface-2)] rounded w-1/3" />
               </div>
@@ -134,7 +134,7 @@ export default function ReadySitesPage() {
             {templates.map((item, i) => (
               <Reveal key={item.id} delay={i * 60}>
                 <div className="glass-card rounded-3xl overflow-hidden flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 group">
-                  <div className="relative h-48 overflow-hidden bg-[var(--surface-2)]">
+                  <Link href={`/ready-sites/${item.slug}`} className="relative h-44 overflow-hidden bg-[var(--surface-2)] block">
                     {item.image ? (
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     ) : (
@@ -143,24 +143,36 @@ export default function ReadySitesPage() {
                     <div className="absolute top-3 right-3 px-3 py-1.5 rounded-lg bg-green-500 text-white text-xs font-bold shadow-lg flex items-center gap-1">
                       <Zap size={12} /> Готовий
                     </div>
-                  </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                      <span className="text-white text-xs font-bold flex items-center gap-1.5 bg-white/20 backdrop-blur px-3 py-1.5 rounded-full">
+                        <Eye size={14} /> Дивитися детальніше
+                      </span>
+                    </div>
+                  </Link>
                   <div className="p-6 flex flex-col flex-1">
                     <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--accent)] mb-2">{item.category}</div>
-                    <h3 className="text-lg font-bold text-[var(--text)] mb-2">{item.title}</h3>
+                    <Link href={`/ready-sites/${item.slug}`}>
+                      <h3 className="text-lg font-bold text-[var(--text)] mb-2 group-hover:text-[var(--accent)] transition-colors">{item.title}</h3>
+                    </Link>
                     <p className="text-sm text-[var(--text-3)] line-clamp-2 mb-4 flex-1">{item.description}</p>
-                    
+
                     <div className="flex items-end justify-between pt-4 border-t border-[var(--border)] mb-4">
                       <div>
                         <div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Ціна</div>
                         <div className="text-2xl font-bold text-gradient-animated">{(item.price || 5000).toLocaleString('uk-UA')} ₴</div>
                       </div>
-                      <div className="text-xs text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">1–2 дні</div>
+                      <div className="text-xs text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">3–5 днів</div>
                     </div>
 
-                    <Button onClick={() => handleBuy(item)} disabled={buyingId === item.id} className="w-full rounded-xl btn-tactile shadow-[0_0_15px_var(--accent)]">
-                      {buyingId === item.id ? <Loader2 size={18} className="animate-spin mr-2" /> : <ShoppingCart size={18} className="mr-2" />}
-                      {buyingId === item.id ? 'Створення...' : 'Купити одразу'}
-                    </Button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link href={`/ready-sites/${item.slug}`} className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text-2)] text-sm font-semibold hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all">
+                        <Eye size={16} /> Деталі
+                      </Link>
+                      <Button onClick={() => handleBuy(item)} disabled={buyingId === item.id} className="rounded-xl btn-tactile shadow-[0_0_15px_var(--accent)] !py-2.5">
+                        {buyingId === item.id ? <Loader2 size={16} className="animate-spin" /> : <ShoppingCart size={16} className="mr-1" />}
+                        {buyingId === item.id ? '...' : 'Купити'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </Reveal>
