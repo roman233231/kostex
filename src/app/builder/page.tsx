@@ -10,16 +10,22 @@ import Reveal from '@/components/ui/Reveal';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { createOrder } from '@/services/order';
-import { getPublishedProducts } from '@/services/product';
 import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
-import { Product } from '@/types/product';
 import { Feature } from '@/types/feature';
-import { 
-  Package, Palette, FileText, Zap, PenLine, Check, 
-  ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate, 
-  Smartphone, Monitor, ShieldCheck 
-} from 'lucide-react';
+import { Package, Palette, FileText, Zap, PenLine, Check, ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate, Smartphone, Monitor, ShieldCheck, Globe, Bot, Code, ShoppingCart, BarChart3, Settings } from 'lucide-react';
+
+// Базові категорії (типи проєктів), а не шаблони
+const baseCategories = [
+  { id: 'website', name: 'Сайт / Лендінг', icon: Globe, price: 5000, time: '7–14 днів', desc: 'Корпоративний сайт, лендінг, візитка або портфоліо' },
+  { id: 'webapp', name: 'Веб-додаток', icon: Zap, price: 12000, time: '2–4 тижні', desc: 'Складний додаток з авторизацією, базою даних та логікою' },
+  { id: 'bot', name: 'Telegram-бот', icon: Bot, price: 4000, time: '3–7 днів', desc: 'Бот для продажів, запису на послуги або підтримки' },
+  { id: 'software', name: 'Софт / Десктоп', icon: Code, price: 15000, time: '3–5 тижнів', desc: 'Крос-платформний софт або утиліта для бізнесу' },
+  { id: 'crm', name: 'CRM-система', icon: BarChart3, price: 20000, time: '4–6 тижнів', desc: 'Управління клієнтами, замовленнями та командою' },
+  { id: 'ecommerce', name: 'E-commerce / Магазин', icon: ShoppingCart, price: 15000, time: '2–4 тижні', desc: 'Онлайн-магазин з каталогом, кошиком та оплатою' },
+  { id: 'mobile', name: 'Мобільний додаток', icon: Smartphone, price: 25000, time: '4–8 тижнів', desc: 'iOS / Android додаток під ваш бізнес' },
+  { id: 'automation', name: 'Автоматизація', icon: Settings, price: 8000, time: '1–2 тижні', desc: 'Інтеграції, парсери, скрипти та боти для рутини' },
+];
 
 const designOptions = [
   { id: 'Minimal', label: 'Minimal', icon: Monitor },
@@ -41,7 +47,7 @@ const commonPages = [
 ];
 
 const steps = [
-  { titleKey: 'builder.step.product', title: 'Продукт', icon: Package },
+  { titleKey: 'builder.step.product', title: 'Тип проєкту', icon: Package },
   { titleKey: 'builder.step.style', title: 'Стиль', icon: Palette },
   { titleKey: 'builder.step.pages', title: 'Сторінки', icon: FileText },
   { titleKey: 'builder.step.features', title: 'Фічі', icon: Zap },
@@ -52,10 +58,10 @@ const steps = [
 export default function BuilderPage() {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const { t, tProduct } = useLanguage();
+  const { t } = useLanguage();
 
   const [step, setStep] = useState(0);
-  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [template, setTemplate] = useState('');
   const [design, setDesign] = useState('');
   const [selectedPages, setSelectedPages] = useState<string[]>(['Home']);
@@ -65,34 +71,25 @@ export default function BuilderPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
   const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
   const [featuresLoading, setFeaturesLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try { const data = await getPublishedProducts(); setAvailableProducts(data); } 
-      catch (err) { console.error(err); } finally { setProductsLoading(false); }
-    };
     const fetchFeatures = async () => {
       try { const data = await getActiveFeatures(); setAvailableFeatures(data); } 
       catch (err) { console.error(err); } finally { setFeaturesLoading(false); }
     };
-    fetchProducts(); fetchFeatures();
+    fetchFeatures();
   }, []);
 
-  const product = availableProducts.find((p) => p.id === selectedProduct);
-
+  const selectedCategory = baseCategories.find((c) => c.id === selectedCategoryId);
   const pagesPrice = selectedPages.reduce((sum, pageName) => {
     const p = commonPages.find((cp) => cp.name === pageName); return sum + (p?.price || 0);
   }, 0);
-
   const featuresPrice = selectedFeatures.reduce((sum, featureId) => {
     const feature = availableFeatures.find((f) => f.id === featureId); return sum + (feature?.price || 0);
   }, 0);
-
-  const totalPrice = (product?.startingPrice || 0) + pagesPrice + featuresPrice;
+  const totalPrice = (selectedCategory?.price || 0) + pagesPrice + featuresPrice;
 
   const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
     if (list.includes(value)) { setList(list.filter((v) => v !== value)); } 
@@ -100,7 +97,7 @@ export default function BuilderPage() {
   };
 
   const handleNext = () => {
-    if (step === 0 && !selectedProduct) { setError('Будь ласка, оберіть продукт'); return; }
+    if (step === 0 && !selectedCategoryId) { setError('Оберіть тип проєкту'); return; }
     if (step === 1 && (!template || !design)) { setError('Оберіть шаблон та стиль дизайну'); return; }
     setError(''); setStep(step + 1); window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -113,13 +110,14 @@ export default function BuilderPage() {
     try {
       const featureNames = availableFeatures.filter((f) => selectedFeatures.includes(f.id!)).map((f) => f.name);
       const orderId = await createOrder({
-        userId: currentUser.uid, productId: selectedProduct,
-        productTitle: product ? tProduct(product.slug, 'title', product.title) : undefined,
+        userId: currentUser.uid, 
+        productId: selectedCategoryId,
+        productTitle: selectedCategory?.name || 'Індивідуальний проєкт',
         template, design, pages: selectedPages, features: featureNames, requirements,
         references: references ? references.split('\n').filter((r) => r.trim()) : [],
-        estimatedPrice: totalPrice, estimatedTime: product?.estimatedTime || 'TBD', status: 'NEW',
+        estimatedPrice: totalPrice, estimatedTime: selectedCategory?.time || 'TBD', status: 'NEW',
       });
-      await notifyAllAdmins('New order received', `New order: ${product?.title || 'Project'}`, `/admin/orders/${orderId}`);
+      await notifyAllAdmins('New order received', `New order: ${selectedCategory?.name || 'Project'}`, `/admin/orders/${orderId}`);
       router.push('/account/orders');
     } catch (err: any) {
       console.error(err); setError(err.message || 'Failed to create order');
@@ -131,44 +129,36 @@ export default function BuilderPage() {
       case 0:
         return (
           <div className="animate-slide-up">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.chooseStart')}</h2>
-            <p className="text-[var(--text-3)] mb-8">{t('builder.chooseStartDesc')}</p>
-            
-            {productsLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Array.from({ length: 4 }).map((_, i) => (<div key={i} className="glass-card p-6 h-48 animate-pulse rounded-3xl" />))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {availableProducts.map((p) => {
-                  const isSelected = selectedProduct === p.id;
-                  return (
-                    <button key={p.id} onClick={() => setSelectedProduct(p.id)}
-                      className={`text-left rounded-3xl border p-6 transition-all duration-300 relative overflow-hidden group flex flex-col ${
-                        isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-[0_0_30px_rgba(139,92,246,0.15)] ring-1 ring-[var(--accent)]' 
-                        : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/50 hover:-translate-y-1'
-                      }`}
-                    >
-                      {isSelected && (
-                        <div className="absolute top-5 right-5 w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center text-white shadow-lg animate-zoom-in">
-                          <Check size={14} strokeWidth={3} />
-                        </div>
-                      )}
-                      <div className="text-3xl mb-4 bg-[var(--surface-2)] w-14 h-14 rounded-2xl flex items-center justify-center border border-[var(--border)]">
-                        {p.category === 'websites' ? '🌐' : p.category === 'web-apps' ? '⚡' : p.category === 'software' ? '💻' : p.category === 'bots' ? '🤖' : '📦'}
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Що ви хочете створити?</h2>
+            <p className="text-[var(--text-3)] mb-8">Оберіть тип проєкту. Далі ви налаштуєте його під себе.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {baseCategories.map((cat) => {
+                const Icon = cat.icon;
+                const isSelected = selectedCategoryId === cat.id;
+                return (
+                  <button key={cat.id} onClick={() => setSelectedCategoryId(cat.id)}
+                    className={`text-left rounded-3xl border p-6 transition-all duration-300 relative overflow-hidden group flex flex-col ${
+                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-[0_0_30px_rgba(139,92,246,0.15)] ring-1 ring-[var(--accent)]' 
+                      : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/50 hover:-translate-y-1'
+                    }`}
+                  >
+                    {isSelected && (<div className="absolute top-5 right-5 w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center text-white shadow-lg animate-zoom-in"><Check size={14} strokeWidth={3} /></div>)}
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+                      <Icon size={26} />
+                    </div>
+                    <h3 className="text-lg font-bold mb-2 text-[var(--text)]">{cat.name}</h3>
+                    <p className="text-sm text-[var(--text-3)] mb-6 line-clamp-2 flex-1">{cat.desc}</p>
+                    <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] w-full mt-auto">
+                      <div>
+                        <div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-0.5">Від</div>
+                        <div className="text-base font-bold text-[var(--text)]">{cat.price.toLocaleString('uk-UA')} ₴</div>
                       </div>
-                      <div className="inline-flex text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--accent)] mb-2">{p.category.replace('-', ' ')}</div>
-                      <h3 className="text-lg font-bold mb-2 text-[var(--text)]">{tProduct(p.slug, 'title', p.title)}</h3>
-                      <p className="text-sm text-[var(--text-3)] mb-6 line-clamp-2 flex-1">{tProduct(p.slug, 'shortDescription', p.shortDescription)}</p>
-                      <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] w-full mt-auto">
-                        <div className="text-base font-bold text-[var(--text)]">{p.startingPrice.toLocaleString('uk-UA')} ₴</div>
-                        <div className="text-xs font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">{p.estimatedTime}</div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                      <div className="text-xs font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">{cat.time}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         );
 
@@ -179,7 +169,6 @@ export default function BuilderPage() {
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.designStyle')}</h2>
               <p className="text-[var(--text-3)]">{t('builder.designStyleDesc')}</p>
             </div>
-
             <div className="glass-card rounded-3xl p-6 md:p-8">
               <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">1. {t('builder.template')}</label>
               <div className="flex flex-wrap gap-2.5">
@@ -193,13 +182,11 @@ export default function BuilderPage() {
                 ))}
               </div>
             </div>
-
             <div className="glass-card rounded-3xl p-6 md:p-8">
               <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">2. {t('builder.design')}</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {designOptions.map((d) => {
-                  const Icon = d.icon;
-                  const isSel = design === d.id;
+                  const Icon = d.icon; const isSel = design === d.id;
                   return (
                     <button key={d.id} onClick={() => setDesign(d.id)}
                       className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 gap-3 ${
@@ -312,34 +299,21 @@ export default function BuilderPage() {
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.reviewQ')}</h2>
               <p className="text-[var(--text-3)]">{t('builder.reviewDesc')}</p>
             </div>
-            
             <div className="glass-card rounded-3xl p-6 md:p-8">
               <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-6 pb-4 border-b border-[var(--border)]">Деталі проєкту</div>
               <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Продукт</div><div className="font-semibold text-[var(--text)]">{product ? tProduct(product.slug, 'title', product.title) : '—'}</div></div>
-                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Термін</div><div className="font-semibold text-[var(--text)]">{product?.estimatedTime || '—'}</div></div>
+                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Тип</div><div className="font-semibold text-[var(--text)]">{selectedCategory?.name || '—'}</div></div>
+                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Термін</div><div className="font-semibold text-[var(--text)]">{selectedCategory?.time || '—'}</div></div>
                 <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Шаблон</div><div className="font-semibold text-[var(--text)]">{template}</div></div>
                 <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Дизайн</div><div className="font-semibold text-[var(--text)]">{design}</div></div>
               </div>
             </div>
-
             <div className="glass-card rounded-3xl p-6">
               <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">Обрані сторінки ({selectedPages.length})</div>
               <div className="flex flex-wrap gap-2">
                 {selectedPages.map((p) => (<span key={p} className="px-3 py-1.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-xs font-medium text-[var(--text-2)]">{p}</span>))}
               </div>
             </div>
-
-            {selectedFeatures.length > 0 && (
-              <div className="glass-card rounded-3xl p-6">
-                <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">Додаткові фічі ({selectedFeatures.length})</div>
-                <div className="flex flex-wrap gap-2">
-                  {availableFeatures.filter((f) => selectedFeatures.includes(f.id!)).map((f) => (
-                    <span key={f.id} className="px-3 py-1.5 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/30 text-xs font-medium text-[var(--accent)]">{f.name}</span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         );
       default: return null;
@@ -349,8 +323,7 @@ export default function BuilderPage() {
   return (
     <>
       <Navbar />
-      <main className="container py-24 md:py-32 min-h-screen pb-40 lg:pb-24">
-        {/* Заголовок сторінки */}
+      <main className="container py-24 md:py-32 min-h-screen pb-32 md:pb-24">
         <Reveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] mb-4 text-[var(--text)]">
@@ -360,33 +333,24 @@ export default function BuilderPage() {
           </div>
         </Reveal>
 
-        {/* Новий Stepper (Капсули) */}
-        <div className="mb-12 max-w-5xl mx-auto overflow-x-auto pb-4 scrollbar-hide">
-          <div className="flex items-center gap-2 min-w-max px-2">
+        <div className="mb-12 max-w-4xl mx-auto">
+          <div className="flex items-center justify-between relative">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[var(--surface-2)] rounded-full -z-10" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--accent)] rounded-full transition-all duration-500 -z-10" style={{ width: `${(step / (steps.length - 1)) * 100}%` }} />
             {steps.map((s, i) => {
               const Icon = s.icon;
               const active = i === step;
               const done = i < step;
               return (
-                <button 
-                  key={i} 
-                  onClick={() => i <= step && setStep(i)} 
-                  disabled={i > step} 
-                  className={`flex items-center gap-2.5 px-5 py-3 rounded-full transition-all duration-300 border ${
-                    active 
-                      ? 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white border-transparent shadow-[0_0_20px_rgba(139,92,246,0.4)] scale-105 z-10' 
-                      : done 
-                        ? 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--text)] hover:border-[var(--accent)]/50' 
-                        : 'bg-[var(--surface)]/50 border-transparent text-[var(--text-4)] opacity-70'
-                  } ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}
-                >
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                    active ? 'bg-white/20' : done ? 'bg-[var(--accent)]/10 text-[var(--accent)]' : 'bg-[var(--surface-2)]'
+                <button key={i} onClick={() => i <= step && setStep(i)} disabled={i > step} className={`flex flex-col items-center gap-2 ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
+                    active ? 'bg-[var(--bg)] border-[var(--accent)] text-[var(--accent)] shadow-[0_0_20px_var(--accent)] scale-110' 
+                    : done ? 'bg-[var(--accent)] border-[var(--accent)] text-white' 
+                    : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-4)]'
                   }`}>
-                    {done ? <Check size={14} strokeWidth={3} /> : <Icon size={14} />}
+                    {done ? <Check size={18} strokeWidth={3} /> : <Icon size={18} />}
                   </div>
-                  <span className="text-sm font-bold whitespace-nowrap pr-1">{s.title}</span>
-                  {active && <div className="absolute inset-0 rounded-full animate-pulse bg-white/10 pointer-events-none" />}
+                  <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:block ${active ? 'text-[var(--accent)]' : done ? 'text-[var(--text-2)]' : 'text-[var(--text-4)]'}`}>{s.title}</span>
                 </button>
               );
             })}
@@ -395,25 +359,17 @@ export default function BuilderPage() {
 
         {error && (<div className="mb-8 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm flex items-center gap-3 animate-slide-up max-w-4xl mx-auto"><span className="text-lg">⚠</span><span>{error}</span></div>)}
 
-        {/* Основна сітка: Контент + Сайдбар */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-6xl mx-auto items-start">
-          
-          {/* Ліва частина - Кроки */}
-          <div className="lg:col-span-8">
-            {renderStep()}
-          </div>
+          <div className="lg:col-span-8">{renderStep()}</div>
 
-          {/* Права частина - Панель підсумку (Sticky для ПК) */}
           <div className="lg:col-span-4 hidden lg:block sticky top-28">
             <div className="glass-card rounded-[2rem] p-8 border-[var(--accent)]/20 shadow-[0_10px_40px_-10px_rgba(139,92,246,0.1)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--accent)]/10 rounded-full blur-[60px]" />
-              
               <h3 className="text-lg font-bold text-[var(--text)] mb-6">Ваше замовлення</h3>
-              
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-[var(--text-3)]">Базовий продукт</span>
-                  <span className="font-semibold text-[var(--text)]">{(product?.startingPrice || 0).toLocaleString('uk-UA')} ₴</span>
+                  <span className="text-[var(--text-3)]">Базовий тип</span>
+                  <span className="font-semibold text-[var(--text)]">{(selectedCategory?.price || 0).toLocaleString('uk-UA')} ₴</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-[var(--text-3)]">Сторінки ({selectedPages.length})</span>
@@ -424,7 +380,6 @@ export default function BuilderPage() {
                   <span className="font-semibold text-[var(--text)]">+{featuresPrice.toLocaleString('uk-UA')} ₴</span>
                 </div>
               </div>
-
               <div className="pt-6 border-t border-[var(--border)] mb-8">
                 <div className="flex justify-between items-end">
                   <span className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-1">Разом</span>
@@ -432,7 +387,6 @@ export default function BuilderPage() {
                 </div>
                 <p className="text-[10px] text-[var(--text-4)] mt-3 leading-relaxed">Фінальна ціна може відрізнятися в залежності від складності та вимог.</p>
               </div>
-
               <div className="space-y-3 relative z-10">
                 {step < steps.length - 1 ? (
                   <Button onClick={handleNext} className="w-full py-4 text-base rounded-xl shadow-[0_0_20px_var(--accent)] btn-tactile">
@@ -444,7 +398,6 @@ export default function BuilderPage() {
                     {loading ? 'Створення...' : 'Створити проєкт'}
                   </Button>
                 )}
-                
                 {step > 0 && (
                   <Button variant="outline" onClick={handleBack} className="w-full py-3 rounded-xl border-[var(--border)] hover:bg-[var(--surface-2)] text-[var(--text-2)]">
                     <ArrowLeft size={16} className="mr-2" /> Назад
@@ -455,7 +408,6 @@ export default function BuilderPage() {
           </div>
         </div>
 
-        {/* Мобільна / Планшетна панель знизу */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-[var(--bg)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           <div className="flex items-center justify-between gap-4 max-w-2xl mx-auto">
             <div>
@@ -474,7 +426,6 @@ export default function BuilderPage() {
             </div>
           </div>
         </div>
-
       </main>
       <Footer />
     </>
