@@ -37,8 +37,8 @@ export default function EditPortfolioPage() {
               description: item.description,
               image: item.image || '',
               demoUrl: item.demoUrl || '',
-              technologies: item.technologies.join(', '),
-              features: item.features.join(', '),
+              technologies: item.technologies || [].join(', '),
+              features: item.features || [].join(', '),
               published: item.published,
             });
           }

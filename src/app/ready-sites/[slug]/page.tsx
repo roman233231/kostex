@@ -128,7 +128,6 @@ export default function ReadySiteDetailPage() {
           </div>
         </Reveal>
 
-        {/* Велике прев'ю */}
         {item.image && (
           <Reveal delay={100}>
             <div className="relative w-full aspect-[16/9] rounded-[2rem] overflow-hidden border border-[var(--border)] mb-10 shadow-[0_20px_80px_-20px_rgba(139,92,246,0.2)] group">
@@ -155,9 +154,7 @@ export default function ReadySiteDetailPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Ліва частина */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Що ви отримаєте */}
             <Reveal>
               <div className="glass-card rounded-3xl p-8">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-3 text-[var(--text)]">
@@ -167,16 +164,16 @@ export default function ReadySiteDetailPage() {
                   Що ви отримаєте
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {includedItems.map((item, i) => {
-                    const Icon = item.icon;
+                  {includedItems.map((inc, i) => {
+                    const Icon = inc.icon;
                     return (
                       <div key={i} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--surface-2)] transition-colors">
                         <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
                           <Icon size={16} />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-[var(--text)] mb-0.5">{item.title}</div>
-                          <div className="text-xs text-[var(--text-3)] leading-relaxed">{item.desc}</div>
+                          <div className="text-sm font-bold text-[var(--text)] mb-0.5">{inc.title}</div>
+                          <div className="text-xs text-[var(--text-3)] leading-relaxed">{inc.desc}</div>
                         </div>
                       </div>
                     );
@@ -185,7 +182,6 @@ export default function ReadySiteDetailPage() {
               </div>
             </Reveal>
 
-            {/* Фічі проєкту */}
             {features.length > 0 && (
               <Reveal delay={100}>
                 <div className="glass-card rounded-3xl p-8">
@@ -202,7 +198,6 @@ export default function ReadySiteDetailPage() {
               </Reveal>
             )}
 
-            {/* Технології */}
             {technologies.length > 0 && (
               <Reveal delay={150}>
                 <div className="glass-card rounded-3xl p-8">
@@ -218,7 +213,6 @@ export default function ReadySiteDetailPage() {
               </Reveal>
             )}
 
-            {/* Процес */}
             <Reveal delay={200}>
               <div className="glass-card rounded-3xl p-8">
                 <h2 className="text-2xl font-bold mb-6 text-[var(--text)]">Як це працює</h2>
@@ -229,14 +223,14 @@ export default function ReadySiteDetailPage() {
                     { step: 3, title: 'Адаптація', desc: 'Ми замінюємо контент, кольори та налаштовуємо під вас (1–3 дні)' },
                     { step: 4, title: 'Перевірка', desc: 'Ви переглядаєте результат та вносите правки (1 день)' },
                     { step: 5, title: 'Запуск', desc: 'Підключаємо домен і сайт готовий до роботи (1 день)' },
-                  ].map((item, i) => (
+                  ].map((s, i) => (
                     <div key={i} className="flex gap-4">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--accent-2)] text-white font-bold flex items-center justify-center shrink-0 shadow-lg">
-                        {item.step}
+                        {s.step}
                       </div>
                       <div className="flex-1 pt-1">
-                        <div className="text-sm font-bold text-[var(--text)] mb-0.5">{item.title}</div>
-                        <div className="text-sm text-[var(--text-3)]">{item.desc}</div>
+                        <div className="text-sm font-bold text-[var(--text)] mb-0.5">{s.title}</div>
+                        <div className="text-sm text-[var(--text-3)]">{s.desc}</div>
                       </div>
                     </div>
                   ))}
@@ -245,7 +239,6 @@ export default function ReadySiteDetailPage() {
             </Reveal>
           </div>
 
-          {/* Права частина - Sticky з ціною */}
           <div className="lg:col-span-1 sticky top-28">
             <Reveal delay={150}>
               <div className="glass-card rounded-[2rem] p-8 border-[var(--accent)]/30 shadow-[0_10px_40px_-10px_rgba(139,92,246,0.2)] relative overflow-hidden">

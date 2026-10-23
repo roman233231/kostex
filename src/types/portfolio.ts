@@ -1,13 +1,14 @@
 export interface PortfolioItem {
   id?: string;
-  title: string;
   slug: string;
+  title: string;
   description: string;
   category: string;
   image?: string;
   demoUrl?: string;
-  technologies: string[];
-  features: string[];
+  features?: string[];
+  technologies?: string[];
   published: boolean;
   createdAt?: string;
+  price?: number; // Додано для готових сайтів
 }
