@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
@@ -13,18 +14,40 @@ import { createOrder } from '@/services/order';
 import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
 import { Feature } from '@/types/feature';
-import { Package, Palette, FileText, Zap, PenLine, Check, ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate, Smartphone, Monitor, ShieldCheck, Globe, Bot, Code, ShoppingCart, BarChart3, Settings } from 'lucide-react';
+import {
+  Package, Palette, FileText, Zap, PenLine, Check,
+  ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate,
+  Smartphone, Monitor, ShieldCheck, Globe, Bot, Code,
+  ShoppingCart, BarChart3, Settings, HelpCircle, GraduationCap,
+  HeartPulse, Building2
+} from 'lucide-react';
 
-// Базові категорії (типи проєктів), а не шаблони
+// Типи проєктів (крок 1)
 const baseCategories = [
-  { id: 'website', name: 'Сайт / Лендінг', icon: Globe, price: 5000, time: '7–14 днів', desc: 'Корпоративний сайт, лендінг, візитка або портфоліо' },
-  { id: 'webapp', name: 'Веб-додаток', icon: Zap, price: 12000, time: '2–4 тижні', desc: 'Складний додаток з авторизацією, базою даних та логікою' },
-  { id: 'bot', name: 'Telegram-бот', icon: Bot, price: 4000, time: '3–7 днів', desc: 'Бот для продажів, запису на послуги або підтримки' },
-  { id: 'software', name: 'Софт / Десктоп', icon: Code, price: 15000, time: '3–5 тижнів', desc: 'Крос-платформний софт або утиліта для бізнесу' },
-  { id: 'crm', name: 'CRM-система', icon: BarChart3, price: 20000, time: '4–6 тижнів', desc: 'Управління клієнтами, замовленнями та командою' },
-  { id: 'ecommerce', name: 'E-commerce / Магазин', icon: ShoppingCart, price: 15000, time: '2–4 тижні', desc: 'Онлайн-магазин з каталогом, кошиком та оплатою' },
+  { id: 'website', name: 'Сайт / Корпоративний', icon: Globe, price: 5000, time: '7–14 днів', desc: 'Багатосторінковий сайт для бізнесу' },
+  { id: 'landing', name: 'Лендінг', icon: LayoutTemplate, price: 3500, time: '3–7 днів', desc: 'Односторінковий сайт для продажу послуги' },
+  { id: 'webapp', name: 'Веб-додаток', icon: Zap, price: 12000, time: '2–4 тижні', desc: 'Додаток з авторизацією, базою даних та логікою' },
+  { id: 'bot', name: 'Telegram-бот', icon: Bot, price: 4000, time: '3–7 днів', desc: 'Бот для продажів, запису або підтримки' },
+  { id: 'software', name: 'Софт / Десктоп', icon: Code, price: 15000, time: '3–5 тижнів', desc: 'Крос-платформний софт або утиліта' },
+  { id: 'crm', name: 'CRM-система', icon: BarChart3, price: 20000, time: '4–6 тижнів', desc: 'Управління клієнтами та замовленнями' },
+  { id: 'ecommerce', name: 'E-commerce', icon: ShoppingCart, price: 15000, time: '2–4 тижні', desc: 'Онлайн-магазин з каталогом та оплатою' },
   { id: 'mobile', name: 'Мобільний додаток', icon: Smartphone, price: 25000, time: '4–8 тижнів', desc: 'iOS / Android додаток під ваш бізнес' },
-  { id: 'automation', name: 'Автоматизація', icon: Settings, price: 8000, time: '1–2 тижні', desc: 'Інтеграції, парсери, скрипти та боти для рутини' },
+  { id: 'automation', name: 'Автоматизація', icon: Settings, price: 8000, time: '1–2 тижні', desc: 'Інтеграції, парсери, скрипти' },
+  { id: 'other', name: 'Інше / Кастом', icon: HelpCircle, price: 0, time: 'Узгоджується', desc: 'Нестандартний проєкт — обговоримо' },
+];
+
+// Сфери діяльності (крок 2)
+const sphereOptions = [
+  { id: 'Business', label: 'Бізнес / Послуги', icon: Building2 },
+  { id: 'Restaurant', label: 'Ресторан / Кафе', icon: Sparkles },
+  { id: 'Auto Service', label: 'Автосервіс', icon: Settings },
+  { id: 'Fitness', label: 'Фітнес / Спорт', icon: HeartPulse },
+  { id: 'Portfolio', label: 'Портфоліо / Особистий бренд', icon: LayoutTemplate },
+  { id: 'E-commerce', label: 'Магазин / Товари', icon: ShoppingCart },
+  { id: 'Education', label: 'Освіта / Курси', icon: GraduationCap },
+  { id: 'Medicine', label: 'Медицина / Клініка', icon: HeartPulse },
+  { id: 'Real Estate', label: 'Нерухомість', icon: Building2 },
+  { id: 'Landing', label: 'Інше', icon: Globe },
 ];
 
 const designOptions = [
@@ -36,8 +59,6 @@ const designOptions = [
   { id: 'Corporate', label: 'Corporate', icon: Smartphone },
 ];
 
-const templateOptions = ['Business', 'Restaurant', 'Auto Service', 'Fitness', 'Portfolio', 'E-commerce', 'Landing'];
-
 const commonPages = [
   { name: 'Home', price: 0 }, { name: 'About', price: 500 }, { name: 'Services', price: 700 },
   { name: 'Contact', price: 0 }, { name: 'Gallery', price: 600 }, { name: 'Blog', price: 900 },
@@ -47,12 +68,12 @@ const commonPages = [
 ];
 
 const steps = [
-  { titleKey: 'builder.step.product', title: 'Тип проєкту', icon: Package },
-  { titleKey: 'builder.step.style', title: 'Стиль', icon: Palette },
-  { titleKey: 'builder.step.pages', title: 'Сторінки', icon: FileText },
-  { titleKey: 'builder.step.features', title: 'Фічі', icon: Zap },
-  { titleKey: 'builder.step.details', title: 'Деталі', icon: PenLine },
-  { titleKey: 'builder.step.review', title: 'Огляд', icon: Check },
+  { title: 'Тип проєкту', icon: Package },
+  { title: 'Стиль', icon: Palette },
+  { title: 'Сторінки', icon: FileText },
+  { title: 'Фічі', icon: Zap },
+  { title: 'Деталі', icon: PenLine },
+  { title: 'Огляд', icon: Check },
 ] as const;
 
 export default function BuilderPage() {
@@ -62,7 +83,7 @@ export default function BuilderPage() {
 
   const [step, setStep] = useState(0);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  const [template, setTemplate] = useState('');
+  const [sphere, setSphere] = useState('');
   const [design, setDesign] = useState('');
   const [selectedPages, setSelectedPages] = useState<string[]>(['Home']);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
@@ -76,7 +97,7 @@ export default function BuilderPage() {
 
   useEffect(() => {
     const fetchFeatures = async () => {
-      try { const data = await getActiveFeatures(); setAvailableFeatures(data); } 
+      try { const data = await getActiveFeatures(); setAvailableFeatures(data); }
       catch (err) { console.error(err); } finally { setFeaturesLoading(false); }
     };
     fetchFeatures();
@@ -92,13 +113,13 @@ export default function BuilderPage() {
   const totalPrice = (selectedCategory?.price || 0) + pagesPrice + featuresPrice;
 
   const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
-    if (list.includes(value)) { setList(list.filter((v) => v !== value)); } 
+    if (list.includes(value)) { setList(list.filter((v) => v !== value)); }
     else { setList([...list, value]); }
   };
 
   const handleNext = () => {
     if (step === 0 && !selectedCategoryId) { setError('Оберіть тип проєкту'); return; }
-    if (step === 1 && (!template || !design)) { setError('Оберіть шаблон та стиль дизайну'); return; }
+    if (step === 1 && (!sphere || !design)) { setError('Оберіть сферу та стиль дизайну'); return; }
     setError(''); setStep(step + 1); window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -110,12 +131,18 @@ export default function BuilderPage() {
     try {
       const featureNames = availableFeatures.filter((f) => selectedFeatures.includes(f.id!)).map((f) => f.name);
       const orderId = await createOrder({
-        userId: currentUser.uid, 
+        userId: currentUser.uid,
         productId: selectedCategoryId,
         productTitle: selectedCategory?.name || 'Індивідуальний проєкт',
-        template, design, pages: selectedPages, features: featureNames, requirements,
+        template: sphere,
+        design,
+        pages: selectedPages,
+        features: featureNames,
+        requirements,
         references: references ? references.split('\n').filter((r) => r.trim()) : [],
-        estimatedPrice: totalPrice, estimatedTime: selectedCategory?.time || 'TBD', status: 'NEW',
+        estimatedPrice: totalPrice,
+        estimatedTime: selectedCategory?.time || 'TBD',
+        status: 'NEW',
       });
       await notifyAllAdmins('New order received', `New order: ${selectedCategory?.name || 'Project'}`, `/admin/orders/${orderId}`);
       router.push('/account/orders');
@@ -130,30 +157,40 @@ export default function BuilderPage() {
         return (
           <div className="animate-slide-up">
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Що ви хочете створити?</h2>
-            <p className="text-[var(--text-3)] mb-8">Оберіть тип проєкту. Далі ви налаштуєте його під себе.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <p className="text-[var(--text-3)] mb-6">Оберіть тип проєкту. Далі налаштуєте під себе.</p>
+
+            {/* Посилання на готові сайти */}
+            <Link href="/ready-sites" className="flex items-center gap-3 p-4 rounded-2xl bg-[var(--accent)]/5 border border-[var(--accent)]/20 hover:border-[var(--accent)] transition-all mb-8 group">
+              <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
+                <ShoppingCart size={18} />
+              </div>
+              <div className="flex-1">
+                <div className="font-bold text-[var(--text)] text-sm group-hover:text-[var(--accent)] transition-colors">Або купіть готовий сайт</div>
+                <div className="text-xs text-[var(--text-3)]">Дешевше та швидше — запуск за 1–2 дні</div>
+              </div>
+              <ArrowRight size={16} className="text-[var(--accent)] group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {baseCategories.map((cat) => {
                 const Icon = cat.icon;
                 const isSelected = selectedCategoryId === cat.id;
                 return (
                   <button key={cat.id} onClick={() => setSelectedCategoryId(cat.id)}
-                    className={`text-left rounded-3xl border p-6 transition-all duration-300 relative overflow-hidden group flex flex-col ${
-                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-[0_0_30px_rgba(139,92,246,0.15)] ring-1 ring-[var(--accent)]' 
+                    className={`text-left rounded-2xl border p-5 transition-all duration-300 relative overflow-hidden group flex flex-col ${
+                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 shadow-[0_0_25px_rgba(139,92,246,0.15)] ring-1 ring-[var(--accent)]'
                       : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/50 hover:-translate-y-1'
                     }`}
                   >
-                    {isSelected && (<div className="absolute top-5 right-5 w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center text-white shadow-lg animate-zoom-in"><Check size={14} strokeWidth={3} /></div>)}
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
-                      <Icon size={26} />
+                    {isSelected && (<div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[var(--accent)] flex items-center justify-center text-white shadow-lg animate-zoom-in"><Check size={12} strokeWidth={3} /></div>)}
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20">
+                      <Icon size={22} />
                     </div>
-                    <h3 className="text-lg font-bold mb-2 text-[var(--text)]">{cat.name}</h3>
-                    <p className="text-sm text-[var(--text-3)] mb-6 line-clamp-2 flex-1">{cat.desc}</p>
-                    <div className="flex items-center justify-between pt-4 border-t border-[var(--border)] w-full mt-auto">
-                      <div>
-                        <div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-0.5">Від</div>
-                        <div className="text-base font-bold text-[var(--text)]">{cat.price.toLocaleString('uk-UA')} ₴</div>
-                      </div>
-                      <div className="text-xs font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">{cat.time}</div>
+                    <h3 className="text-base font-bold mb-1 text-[var(--text)]">{cat.name}</h3>
+                    <p className="text-xs text-[var(--text-3)] mb-4 line-clamp-2 flex-1">{cat.desc}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] w-full mt-auto">
+                      <div className="text-sm font-bold text-[var(--text)]">{cat.price > 0 ? `від ${cat.price.toLocaleString('uk-UA')} ₴` : 'Ціна за запитом'}</div>
+                      <div className="text-[10px] font-medium text-[var(--text-4)] bg-[var(--surface-2)] px-2 py-1 rounded-md">{cat.time}</div>
                     </div>
                   </button>
                 );
@@ -166,36 +203,45 @@ export default function BuilderPage() {
         return (
           <div className="animate-slide-up space-y-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.designStyle')}</h2>
-              <p className="text-[var(--text-3)]">{t('builder.designStyleDesc')}</p>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Стиль та сфера</h2>
+              <p className="text-[var(--text-3)]">Розкажіть, для якого бізнесу робимо та який настрій дизайну хочете.</p>
             </div>
+
             <div className="glass-card rounded-3xl p-6 md:p-8">
-              <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">1. {t('builder.template')}</label>
-              <div className="flex flex-wrap gap-2.5">
-                {templateOptions.map((tp) => (
-                  <button key={tp} onClick={() => setTemplate(tp)}
-                    className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 ${
-                      template === tp ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_15px_var(--accent)] btn-tactile' 
-                      : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)]'
-                    }`}
-                  >{tp}</button>
-                ))}
+              <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">1. Для якої сфери?</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {sphereOptions.map((s) => {
+                  const Icon = s.icon;
+                  const isSel = sphere === s.id;
+                  return (
+                    <button key={s.id} onClick={() => setSphere(s.id)}
+                      className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-xs font-semibold transition-all duration-300 text-left ${
+                        isSel ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_15px_var(--accent)] btn-tactile'
+                        : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)]'
+                      }`}
+                    >
+                      <Icon size={16} className={isSel ? 'text-white' : 'text-[var(--accent)]'} />
+                      {s.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
+
             <div className="glass-card rounded-3xl p-6 md:p-8">
-              <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">2. {t('builder.design')}</label>
+              <label className="text-sm font-bold uppercase tracking-wider text-[var(--text)] mb-4 block">2. Стиль дизайну</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {designOptions.map((d) => {
                   const Icon = d.icon; const isSel = design === d.id;
                   return (
                     <button key={d.id} onClick={() => setDesign(d.id)}
-                      className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 gap-3 ${
-                        isSel ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_15px_var(--accent)] btn-tactile' 
+                      className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-300 gap-2 ${
+                        isSel ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_15px_var(--accent)] btn-tactile'
                         : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
                       }`}
                     >
-                      <Icon size={24} className={isSel ? 'text-white' : 'text-[var(--accent)]'} />
-                      <span className="text-sm font-semibold">{d.label}</span>
+                      <Icon size={22} className={isSel ? 'text-white' : 'text-[var(--accent)]'} />
+                      <span className="text-xs font-semibold">{d.label}</span>
                     </button>
                   );
                 })}
@@ -207,8 +253,8 @@ export default function BuilderPage() {
       case 2:
         return (
           <div className="animate-slide-up">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.pagesQ')}</h2>
-            <p className="text-[var(--text-3)] mb-8">{t('builder.pagesDesc')}</p>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Які сторінки потрібні?</h2>
+            <p className="text-[var(--text-3)] mb-8">Оберіть сторінки для вашого проєкту. Головна — обов'язкова.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {commonPages.map((page) => {
                 const isSelected = selectedPages.includes(page.name);
@@ -216,7 +262,7 @@ export default function BuilderPage() {
                 return (
                   <button key={page.name} onClick={() => !isRequired && toggleSelection(selectedPages, setSelectedPages, page.name)} disabled={isRequired}
                     className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 ${
-                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)]' 
+                      isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)]'
                       : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/40'
                     } ${isRequired ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:-translate-y-0.5'}`}
                   >
@@ -239,10 +285,10 @@ export default function BuilderPage() {
       case 3:
         return (
           <div className="animate-slide-up">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.featuresQ')}</h2>
-            <p className="text-[var(--text-3)] mb-8">{t('builder.featuresDesc')}</p>
-            {featuresLoading ? (<div className="animate-pulse h-32 glass-card rounded-3xl" />) 
-            : availableFeatures.length === 0 ? (<div className="glass-card text-center py-12"><p className="text-[var(--text-3)]">{t('builder.noFeatures')}</p></div>) 
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Додаткові функції</h2>
+            <p className="text-[var(--text-3)] mb-8">Оберіть фічі, які потрібні у вашому проєкті.</p>
+            {featuresLoading ? (<div className="animate-pulse h-32 glass-card rounded-3xl" />)
+            : availableFeatures.length === 0 ? (<div className="glass-card text-center py-12"><p className="text-[var(--text-3)]">Поки немає доступних фіч.</p></div>)
             : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {availableFeatures.map((feature) => {
@@ -250,7 +296,7 @@ export default function BuilderPage() {
                   return (
                     <button key={feature.id} onClick={() => toggleSelection(selectedFeatures, setSelectedFeatures, feature.id!)}
                       className={`text-left p-5 rounded-3xl border transition-all duration-300 ${
-                        isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)] shadow-[0_0_20px_rgba(139,92,246,0.1)]' 
+                        isSelected ? 'border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)] shadow-[0_0_20px_rgba(139,92,246,0.1)]'
                         : 'glass-card border-[var(--border)] hover:border-[var(--accent)]/40 hover:-translate-y-0.5'
                       }`}
                     >
@@ -276,17 +322,17 @@ export default function BuilderPage() {
       case 4:
         return (
           <div className="animate-slide-up">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.tellMore')}</h2>
-            <p className="text-[var(--text-3)] mb-8">{t('builder.tellMoreDesc')}</p>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Деталі проєкту</h2>
+            <p className="text-[var(--text-3)] mb-8">Опишіть ваші побажання та додайте референси.</p>
             <div className="space-y-6">
               <div className="glass-card rounded-3xl p-6">
-                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">{t('builder.requirements')}</label>
-                <Textarea value={requirements} onChange={(e) => setRequirements(e.target.value)} placeholder={t('builder.requirementsPlaceholder')} className="!bg-[var(--surface)] !border-[var(--border)] min-h-[140px] text-base" />
+                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">Що важливо врахувати?</label>
+                <Textarea value={requirements} onChange={(e) => setRequirements(e.target.value)} placeholder="Опишіть, що саме потрібно, які є побажання..." className="!bg-[var(--surface)] !border-[var(--border)] min-h-[140px] text-base" />
               </div>
               <div className="glass-card rounded-3xl p-6">
-                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">{t('builder.references')}</label>
-                <Textarea value={references} onChange={(e) => setReferences(e.target.value)} placeholder={t('builder.referencesPlaceholder')} className="!bg-[var(--surface)] !border-[var(--border)] min-h-[140px] text-base" />
-                <p className="text-xs text-[var(--text-4)] mt-3">{t('builder.referencesNote')}</p>
+                <label className="text-sm font-bold uppercase tracking-wider mb-3 block text-[var(--text)]">Посилання на референси</label>
+                <Textarea value={references} onChange={(e) => setReferences(e.target.value)} placeholder="https://example.com — подобається структура..." className="!bg-[var(--surface)] !border-[var(--border)] min-h-[140px] text-base" />
+                <p className="text-xs text-[var(--text-4)] mt-3">Кожне посилання з нового рядка.</p>
               </div>
             </div>
           </div>
@@ -296,20 +342,20 @@ export default function BuilderPage() {
         return (
           <div className="animate-slide-up space-y-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">{t('builder.reviewQ')}</h2>
-              <p className="text-[var(--text-3)]">{t('builder.reviewDesc')}</p>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-[var(--text)]">Перевірте замовлення</h2>
+              <p className="text-[var(--text-3)]">Все вірно? Тоді створюємо проєкт.</p>
             </div>
             <div className="glass-card rounded-3xl p-6 md:p-8">
-              <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-6 pb-4 border-b border-[var(--border)]">Деталі проєкту</div>
+              <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-6 pb-4 border-b border-[var(--border)]">Деталі</div>
               <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                 <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Тип</div><div className="font-semibold text-[var(--text)]">{selectedCategory?.name || '—'}</div></div>
                 <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Термін</div><div className="font-semibold text-[var(--text)]">{selectedCategory?.time || '—'}</div></div>
-                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Шаблон</div><div className="font-semibold text-[var(--text)]">{template}</div></div>
+                <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Сфера</div><div className="font-semibold text-[var(--text)]">{sphere}</div></div>
                 <div><div className="text-[10px] text-[var(--text-4)] uppercase tracking-wider mb-1">Дизайн</div><div className="font-semibold text-[var(--text)]">{design}</div></div>
               </div>
             </div>
             <div className="glass-card rounded-3xl p-6">
-              <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">Обрані сторінки ({selectedPages.length})</div>
+              <div className="text-xs font-bold uppercase tracking-[0.15em] text-[var(--text-4)] mb-4">Сторінки ({selectedPages.length})</div>
               <div className="flex flex-wrap gap-2">
                 {selectedPages.map((p) => (<span key={p} className="px-3 py-1.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-xs font-medium text-[var(--text-2)]">{p}</span>))}
               </div>
@@ -327,9 +373,9 @@ export default function BuilderPage() {
         <Reveal>
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.05] mb-4 text-[var(--text)]">
-              {t('builder.title')} <span className="text-gradient-animated">{t('builder.title2')}</span>
+              Створіть свій <span className="text-gradient-animated">проєкт</span>
             </h1>
-            <p className="text-lg text-[var(--text-3)]">{t('builder.subtitle')}</p>
+            <p className="text-lg text-[var(--text-3)]">Налаштуйте продукт крок за кроком. Ціна оновлюється в реальному часі.</p>
           </div>
         </Reveal>
 
@@ -344,8 +390,8 @@ export default function BuilderPage() {
               return (
                 <button key={i} onClick={() => i <= step && setStep(i)} disabled={i > step} className={`flex flex-col items-center gap-2 ${i <= step ? 'cursor-pointer' : 'cursor-default'}`}>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
-                    active ? 'bg-[var(--bg)] border-[var(--accent)] text-[var(--accent)] shadow-[0_0_20px_var(--accent)] scale-110' 
-                    : done ? 'bg-[var(--accent)] border-[var(--accent)] text-white' 
+                    active ? 'bg-[var(--bg)] border-[var(--accent)] text-[var(--accent)] shadow-[0_0_20px_var(--accent)] scale-110'
+                    : done ? 'bg-[var(--accent)] border-[var(--accent)] text-white'
                     : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-4)]'
                   }`}>
                     {done ? <Check size={18} strokeWidth={3} /> : <Icon size={18} />}
@@ -385,7 +431,7 @@ export default function BuilderPage() {
                   <span className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-1">Разом</span>
                   <span className="text-3xl font-bold text-gradient-animated leading-none">{totalPrice.toLocaleString('uk-UA')} ₴</span>
                 </div>
-                <p className="text-[10px] text-[var(--text-4)] mt-3 leading-relaxed">Фінальна ціна може відрізнятися в залежності від складності та вимог.</p>
+                <p className="text-[10px] text-[var(--text-4)] mt-3 leading-relaxed">Фінальна ціна може відрізнятися в залежності від складності.</p>
               </div>
               <div className="space-y-3 relative z-10">
                 {step < steps.length - 1 ? (
