@@ -16,6 +16,7 @@ export default function Reveal({ children, delay = 0, className = '' }: RevealPr
     const el = ref.current;
     if (!el) return;
 
+    // Використовуємо IntersectionObserver
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -24,8 +25,9 @@ export default function Reveal({ children, delay = 0, className = '' }: RevealPr
         }
       },
       {
-        threshold: 0.01, // Спрацьовує як тільки 1% елемента з'явився
-        rootMargin: '0px 0px 100px 0px', // Спрацьовує ЗА 100px до входу в екран
+        // Спрацьовує за 300px ДО того, як елемент з'явиться
+        rootMargin: '0px 0px 300px 0px',
+        threshold: 0,
       }
     );
 
@@ -39,8 +41,10 @@ export default function Reveal({ children, delay = 0, className = '' }: RevealPr
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(20px)',
-        transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
+        // Робимо зсув меншим (10px замість 20px) і на мобільних
+        transform: visible ? 'translateY(0)' : 'translateY(10px)',
+        // Швидкість анімації зменшена до 0.3 секунди
+        transition: `opacity 0.3s ease-out ${delay}ms, transform 0.3s ease-out ${delay}ms`,
         willChange: visible ? 'auto' : 'opacity, transform',
       }}
     >

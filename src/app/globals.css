@@ -1511,3 +1511,40 @@ button:active, .btn:active {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================
+   LIGHT THEME TEXT CONTRAST FIX
+   ========================================= */
+
+:root:not(.dark) {
+  /* Робимо всі похідні текстові кольори набагато темнішими */
+  --text-muted: #4b5563 !important; /* Сірий, але добре читається */
+  --text-3: #374151 !important;     /* Темно-сірий */
+  --text-4: #6b7280 !important;     /* Середньо-сірий для дрібниць */
+}
+
+/* Примусово робимо текст у скляних картках темним */
+:root:not(.dark) .glass-card p,
+:root:not(.dark) .glass-card span,
+:root:not(.dark) .glass-card div,
+:root:not(.dark) .glass-card li {
+  color: var(--text-3);
+}
+
+/* Заголовки - чорні */
+:root:not(.dark) .glass-card h1,
+:root:not(.dark) .glass-card h2,
+:root:not(.dark) .glass-card h3,
+:root:not(.dark) .glass-card h4 {
+  color: #111827 !important;
+}
+
+/* Фікс для градієнтного тексту (якщо він не завантажився, нехай буде темним) */
+:root:not(.dark) .text-gradient-animated,
+:root:not(.dark) .gradient-text {
+  background: linear-gradient(to right, #7c3aed, #2563eb, #7c3aed) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
