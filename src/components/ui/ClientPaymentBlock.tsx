@@ -60,11 +60,13 @@ export default function ClientPaymentBlock({ order, onUpdate }: { order: Order; 
   // Скасовано
   if (order.paymentStatus === 'cancelled') {
     return (
-      <div className="glass-card rounded-3xl p-6 border-red-500/30 flex items-start gap-3">
-        <XCircle size={22} className="text-red-500 shrink-0 mt-0.5" />
+      <div className="glass-card rounded-3xl p-6 md:p-8 border-red-500/30 flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+          <XCircle size={24} />
+        </div>
         <div>
-          <div className="font-bold text-red-500">Оплату скасовано</div>
-          <p className="text-sm text-[var(--text-3)] mt-1">Зв'яжіться з нами, щоб отримати новий рахунок.</p>
+          <div className="font-bold text-lg text-red-500 mb-1">Оплату скасовано</div>
+          <p className="text-sm text-[var(--text-3)]">Зв'яжіться з нами в чаті, щоб отримати новий рахунок на оплату.</p>
         </div>
       </div>
     );
@@ -73,14 +75,15 @@ export default function ClientPaymentBlock({ order, onUpdate }: { order: Order; 
   // Оплачено
   if (order.paymentStatus === 'paid') {
     return (
-      <div className="glass-card rounded-3xl p-6 border-green-500/30 flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center shrink-0">
-          <Check size={22} />
+      <div className="glass-card rounded-3xl p-6 md:p-8 border-green-500/30 flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center shrink-0">
+          <Check size={24} />
         </div>
         <div>
-          <div className="font-bold text-green-500">Оплату підтверджено</div>
-          <p className="text-sm text-[var(--text-3)] mt-1">
-            {amount.toLocaleString('uk-UA')} ₴{order.paidAt ? ` · ${new Date(order.paidAt).toLocaleString('uk-UA')}` : ''}
+          <div className="font-bold text-lg text-green-500 mb-1">Оплату підтверджено</div>
+          <p className="text-sm text-[var(--text-3)]">
+            Сума: <strong className="text-[var(--text)]">{amount.toLocaleString('uk-UA')} ₴</strong>
+            {order.paidAt && ` · ${new Date(order.paidAt).toLocaleString('uk-UA')}`}
           </p>
         </div>
       </div>
@@ -90,13 +93,13 @@ export default function ClientPaymentBlock({ order, onUpdate }: { order: Order; 
   // Очікує підтвердження
   if (order.paymentStatus === 'pending_confirmation') {
     return (
-      <div className="glass-card rounded-3xl p-6 border-yellow-500/30 flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl bg-yellow-500/10 text-yellow-500 flex items-center justify-center shrink-0">
-          <Clock size={22} />
+      <div className="glass-card rounded-3xl p-6 md:p-8 border-yellow-500/30 flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 text-yellow-500 flex items-center justify-center shrink-0 animate-pulse">
+          <Clock size={24} />
         </div>
         <div>
-          <div className="font-bold text-yellow-500">Очікуємо підтвердження</div>
-          <p className="text-sm text-[var(--text-3)] mt-1">Ми перевіримо надходження коштів і підтвердимо оплату найближчим часом.</p>
+          <div className="font-bold text-lg text-yellow-500 mb-1">Очікуємо підтвердження</div>
+          <p className="text-sm text-[var(--text-3)]">Ми перевіримо надходження коштів і підтвердимо оплату найближчим часом.</p>
         </div>
       </div>
     );
@@ -104,48 +107,52 @@ export default function ClientPaymentBlock({ order, onUpdate }: { order: Order; 
 
   // awaiting_manual - показуємо реквізити
   return (
-    <div className="glass-card rounded-3xl p-6 md:p-8 border-[var(--accent)]/30">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
-        <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center">
-          <Wallet size={20} />
+    <div className="glass-card rounded-[2rem] p-6 md:p-8 border-[var(--accent)]/30 shadow-[0_10px_40px_-10px_rgba(139,92,246,0.15)] relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--accent)]/10 rounded-full blur-[60px] pointer-events-none" />
+      
+      <div className="flex items-center gap-3 mb-8 relative z-10">
+        <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
+          <Wallet size={24} />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-[var(--text)]">Оплата замовлення</h3>
-          <p className="text-xs text-[var(--text-3)]">Перекажіть суму та натисніть «Я оплатив»</p>
+          <h3 className="text-xl font-bold text-[var(--text)]">Оплата замовлення</h3>
+          <p className="text-sm text-[var(--text-3)]">Перекажіть суму та натисніть «Я оплатив»</p>
         </div>
       </div>
 
-      <div className="text-center mb-6">
-        <div className="text-xs text-[var(--text-3)] uppercase tracking-wider mb-1">До сплати</div>
-        <div className="text-4xl md:text-5xl font-bold text-gradient-animated">{amount.toLocaleString('uk-UA')} ₴</div>
+      <div className="text-center mb-8 relative z-10">
+        <div className="text-xs font-bold text-[var(--text-4)] uppercase tracking-widest mb-1">До сплати</div>
+        <div className="text-5xl md:text-6xl font-bold text-gradient-animated">{amount.toLocaleString('uk-UA')} ₴</div>
       </div>
 
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] mb-4">
-        <div className="w-10 h-10 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
-          <Icon size={18} />
+      <div className="flex items-center justify-between p-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] mb-4 relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0">
+            <Icon size={20} />
+          </div>
+          <div className="text-base font-bold text-[var(--text)]">{method.label}</div>
         </div>
-        <div className="text-sm font-bold text-[var(--text)]">{method.label}</div>
       </div>
 
-      <div className="p-5 rounded-2xl bg-[var(--bg)] border-2 border-dashed border-[var(--accent)]/30 relative mb-4">
-        <button onClick={copyDetails} className="absolute top-3 right-3 w-9 h-9 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all" title="Скопіювати">
-          {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+      <div className="p-5 rounded-2xl bg-[var(--bg)] border-2 border-dashed border-[var(--accent)]/40 relative mb-6 z-10">
+        <button onClick={copyDetails} className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all" title="Скопіювати">
+          {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
         </button>
-        <div className="text-xs font-bold text-[var(--text-4)] uppercase tracking-wider mb-2">Реквізити</div>
-        <pre className="font-mono text-sm text-[var(--text)] whitespace-pre-wrap break-words leading-relaxed pr-10">
+        <div className="text-xs font-bold text-[var(--text-4)] uppercase tracking-wider mb-3">Реквізити для оплати</div>
+        <pre className="font-mono text-sm text-[var(--text)] whitespace-pre-wrap break-words leading-relaxed pr-12">
 {order.paymentDetails || 'Реквізити ще не вказані'}
         </pre>
       </div>
 
-      <div className="p-3 rounded-xl bg-yellow-500/5 border border-yellow-500/20 mb-4 flex items-start gap-2">
-        <AlertCircle size={16} className="text-yellow-500 shrink-0 mt-0.5" />
-        <p className="text-xs text-[var(--text-3)]">
-          Після оплати натисніть кнопку нижче. Ми перевіримо надходження і підтвердимо.
+      <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 mb-6 flex items-start gap-3 relative z-10">
+        <AlertCircle size={20} className="text-yellow-500 shrink-0 mt-0.5" />
+        <p className="text-sm text-[var(--text-2)] leading-relaxed">
+          Після переказу коштів натисніть кнопку нижче. Ми перевіримо надходження і підтвердимо оплату.
         </p>
       </div>
 
-      <Button onClick={handleClaimPaid} disabled={claiming} className="w-full py-4 rounded-xl btn-tactile shadow-[0_0_20px_var(--accent)] bg-green-500 hover:bg-green-600 border-none">
-        {claiming ? <Loader2 size={18} className="animate-spin mr-2" /> : <Check size={18} className="mr-2" />}
+      <Button onClick={handleClaimPaid} disabled={claiming} className="w-full py-4 rounded-xl btn-tactile shadow-[0_0_20px_rgba(16,185,129,0.4)] bg-green-500 hover:bg-green-600 border-none text-lg relative z-10">
+        {claiming ? <Loader2 size={20} className="animate-spin mr-2" /> : <Check size={20} className="mr-2" />}
         {claiming ? 'Надсилаємо...' : 'Я оплатив'}
       </Button>
     </div>
