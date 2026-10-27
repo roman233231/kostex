@@ -16,7 +16,7 @@ import InvoiceGenerator from '@/components/admin/InvoiceGenerator';
 import { 
   ArrowLeft, Package, User, Mail, Send, Phone, 
   CheckCircle, Clock, AlertCircle, Settings, MessageCircle, 
-  Instagram, Wallet, ExternalLink
+  AtSign, Wallet, ExternalLink
 } from 'lucide-react';
 
 const statusLabels: Record<string, string> = {
@@ -38,7 +38,7 @@ const statusColors: Record<string, string> = {
 
 const contactIcons: Record<string, any> = {
   telegram: Send,
-  instagram: Instagram,
+  instagram: AtSign,
   phone: Phone,
   email: Mail,
   whatsapp: MessageCircle,

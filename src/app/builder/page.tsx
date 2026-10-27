@@ -20,7 +20,7 @@ import {
   ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate,
   Smartphone, Monitor, ShieldCheck, Globe, Bot, Code,
   ShoppingCart, BarChart3, Settings, HelpCircle, GraduationCap,
-  HeartPulse, Building2, Send, Instagram, Phone, Mail, MessageCircle
+  HeartPulse, Building2, Send, AtSign, Phone, Mail, MessageCircle
 } from 'lucide-react';
 
 const baseCategories = [
@@ -60,7 +60,7 @@ const designOptions = [
 
 const contactOptions = [
   { id: 'telegram', label: 'Telegram', icon: Send, placeholder: '@username' },
-  { id: 'instagram', label: 'Instagram', icon: Instagram, placeholder: '@username' },
+  { id: 'instagram', label: 'Instagram', icon: AtSign, placeholder: '@username' },
   { id: 'phone', label: 'Телефон', icon: Phone, placeholder: '+380...' },
   { id: 'email', label: 'Email', icon: Mail, placeholder: 'you@example.com' },
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, placeholder: '+380...' },
