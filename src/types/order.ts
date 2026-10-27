@@ -1,18 +1,29 @@
 export interface Order {
   id?: string;
   userId: string;
-  productId: string;
+  productId?: string;
   productTitle?: string;
   template?: string;
   design?: string;
-  pages: string[];
-  features: string[];
+  pages?: string[];
+  features?: string[];
   requirements?: string;
   references?: string[];
   estimatedPrice: number;
-  finalPrice?: number;
   estimatedTime?: string;
-  status: 'NEW' | 'REVIEW' | 'ACCEPTED' | 'IN DEVELOPMENT' | 'CLIENT REVIEW' | 'REVISION' | 'COMPLETED' | 'CANCELLED';
+  finalPrice?: number;
+  status: string;
   createdAt?: string;
   updatedAt?: string;
+
+  // Контакт для зв'язку
+  contactPreference?: 'telegram' | 'instagram' | 'phone' | 'email' | 'whatsapp' | 'viber' | 'site';
+  contactValue?: string;
+
+  // Оплата (ручний інвойс)
+  paymentStatus?: 'pending' | 'awaiting_manual' | 'paid' | 'cancelled';
+  paymentMethod?: 'card' | 'crypto' | 'paypal' | 'other';
+  paymentDetails?: string;
+  paymentToken?: string;
+  paidAt?: string;
 }

@@ -37,3 +37,39 @@ export async function updateOrderStatusAndPrice(
   }
   await updateDoc(orderRef, updateData);
 }
+// Генерує токен для оплати і зберігає реквізити в замовленні
+export async function generateInvoice(
+  orderId: string,
+  paymentMethod: 'card' | 'crypto' | 'paypal' | 'other',
+  paymentDetails: string
+): Promise<string> {
+  const token = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
+  const ref = doc(db, 'orders', orderId);
+  await updateDoc(ref, {
+    paymentStatus: 'awaiting_manual',
+    paymentMethod,
+    paymentDetails,
+    paymentToken: token,
+    updatedAt: new Date().toISOString(),
+  });
+  return token;
+}
+
+// Знаходить замовлення за токеном оплати (для публічної сторінки /pay/[token])
+export async function getOrderByPaymentToken(token: string): Promise<Order | null> {
+  const q = query(collection(db, 'orders'), where('paymentToken', '==', token));
+  const snap = await getDocs(q);
+  if (snap.empty) return null;
+  const d = snap.docs[0];
+  return { id: d.id, ...d.data() } as Order;
+}
+
+// Клієнт підтверджує, що оплатив
+export async function markOrderAsPaidByClient(orderId: string): Promise<void> {
+  const ref = doc(db, 'orders', orderId);
+  await updateDoc(ref, {
+    paymentStatus: 'paid',
+    paidAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+}
