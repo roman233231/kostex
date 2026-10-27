@@ -8,6 +8,7 @@ import Footer from '@/components/layout/Footer';
 import Button from '@/components/ui/Button';
 import Textarea from '@/components/ui/Textarea';
 import Input from '@/components/ui/Input';
+import PhoneInput from '@/components/ui/PhoneInput';
 import Reveal from '@/components/ui/Reveal';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -61,10 +62,10 @@ const designOptions = [
 const contactOptions = [
   { id: 'telegram', label: 'Telegram', icon: Send, placeholder: '@username' },
   { id: 'instagram', label: 'Instagram', icon: AtSign, placeholder: '@username' },
-  { id: 'phone', label: 'Телефон', icon: Phone, placeholder: '+380...' },
+  { id: 'phone', label: 'Телефон', icon: Phone, placeholder: '' },
   { id: 'email', label: 'Email', icon: Mail, placeholder: 'you@example.com' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, placeholder: '+380...' },
-  { id: 'viber', label: 'Viber', icon: MessageCircle, placeholder: '+380...' },
+  { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, placeholder: '' },
+  { id: 'viber', label: 'Viber', icon: MessageCircle, placeholder: '' },
   { id: 'site', label: 'Чат на сайті', icon: MessageCircle, placeholder: '' },
 ];
 
@@ -131,8 +132,22 @@ export default function BuilderPage() {
   const handleNext = () => {
     if (step === 0 && !selectedCategoryId) { setError('Оберіть тип проєкту'); return; }
     if (step === 1 && (!sphere || !design)) { setError('Оберіть сферу та стиль дизайну'); return; }
-    if (step === 4 && !contactPreference) { setError('Оберіть, де вам зручніше спілкуватися'); return; }
-    if (step === 4 && contactPreference !== 'site' && !contactValue.trim()) { setError('Вкажіть ваш контакт'); return; }
+    if (step === 4) {
+      if (!contactPreference) { setError('Оберіть, де вам зручніше спілкуватися'); return; }
+      if (contactPreference !== 'site') {
+        if (!contactValue.trim()) { setError('Вкажіть ваш контакт'); return; }
+        if (['phone', 'whatsapp', 'viber'].includes(contactPreference)) {
+          const digits = contactValue.replace(/\D/g, '');
+          if (digits.length < 9) { setError('Введіть коректний номер телефону'); return; }
+        }
+        if (contactPreference === 'email' && !contactValue.includes('@')) {
+          setError('Введіть коректний email'); return;
+        }
+        if (['telegram', 'instagram'].includes(contactPreference) && contactValue.trim().length < 3) {
+          setError('Введіть коректний нікнейм'); return;
+        }
+      }
+    }
     setError(''); setStep(step + 1); window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -325,7 +340,7 @@ export default function BuilderPage() {
                 {contactOptions.map((c) => {
                   const Icon = c.icon; const isSel = contactPreference === c.id;
                   return (
-                    <button key={c.id} onClick={() => setContactPreference(c.id)}
+                    <button key={c.id} onClick={() => { setContactPreference(c.id); setContactValue(''); }}
                       className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-xs font-semibold transition-all duration-300 text-left ${isSel ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-[0_0_15px_var(--accent)] btn-tactile' : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-3)] hover:border-[var(--accent)]/50 hover:text-[var(--text)]'}`}
                     >
                       <Icon size={16} className={isSel ? 'text-white' : 'text-[var(--accent)]'} /> {c.label}
@@ -334,9 +349,17 @@ export default function BuilderPage() {
                 })}
               </div>
 
-              {selectedContact && selectedContact.placeholder && (
+              {selectedContact && (
                 <div className="mt-4 animate-slide-up">
-                  <Input label="Ваш контакт" value={contactValue} onChange={(e) => setContactValue(e.target.value)} placeholder={selectedContact.placeholder} className="!bg-[var(--surface)]" />
+                  {['phone', 'whatsapp', 'viber'].includes(contactPreference) ? (
+                    <PhoneInput label={`${selectedContact.label} номер`} value={contactValue} onChange={setContactValue} />
+                  ) : contactPreference === 'site' ? (
+                    <div className="p-4 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text-3)]">
+                      Ми відповімо вам у чаті на сайті протягом 24 годин.
+                    </div>
+                  ) : (
+                    <Input label={`Ваш ${selectedContact.label}`} value={contactValue} onChange={(e) => setContactValue(e.target.value)} placeholder={selectedContact.placeholder} className="!bg-[var(--surface)]" />
+                  )}
                 </div>
               )}
             </div>
