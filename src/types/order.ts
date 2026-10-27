@@ -16,17 +16,13 @@ export interface Order {
   createdAt?: string;
   updatedAt?: string;
 
-  // Контакт для зв'язку
   contactPreference?: 'telegram' | 'instagram' | 'phone' | 'email' | 'whatsapp' | 'viber' | 'site';
   contactValue?: string;
 
-  // Оплата (ручний інвойс та NOWPayments)
-  paymentStatus?: 'pending' | 'awaiting_manual' | 'paid' | 'cancelled';
+  // Оплата
+  paymentStatus?: 'pending' | 'awaiting_manual' | 'pending_confirmation' | 'paid' | 'cancelled';
   paymentMethod?: 'card' | 'crypto' | 'paypal' | 'other';
   paymentDetails?: string;
-  paymentToken?: string;
-  paymentProvider?: 'nowpayments' | 'manual' | 'liqpay' | 'monobank';
-  paymentInvoiceUrl?: string;
-  paymentId?: string | number;
   paidAt?: string;
+  paymentClaimedAt?: string;
 }
