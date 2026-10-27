@@ -12,6 +12,7 @@ import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
 import Button from '@/components/ui/Button';
 import PaymentDetailsEditor from '@/components/admin/PaymentDetailsEditor';
+import DeliveryLinkPanel from '@/components/admin/DeliveryLinkPanel';
 import {
   ArrowLeft, User, Mail, Send, Phone, AlertCircle,
   MessageCircle, AtSign, ExternalLink
@@ -171,9 +172,18 @@ export default function AdminOrderDetailPage() {
                 {updatingStatus && <p className="text-xs text-[var(--accent)] text-center animate-pulse mt-2">Оновлення...</p>}
               </div>
             </Reveal>
+            
             <Reveal delay={120}>
               <PaymentDetailsEditor order={order} onUpdate={fetchOrder} />
             </Reveal>
+
+            {/* Блок доставки проєкту з'являється ТІЛЬКИ після підтвердження оплати */}
+            {order.paymentStatus === 'paid' && (
+              <Reveal delay={140}>
+                <DeliveryLinkPanel order={order} onUpdate={fetchOrder} />
+              </Reveal>
+            )}
+            
           </div>
         </div>
       </main>
