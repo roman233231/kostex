@@ -13,11 +13,11 @@ export default function ClientLinksBlock({ order }: { order: Order }) {
   useEffect(() => {
     if (!order.id) return;
     const load = async () => {
-      try { setLinks(await getOrderLinks(order.id!)); }
+      try { setLinks(await getOrderLinks(order.id!, order.userId)); }
       catch (err) { console.error(err); } finally { setLoading(false); }
     };
     load();
-  }, [order.id]);
+  }, [order.id, order.userId]);
 
   if (loading || links.length === 0) return null;
 

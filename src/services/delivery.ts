@@ -32,8 +32,14 @@ export async function addDeliveryLink(
   };
 }
 
-export async function getOrderLinks(orderId: string): Promise<DeliveryLink[]> {
-  const q = query(collection(db, 'files'), where('orderId', '==', orderId));
+// Оновлена функція з фільтром по userId
+export async function getOrderLinks(orderId: string, userId?: string): Promise<DeliveryLink[]> {
+  let q;
+  if (userId) {
+    q = query(collection(db, 'files'), where('orderId', '==', orderId), where('userId', '==', userId));
+  } else {
+    q = query(collection(db, 'files'), where('orderId', '==', orderId));
+  }
   const snap = await getDocs(q);
   const links: DeliveryLink[] = [];
   snap.forEach((d) => links.push({ id: d.id, ...d.data() } as DeliveryLink));

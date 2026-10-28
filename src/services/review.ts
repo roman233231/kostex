@@ -31,8 +31,9 @@ export async function getUserReviews(userId: string): Promise<Review[]> {
   return reviews;
 }
 
-export async function getReviewByOrderId(orderId: string): Promise<Review | null> {
-  const q = query(collection(db, 'reviews'), where('orderId', '==', orderId));
+// Оновлена функція з фільтром по userId
+export async function getReviewByOrderId(orderId: string, userId: string): Promise<Review | null> {
+  const q = query(collection(db, 'reviews'), where('orderId', '==', orderId), where('userId', '==', userId));
   const snap = await getDocs(q);
   if (snap.empty) return null;
   const d = snap.docs[0];
