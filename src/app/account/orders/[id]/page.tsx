@@ -19,6 +19,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
 import ClientPaymentBlock from '@/components/ui/ClientPaymentBlock';
+import ClientLinksBlock from '@/components/ui/ClientLinksBlock';
 import { ArrowLeft, Send, MessageSquare, Hash, Calendar } from 'lucide-react';
 
 const statusLabels: Record<string, string> = {
@@ -111,7 +112,10 @@ export default function ClientOrderDetailPage() {
           </div>
         </Reveal>
 
-        {/* Блок оплати */}
+        {/* 1. Блок отримання файлів (якщо є) */}
+        <ClientLinksBlock order={order} />
+
+        {/* 2. Блок оплати */}
         {order.paymentStatus && order.paymentStatus !== 'pending' && (
           <Reveal delay={80}>
             <div className="mb-6">
@@ -120,6 +124,7 @@ export default function ClientOrderDetailPage() {
           </Reveal>
         )}
 
+        {/* 3. Чат */}
         <Reveal delay={100}>
           <div className="glass-card rounded-[2rem] p-6 md:p-8 mb-6">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
@@ -149,6 +154,7 @@ export default function ClientOrderDetailPage() {
           </div>
         </Reveal>
 
+        {/* 4. Відгук */}
         {order.status === 'COMPLETED' && (
           <Reveal delay={200}>
             <div className="mt-6">
