@@ -32,24 +32,18 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps | L
 
     const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
 
-    const shine = (
-      <span className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-    );
-
     if ('href' in props && props.href !== undefined) {
       const { href, ...rest } = props as LinkProps;
       return (
-        <Link href={href} className={`group ${combinedClassName}`} {...rest}>
-          {shine}
-          <span className="relative z-10 flex items-center justify-center w-full">{children}</span>
+        <Link href={href} className={combinedClassName} {...rest}>
+          <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
         </Link>
       );
     }
 
     return (
-      <button ref={ref as React.Ref<HTMLButtonElement>} className={`group ${combinedClassName}`} {...(props as ButtonProps)}>
-        {shine}
-        <span className="relative z-10 flex items-center justify-center w-full">{children}</span>
+      <button ref={ref as React.Ref<HTMLButtonElement>} className={combinedClassName} {...(props as ButtonProps)}>
+        <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
       </button>
     );
   }

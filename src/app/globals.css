@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== THEME VARIABLES ===== */
+/* =========================================
+   THEME VARIABLES (DARK & LIGHT)
+   ========================================= */
 :root {
   --bg: #050505;
   --bg-2: #0a0a0a;
@@ -21,13 +23,18 @@
   --accent-border: rgba(139, 92, 246, 0.3);
   --gold: #f0c265;
   --gold-soft: rgba(240, 194, 101, 0.1);
+  --purple: #8b5cf6;
+  --purple-bright: #a78bfa;
+  --purple-neon: #c026ff;
+  --purple-soft: rgba(139, 92, 246, 0.15);
+  --border-purple: rgba(139, 92, 246, 0.3);
 }
 
 :root:not(.dark) {
   --bg: #f8fafc;
   --bg-2: #f1f5f9;
   --surface: #ffffff;
-  --surface-2: #f8fafc;
+  --surface-2: #f1f5f9;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
   --text: #0f172a;
@@ -41,15 +48,27 @@
   --accent-border: #d8b4fe;
   --gold: #d97706;
   --gold-soft: #fef3c7;
+  --purple: #7c3aed;
+  --purple-bright: #6d28d9;
+  --purple-neon: #4f46e5;
+  --purple-soft: #f3e8ff;
+  --border-purple: #d8b4fe;
 }
 
+/* =========================================
+   BASE STYLES
+   ========================================= */
 body {
   background-color: var(--bg);
   color: var(--text);
+  font-family: inherit;
   transition: background-color 0.3s, color 0.3s;
+  overflow-x: hidden;
 }
 
-/* ===== GLASS CARD ===== */
+/* =========================================
+   COMPONENTS (Cards, Buttons, etc.)
+   ========================================= */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(16px);
@@ -70,7 +89,50 @@ body {
   transform: translateY(-2px);
 }
 
-/* ===== BUTTONS ===== */
+/* Color Cards (from old design) */
+.color-card {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 10px 30px -10px var(--card-glow);
+}
+.color-card-inner {
+  background: var(--bg);
+  border-radius: calc(1.5rem - 1px);
+  height: 100%;
+  width: 100%;
+  padding: 1.5rem;
+}
+:root:not(.dark) .color-card-inner {
+  background: #ffffff;
+}
+.color-card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.color-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--card-color-1) 20%, var(--card-color-2) 20%);
+  border: 1px solid var(--card-color-1);
+}
+.color-arrow {
+  transition: transform 0.3s ease;
+}
+.color-card:hover .color-arrow {
+  transform: translateX(4px);
+}
+
+/* Buttons */
 .btn-tactile {
   transition: transform 0.1s ease, filter 0.2s ease;
 }
@@ -78,7 +140,31 @@ body {
   transform: scale(0.96);
 }
 
-/* ===== TEXT GRADIENTS ===== */
+/* =========================================
+   UTILITIES (Marquee, Animations, Grid)
+   ========================================= */
+.marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; }
+.marquee-track { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; gap: 2rem; min-width: 100%; animation: scroll 30s linear infinite; }
+@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
 .gradient-text, .text-gradient-animated {
   background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent));
   background-size: 200% auto;
@@ -87,37 +173,32 @@ body {
   -webkit-text-fill-color: transparent;
   animation: shine 4s linear infinite;
 }
+@keyframes shine { to { background-position: 200% center; } }
 
-@keyframes shine {
-  to { background-position: 200% center; }
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 .animate-slide-up { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-@keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 .animate-zoom-in { animation: zoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .animate-float { animation: float 5s ease-in-out infinite; }
 
-/* ===== SCROLLBAR ===== */
+/* Custom Scrollbar */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
 
-/* ===== UTILS ===== */
-.marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; }
-.marquee-track { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; gap: 2rem; min-width: 100%; animation: scroll 30s linear infinite; }
-@keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+/* Fix for light theme text contrast */
+:root:not(.dark) .glass-card h1,
+:root:not(.dark) .glass-card h2,
+:root:not(.dark) .glass-card h3,
+:root:not(.dark) .glass-card h4 {
+  color: #0f172a !important;
+}
+:root:not(.dark) .glass-card p,
+:root:not(.dark) .glass-card span,
+:root:not(.dark) .glass-card div {
+  color: var(--text-3);
+}
