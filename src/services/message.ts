@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Message } from '@/types/message';
 
@@ -17,16 +17,16 @@ export async function sendMessage(data: {
   return docRef.id;
 }
 
-// Оновлена функція з фільтром по userId
 export async function getOrderMessages(orderId: string, userId?: string): Promise<Message[]> {
-  let q;
-  if (userId) {
-    q = query(collection(db, 'messages'), where('orderId', '==', orderId), where('userId', '==', userId), orderBy('createdAt', 'asc'));
-  } else {
-    q = query(collection(db, 'messages'), where('orderId', '==', orderId), orderBy('createdAt', 'asc'));
-  }
+  const q = query(collection(db, 'messages'), where('orderId', '==', orderId));
   const snap = await getDocs(q);
   const messages: Message[] = [];
   snap.forEach((d) => messages.push({ id: d.id, ...d.data() } as Message));
-  return messages;
+  
+  // Використовуємо fallback (0 або поточна дата), якщо createdAt чомусь немає
+  return messages.sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateA - dateB;
+  });
 }

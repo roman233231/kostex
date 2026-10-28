@@ -13,44 +13,43 @@ type LinkProps = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href: s
 
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps | LinkProps>(
   ({ variant = 'primary', size = 'md', className = '', children, ...props }, ref) => {
+    
     const baseStyles =
-      'relative overflow-hidden inline-flex items-center justify-center font-semibold transition-all duration-300 btn-tactile rounded-xl group';
+      'relative overflow-hidden inline-flex items-center justify-center font-semibold transition-all duration-300 btn-tactile rounded-xl whitespace-nowrap';
 
     const variants = {
-      primary: 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)]',
-      outline: 'border border-[var(--border)] text-[var(--text)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/10',
-      ghost: 'text-[var(--text-3)] hover:text-white hover:bg-[var(--surface-2)]',
-      danger: 'bg-red-500/10 text-red-500 border border-red-500/30 hover:bg-red-500 hover:text-white',
+      primary: 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_4px_14px_0_rgba(139,92,246,0.39)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.23)] hover:brightness-110 border border-transparent',
+      outline: 'border border-[var(--border)] text-[var(--text)] bg-transparent hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]',
+      ghost: 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent',
+      danger: 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white',
     };
 
     const sizes = {
-      sm: 'px-4 py-2 text-sm',
-      md: 'px-6 py-3 text-base',
-      lg: 'px-8 py-4 text-lg',
+      sm: 'px-4 py-2 text-sm gap-1.5',
+      md: 'px-6 py-3 text-sm md:text-base gap-2',
+      lg: 'px-8 py-4 text-base md:text-lg gap-2.5',
     };
 
     const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
 
-    // Ефект переливу (gloss) при наведенні
     const shine = (
-      <span className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      <span className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
     );
 
     if ('href' in props && props.href !== undefined) {
-      // Виправлення: витягуємо href з props, щоб не передавати його двічі
       const { href, ...rest } = props as LinkProps;
       return (
-        <Link href={href} className={combinedClassName} {...rest}>
+        <Link href={href} className={`group ${combinedClassName}`} {...rest}>
           {shine}
-          <span className="relative z-10 flex items-center gap-2">{children}</span>
+          <span className="relative z-10 flex items-center justify-center w-full">{children}</span>
         </Link>
       );
     }
 
     return (
-      <button ref={ref as React.Ref<HTMLButtonElement>} className={combinedClassName} {...(props as ButtonProps)}>
+      <button ref={ref as React.Ref<HTMLButtonElement>} className={`group ${combinedClassName}`} {...(props as ButtonProps)}>
         {shine}
-        <span className="relative z-10 flex items-center gap-2">{children}</span>
+        <span className="relative z-10 flex items-center justify-center w-full">{children}</span>
       </button>
     );
   }
