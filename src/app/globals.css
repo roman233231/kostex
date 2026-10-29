@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* =========================================
    THEME VARIABLES (DARK & LIGHT)
@@ -61,13 +59,13 @@
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: inherit;
+  font-family: var(--font-inter), sans-serif;
   transition: background-color 0.3s, color 0.3s;
   overflow-x: hidden;
 }
 
 /* =========================================
-   COMPONENTS (Cards, Buttons, etc.)
+   COMPONENTS
    ========================================= */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
@@ -89,7 +87,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Color Cards (from old design) */
+/* Color Cards */
 .color-card {
   position: relative;
   border-radius: 1.5rem;
@@ -141,7 +139,7 @@ body {
 }
 
 /* =========================================
-   UTILITIES (Marquee, Animations, Grid)
+   UTILITIES
    ========================================= */
 .marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; }
 .marquee-track { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; gap: 2rem; min-width: 100%; animation: scroll 30s linear infinite; }
