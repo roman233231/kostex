@@ -1,170 +1,62 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
+import { MessageCircle, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { usePathname } from 'next/navigation';
-import {
-  sendSupportMessage,
-  subscribeToSupportMessages,
-  markClientReadMessages,
-  SupportMessage,
-} from '@/services/support';
-import { Send, X, MessageCircle, Check, CheckCheck, Shield } from 'lucide-react';
-
-function CheckIcon({ read }: { read: boolean }) {
-  if (!read) {
-    return <Check size={12} className="opacity-70" />;
-  }
-  return <CheckCheck size={14} className="text-green-400" />;
-}
 
 export default function FloatingChat() {
+  const [isOpen, setIsOpen] = useState(false);
   const { currentUser } = useAuth();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<SupportMessage[]>([]);
-  const [text, setText] = useState('');
-  const [sending, setSending] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const hidden =
-    pathname?.startsWith('/login') ||
-    pathname?.startsWith('/register') ||
-    pathname?.startsWith('/admin');
-
-  useEffect(() => {
-    if (!currentUser) return;
-    const unsub = subscribeToSupportMessages(currentUser.uid, setMessages);
-    return () => unsub();
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (open && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-    if (open && currentUser) {
-      markClientReadMessages(currentUser.uid).catch(() => {});
-    }
-  }, [open, messages, currentUser]);
-
-  if (!currentUser || hidden) return null;
-
-  const unread = messages.filter((m) => m.senderRole === 'admin' && !m.read).length;
-
-  const handleSend = async () => {
-    if (!text.trim() || !currentUser) return;
-    setSending(true);
-    try {
-      await sendSupportMessage({
-        userId: currentUser.uid,
-        senderId: currentUser.uid,
-        senderRole: 'client',
-        text: text.trim(),
-      });
-      setText('');
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  if (!currentUser) return null;
 
   return (
     <>
-      {open && (
-        <div className="chat-panel">
-          {/* Header */}
-          <div className="chat-header">
-            <div className="chat-avatar">
-              <Shield size={20} className="text-white relative z-10" strokeWidth={2.5} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold text-sm">Підтримка KOSTEX</div>
-              <div className="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                Онлайн · Відповідь ~5 хв
-              </div>
-            </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors"
-              aria-label="Закрити"
-            >
-              <X size={18} />
-            </button>
-          </div>
+      {/* Кнопка чату */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 z-[9000] group flex items-center gap-3 px-5 py-4 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_10px_40px_rgba(139,92,246,0.5)] hover:shadow-[0_10px_50px_rgba(139,92,246,0.7)] hover:scale-105 transition-all duration-300 animate-glow"
+      >
+        <MessageCircle size={24} className="group-hover:rotate-12 transition-transform" />
+        <span className="font-bold hidden md:block">Чат з підтримкою</span>
+      </button>
 
-          {/* Messages */}
-          <div className="chat-messages" ref={scrollRef}>
-            {messages.length === 0 ? (
-              <div className="text-center py-10">
-                <div className="w-14 h-14 rounded-full bg-[var(--purple-soft)] border border-[var(--border-purple)] flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">👋</span>
+      {/* Вікно чату */}
+      {isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-end justify-end p-4 md:p-6 bg-black/40 backdrop-blur-sm animate-slide-up">
+          <div className="w-full max-w-md h-[80vh] md:h-[600px] bg-[var(--bg)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-2)]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-white">
+                  <MessageCircle size={20} />
                 </div>
-                <div className="font-semibold mb-1">Вітаємо!</div>
-                <div className="text-sm text-[var(--text-muted)] max-w-[240px] mx-auto leading-relaxed">
-                  Запитайте нас про проєкт, ціни або функції. Відповідаємо швидко.
+                <div>
+                  <h3 className="font-bold text-[var(--text)]">Підтримка KOSTEX</h3>
+                  <p className="text-xs text-green-500 flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Онлайн
+                  </p>
                 </div>
               </div>
-            ) : (
-              messages.map((m) => (
-                <div
-                  key={m.id}
-                  className={`chat-bubble ${m.senderRole === 'client' ? 'client' : 'admin'}`}
-                >
-                  <div>{m.text}</div>
-                  <div className="chat-bubble-time flex items-center justify-end gap-1">
-                    {new Date(m.createdAt).toLocaleTimeString('uk-UA', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                    {m.senderRole === 'client' && <CheckIcon read={m.read} />}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+              <button onClick={() => setIsOpen(false)} className="w-8 h-8 rounded-full bg-[var(--surface)] flex items-center justify-center text-[var(--text-3)] hover:text-red-500 transition-colors">
+                <X size={18} />
+              </button>
+            </div>
 
-          {/* Input */}
-          <div className="chat-input-area">
-            <input
-              type="text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Напишіть повідомлення..."
-              className="chat-input"
-              disabled={sending}
-            />
-            <button
-              onClick={handleSend}
-              disabled={!text.trim() || sending}
-              className="chat-send"
-              aria-label="Надіслати"
-            >
-              <Send size={16} />
-            </button>
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-[var(--bg)]">
+              <div className="w-20 h-20 rounded-full bg-[var(--accent-soft)] flex items-center justify-center mb-4">
+                <MessageCircle size={40} className="text-[var(--accent)]" />
+              </div>
+              <h4 className="text-lg font-bold text-[var(--text)] mb-2">Привіт! Чим можемо допомогти?</h4>
+              <p className="text-sm text-[var(--text-3)] mb-6">
+                Напишіть нам, і ми відповімо найближчим часом.
+              </p>
+              <a href="/account/messages" className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white font-bold hover:brightness-110 transition-all btn-tactile">
+                Перейти до повідомлень
+              </a>
+            </div>
           </div>
         </div>
       )}
-
-      <button
-  className="chat-fab"
-  onClick={() => setOpen(!open)}
-  aria-label="Чат підтримки"
->
-  {open ? <X size={26} strokeWidth={2.5} /> : <MessageCircle size={26} strokeWidth={2.5} />}
-        {unread > 0 && !open && (
-          <span className="chat-badge">{unread > 9 ? '9+' : unread}</span>
-        )}
-      </button>
     </>
   );
 }

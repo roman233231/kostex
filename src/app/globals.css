@@ -266,3 +266,50 @@ body {
 @media (min-width: 1024px) {
   .reviews-slider > * { flex: 0 0 calc(33.333% - 1rem); } /* На ПК 3 картки */
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS FIXES
+   ========================================= */
+
+@media (max-width: 768px) {
+  /* Зменшуємо відступи контейнера, щоб контент не вилазив */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    width: 100% !important;
+    overflow-x: hidden;
+  }
+
+  /* Зменшуємо шрифти для мобільних, щоб все вміщалося */
+  h1 { font-size: 2rem !important; line-height: 1.1 !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.25rem !important; }
+
+  /* Робимо всі картки на всю ширину з меншими відступами */
+  .glass-card, .color-card-inner {
+    padding: 1rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  /* Робимо кнопки зручними для натискання пальцем */
+  button, .btn {
+    min-height: 44px;
+  }
+
+  /* Ховаємо зайві елементи, які можуть ламати верстку */
+  .glow-orb, .grid-bg {
+    display: none !important;
+  }
+
+  /* Фіксимо випадаюче меню профілю */
+  .absolute.right-0.mt-3 {
+    right: -10px;
+    width: calc(100vw - 2rem);
+    max-width: 300px;
+  }
+}
+
+/* Фіксимо таблиці або широкі елементи на мобільних */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}

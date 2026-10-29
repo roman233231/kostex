@@ -3,11 +3,13 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { logoutUser } from '@/services/auth';
 import { User, Package, Bell, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
 
 export default function UserMenu() {
   const { currentUser, appUser } = useAuth();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -47,13 +49,11 @@ export default function UserMenu() {
 
       {isOpen && (
         <div className="absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[100]">
-          {/* Header */}
           <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
             <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
             <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
           </div>
 
-          {/* Links */}
           <div className="p-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -71,7 +71,6 @@ export default function UserMenu() {
             })}
           </div>
 
-          {/* Admin link */}
           {isAdmin && (
             <div className="p-2 border-t border-[var(--border)]">
               <Link
@@ -85,7 +84,6 @@ export default function UserMenu() {
             </div>
           )}
 
-          {/* Logout */}
           <div className="p-2 border-t border-[var(--border)]">
             <button
               onClick={() => {
