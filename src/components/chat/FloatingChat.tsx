@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { collection, addDoc, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export default function FloatingChat() {
@@ -15,22 +15,27 @@ export default function FloatingChat() {
   const { currentUser } = useAuth();
   const pathname = usePathname();
 
+  // ХУКИ ПОВИННІ БУТИ НА ПОЧАТКУ!
+  useEffect(() => {
+    if (!isOpen || !currentUser) return;
+    const load = async () => {
+      try {
+        const q = query(collection(db, 'supportMessages'), where('userId', '==', currentUser.uid));
+        const snap = await getDocs(q);
+        const msgs = snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
+        setMessages(msgs.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')));
+      } catch (err) {
+        console.error("Помилка завантаження чату:", err);
+      }
+    };
+    load();
+  }, [isOpen, currentUser]);
+
+  // Після всіх хуків можна робити перевірки
   if (!currentUser) return null;
 
   const isBuilderOrAdmin = pathname === '/builder' || pathname?.startsWith('/admin');
   const bottomPosition = isBuilderOrAdmin ? 'bottom-28 md:bottom-24' : 'bottom-6';
-
-  // Завантажуємо повідомлення, коли відкриваємо чат
-  useEffect(() => {
-    if (!isOpen || !currentUser) return;
-    const load = async () => {
-      const q = query(collection(db, 'supportMessages'), where('userId', '==', currentUser.uid));
-      const snap = await getDocs(q);
-      const msgs = snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
-      setMessages(msgs.sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')));
-    };
-    load();
-  }, [isOpen, currentUser]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +51,6 @@ export default function FloatingChat() {
         createdAt: new Date().toISOString(),
       });
       setNewMessage('');
-      // Перезавантажуємо повідомлення
       const q = query(collection(db, 'supportMessages'), where('userId', '==', currentUser.uid));
       const snap = await getDocs(q);
       const msgs = snap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
