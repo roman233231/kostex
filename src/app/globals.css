@@ -225,3 +225,44 @@ body {
 :root:not(.dark) h4 {
   color: var(--text) !important;
 }
+
+/* =========================================
+   LAYOUT & SLIDER FIXES
+   ========================================= */
+
+/* Фіксимо відступи контейнера, щоб нічого не вилазило за краї */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  max-width: 1400px;
+}
+@media (min-width: 640px) {
+  .container { padding-left: 2rem; padding-right: 2rem; }
+}
+
+/* Ховаємо скролбар для слайдерів, але залишаємо можливість скролити */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Слайдер відгуків */
+.reviews-slider {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+}
+.reviews-slider > * {
+  scroll-snap-align: start;
+  flex: 0 0 100%; /* На мобільному 1 картка */
+}
+@media (min-width: 768px) {
+  .reviews-slider > * { flex: 0 0 calc(50% - 0.75rem); } /* На планшеті 2 картки */
+}
+@media (min-width: 1024px) {
+  .reviews-slider > * { flex: 0 0 calc(33.333% - 1rem); } /* На ПК 3 картки */
+}
