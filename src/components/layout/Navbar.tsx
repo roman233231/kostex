@@ -12,7 +12,7 @@ import SupportMessagesBell from './SupportMessagesBell';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { TranslationKey } from '@/lib/translations';
-import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight, LayoutTemplate } from 'lucide-react';
+import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight, LayoutTemplate, Bell } from 'lucide-react';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
 
@@ -73,19 +73,22 @@ export default function Navbar() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* На мобільному ховаємо ці іконки, щоб вони не заважали кнопці меню */}
             <div className="hidden sm:flex items-center gap-1">
               <ThemeToggle />
+              {currentUser && (
+                <>
+                  <SupportMessagesBell />
+                  <NotificationBell />
+                </>
+              )}
             </div>
 
             {loading ? (
               <div className="w-8 h-8 rounded-full skeleton" />
             ) : currentUser ? (
-              <>
-                <SupportMessagesBell />
-                <NotificationBell />
-                <UserMenu />
-              </>
+              <UserMenu />
             ) : (
               <>
                 <Button variant="outline" href="/login" className="hidden md:inline-flex btn-tactile rounded-full text-sm">{t('nav.login')}</Button>
@@ -93,10 +96,11 @@ export default function Navbar() {
               </>
             )}
 
+            {/* Кнопка меню (Бургер) */}
             <button 
               type="button"
               onClick={() => setMenuOpen(!menuOpen)} 
-              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2 relative z-[200]"
+              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-1 relative z-[200]"
               aria-label="Меню"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -105,8 +109,9 @@ export default function Navbar() {
         </div>
       </header>
 
+      {/* Мобільне меню (найвищий пріоритет z-index) */}
       {menuOpen && (
-        <div className="xl:hidden fixed inset-0 z-[150] bg-[var(--bg)] flex flex-col" style={{ animation: 'slideUp 0.3s ease' }}>
+        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] flex flex-col" style={{ animation: 'slideUp 0.3s ease' }}>
           <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0 bg-[var(--bg)]">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               <Logo size={28} className="w-7 h-7" />
@@ -117,7 +122,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 bg-[var(--bg)]">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const active = pathname === link.href;
@@ -137,7 +142,15 @@ export default function Navbar() {
           <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-4 py-4 space-y-4 pb-safe">
             <div className="flex items-center justify-between gap-4">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">Налаштування</span>
-              <div className="flex items-center gap-2.5"><ThemeToggle /></div>
+              <div className="flex items-center gap-2.5">
+                <ThemeToggle />
+                {currentUser && (
+                  <>
+                    <SupportMessagesBell />
+                    <NotificationBell />
+                  </>
+                )}
+              </div>
             </div>
             <div className="h-px bg-[var(--border)]" />
             {currentUser ? (
