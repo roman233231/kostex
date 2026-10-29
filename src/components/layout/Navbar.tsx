@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import Button from '../ui/Button';
 import ThemeToggle from './ThemeToggle';
-import LanguageSwitcher from './LanguageSwitcher';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import SupportMessagesBell from './SupportMessagesBell';
@@ -76,7 +75,6 @@ export default function Navbar() {
 
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-1">
-              <LanguageSwitcher />
               <ThemeToggle />
             </div>
 
@@ -134,7 +132,7 @@ export default function Navbar() {
           <div className="shrink-0 border-t border-[var(--border)] bg-[var(--bg)] px-4 py-4 space-y-4 pb-safe">
             <div className="flex items-center justify-between gap-4">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-4)] font-medium">Налаштування</span>
-              <div className="flex items-center gap-2.5"><LanguageSwitcher /><ThemeToggle /></div>
+              <div className="flex items-center gap-2.5"><ThemeToggle /></div>
             </div>
             <div className="h-px bg-[var(--border)]" />
             {currentUser ? (

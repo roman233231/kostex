@@ -1,27 +1,31 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { MessageCircle, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function FloatingChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { currentUser } = useAuth();
+  const pathname = usePathname();
 
   if (!currentUser) return null;
 
+  // Якщо ми на сторінці Білдера або Адмінки, піднімаємо кнопку вище
+  const isBuilderOrAdmin = pathname === '/builder' || pathname?.startsWith('/admin');
+  const bottomPosition = isBuilderOrAdmin ? 'bottom-28 md:bottom-24' : 'bottom-6';
+
   return (
     <>
-      {/* Кнопка чату */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-[9000] group flex items-center gap-3 px-5 py-4 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_10px_40px_rgba(139,92,246,0.5)] hover:shadow-[0_10px_50px_rgba(139,92,246,0.7)] hover:scale-105 transition-all duration-300 animate-glow"
+        className={`fixed ${bottomPosition} right-6 z-[9000] group flex items-center gap-3 px-5 py-4 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_10px_40px_rgba(139,92,246,0.5)] hover:shadow-[0_10px_50px_rgba(139,92,246,0.7)] hover:scale-105 transition-all duration-300 animate-glow`}
       >
         <MessageCircle size={24} className="group-hover:rotate-12 transition-transform" />
         <span className="font-bold hidden md:block">Чат з підтримкою</span>
       </button>
 
-      {/* Вікно чату */}
       {isOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end justify-end p-4 md:p-6 bg-black/40 backdrop-blur-sm animate-slide-up">
           <div className="w-full max-w-md h-[80vh] md:h-[600px] bg-[var(--bg)] border border-[var(--border)] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
