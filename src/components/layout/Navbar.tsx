@@ -54,7 +54,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'py-2 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]' : 'py-3 md:py-4 bg-transparent border-b border-transparent'}`}>
+      <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? 'py-2 bg-[var(--bg)]/90 backdrop-blur-xl border-b border-[var(--border)] shadow-lg' : 'py-3 md:py-4 bg-transparent border-b border-transparent'}`}>
         <div className="container flex items-center justify-between px-4 md:px-0">
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
             <Logo size={32} className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
@@ -93,7 +93,12 @@ export default function Navbar() {
               </>
             )}
 
-            <button className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2" onClick={() => setMenuOpen(!menuOpen)}>
+            <button 
+              type="button"
+              onClick={() => setMenuOpen(!menuOpen)} 
+              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-2 relative z-[200]"
+              aria-label="Меню"
+            >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
@@ -101,8 +106,8 @@ export default function Navbar() {
       </header>
 
       {menuOpen && (
-        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)]/95 backdrop-blur-2xl flex flex-col animate-slide-up" style={{ animationDuration: '0.3s' }}>
-          <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0">
+        <div className="xl:hidden fixed inset-0 z-[150] bg-[var(--bg)] flex flex-col" style={{ animation: 'slideUp 0.3s ease' }}>
+          <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0 bg-[var(--bg)]">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               <Logo size={28} className="w-7 h-7" />
               <span className="text-base font-bold tracking-tight">KOSTEX</span>
@@ -112,7 +117,7 @@ export default function Navbar() {
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2 bg-[var(--bg)]">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const active = pathname === link.href;

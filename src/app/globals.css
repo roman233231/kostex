@@ -313,3 +313,15 @@ body {
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
 }
+
+/* =========================================
+   FIX: CONTENT OFFSET FOR FIXED NAVBAR
+   ========================================= */
+main {
+  padding-top: 80px; /* Висота навбару на десктопі */
+}
+@media (max-width: 768px) {
+  main {
+    padding-top: 64px; /* Висота навбару на мобільному */
+  }
+}
