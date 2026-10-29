@@ -14,12 +14,13 @@ type LinkProps = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement> & { href: s
 const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps | LinkProps>(
   ({ variant = 'primary', size = 'md', className = '', children, ...props }, ref) => {
     
+    // w-fit та shrink-0 гарантують, що кнопка не буде розтягуватися без потреби
     const baseStyles =
-      'relative overflow-hidden inline-flex items-center justify-center font-semibold transition-all duration-300 btn-tactile rounded-xl whitespace-nowrap';
+      'relative overflow-hidden inline-flex items-center justify-center font-semibold transition-all duration-300 btn-tactile rounded-xl whitespace-nowrap cursor-pointer w-fit shrink-0';
 
     const variants = {
       primary: 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] text-white shadow-[0_4px_14px_0_rgba(139,92,246,0.39)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.23)] hover:brightness-110 border border-transparent',
-      outline: 'border border-[var(--border)] text-[var(--text)] bg-transparent hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]',
+      outline: 'border border-[var(--border-strong)] text-[var(--text)] bg-transparent hover:border-[var(--accent)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)]',
       ghost: 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] border border-transparent',
       danger: 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white',
     };

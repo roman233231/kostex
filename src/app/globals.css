@@ -1,9 +1,10 @@
 @import "tailwindcss";
 
 /* =========================================
-   THEME VARIABLES
+   THEME VARIABLES (DARK & LIGHT)
    ========================================= */
 :root {
+  /* Темна тема (за замовчуванням) */
   --bg: #050505;
   --bg-2: #0a0a0a;
   --surface: #121212;
@@ -28,32 +29,30 @@
   --border-purple: rgba(139, 92, 246, 0.3);
 }
 
-/* =========================================
-   VIBRANT LIGHT THEME (Світла тема)
-   ========================================= */
 :root:not(.dark) {
-  --bg: #f1f5f9;          /* Трохи темніший фон, щоб білі картки виділялися */
-  --bg-2: #e2e8f0;
+  /* Світла тема (соковита та контрастна) */
+  --bg: #f4f6fa;           /* М'який світло-сірий, не ріже око */
+  --bg-2: #eef2f6;
   --surface: #ffffff;
   --surface-2: #f8fafc;
-  --border: #cbd5e1;      /* Чіткіші рамки */
-  --border-strong: #94a3b8;
-  --text: #0f172a;        /* Майже чорний для заголовків */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;         /* Майже чорний для ідеальної читабельності */
   --text-2: #1e293b;
   --text-3: #475569;
   --text-4: #94a3b8;
   --text-muted: #64748b;
-  --accent: #7c3aed;      /* Яскравий фіолетовий */
-  --accent-2: #2563eb;    /* Синій */
-  --accent-soft: #ede9fe;
-  --accent-border: #c4b5fd;
-  --gold: #d97706;
+  --accent: #7c3aed;       /* Насичений фіолетовий */
+  --accent-2: #2563eb;     /* Насичений синій */
+  --accent-soft: #f3e8ff;
+  --accent-border: #d8b4fe;
+  --gold: #b45309;         /* Темніше золото для контрасту */
   --gold-soft: #fef3c7;
   --purple: #7c3aed;
   --purple-bright: #6d28d9;
   --purple-neon: #4f46e5;
-  --purple-soft: #ede9fe;
-  --border-purple: #c4b5fd;
+  --purple-soft: #f3e8ff;
+  --border-purple: #d8b4fe;
 }
 
 /* =========================================
@@ -67,17 +66,16 @@ body {
   overflow-x: hidden;
 }
 
-/* Додаємо легкий кольоровий градієнт на фон для світлої теми */
+/* Світла тема: додаємо легкі кольорові плями на фон для об'єму */
 :root:not(.dark) body {
-  background: 
-    radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.04), transparent 30%),
-    radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.04), transparent 30%),
-    #f1f5f9;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.04), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.04), transparent 25%);
   background-attachment: fixed;
 }
 
 /* =========================================
-   CARDS & COMPONENTS
+   UI COMPONENTS (Глобальні правила)
    ========================================= */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
@@ -87,35 +85,30 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Світла тема: Об'ємні картки з кольоровими тінями */
+/* Світла тема: білі об'ємні картки з кольоровою тінню */
 :root:not(.dark) .glass-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border: 1px solid var(--border);
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.03),
-    0 10px 25px -5px rgba(124, 58, 237, 0.08),
-    0 0 0 1px rgba(124, 58, 237, 0.02);
+    0 4px 6px -1px rgba(0, 0, 0, 0.02), 
+    0 10px 25px -5px rgba(124, 58, 237, 0.06);
 }
 
 :root:not(.dark) .glass-card:hover {
-  background: #ffffff;
-  border-color: #c4b5fd;
+  border-color: var(--accent-border);
   box-shadow: 
-    0 20px 40px -10px rgba(124, 58, 237, 0.15),
-    0 0 20px rgba(124, 58, 237, 0.05);
-  transform: translateY(-3px);
+    0 20px 40px -10px rgba(124, 58, 237, 0.12),
+    0 0 15px rgba(124, 58, 237, 0.03);
+  transform: translateY(-2px);
 }
 
-/* Кольорові картки (Каталог, Білдер) */
+/* Кольорові картки (Каталог, послуги) */
 .color-card {
   position: relative;
   border-radius: 1.5rem;
   padding: 1px;
   background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 10px 30px -10px var(--card-glow);
-}
-:root:not(.dark) .color-card {
   box-shadow: 0 10px 30px -10px var(--card-glow);
 }
 .color-card-inner {
@@ -145,43 +138,31 @@ body {
   background: linear-gradient(135deg, var(--card-color-1) 20%, var(--card-color-2) 20%);
   border: 1px solid var(--card-color-1);
 }
-.color-arrow {
-  transition: transform 0.3s ease;
-}
-.color-card:hover .color-arrow {
-  transform: translateX(4px);
-}
+.color-arrow { transition: transform 0.3s ease; }
+.color-card:hover .color-arrow { transform: translateX(4px); }
 
-/* =========================================
-   BUTTONS & INPUTS
-   ========================================= */
-.btn-tactile {
-  transition: transform 0.1s ease, filter 0.2s ease;
-}
-.btn-tactile:active {
-  transform: scale(0.96);
-}
-
-/* Поля вводу у світлій темі */
+/* Інпути (Форми) */
 :root:not(.dark) input,
 :root:not(.dark) textarea,
 :root:not(.dark) select {
-  background: #ffffff !important;
+  background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
 :root:not(.dark) input:focus,
 :root:not(.dark) textarea:focus,
 :root:not(.dark) select:focus {
-  border-color: #7c3aed !important;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px var(--accent-soft) !important;
   outline: none;
 }
 
 /* =========================================
-   UTILITIES & ANIMATIONS
+   ANIMATIONS & UTILS
    ========================================= */
+.btn-tactile { transition: transform 0.1s ease; }
+.btn-tactile:active { transform: scale(0.95); }
+
 .marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; }
 .marquee-track { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; gap: 2rem; min-width: 100%; animation: scroll 30s linear infinite; }
 @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
@@ -208,7 +189,7 @@ body {
   pointer-events: none;
 }
 :root:not(.dark) .glow-orb {
-  opacity: 0.2;
+  opacity: 0.15;
   mix-blend-mode: multiply;
 }
 
@@ -231,16 +212,16 @@ body {
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 .animate-float { animation: float 5s ease-in-out infinite; }
 
-/* Custom Scrollbar */
+/* Кастомний скролбар */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
 
-/* Fix for light theme text contrast */
-:root:not(.dark) .glass-card h1,
-:root:not(.dark) .glass-card h2,
-:root:not(.dark) .glass-card h3,
-:root:not(.dark) .glass-card h4 {
-  color: #0f172a !important;
+/* Примусово фіксимо текст у світлій темі */
+:root:not(.dark) h1,
+:root:not(.dark) h2,
+:root:not(.dark) h3,
+:root:not(.dark) h4 {
+  color: var(--text) !important;
 }
