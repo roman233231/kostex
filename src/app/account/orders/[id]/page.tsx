@@ -56,7 +56,7 @@ export default function ClientOrderDetailPage() {
       const found = orders.find((o) => o.id === id);
       if (found) {
         setOrder(found);
-        const msgs = await getOrderMessages(id as string, currentUser.uid);
+        const msgs = await getOrderMessages(id as string);
         setMessages(msgs);
         if (found.status === 'COMPLETED') {
           setLoadingReview(true);
@@ -78,7 +78,7 @@ export default function ClientOrderDetailPage() {
         senderRole: 'client', text: newMessage.trim(), read: false,
       });
       setNewMessage('');
-      setMessages(await getOrderMessages(order.id!, currentUser.uid));
+      setMessages(await getOrderMessages(order.id!));
     } catch (err) { console.error(err); } finally { setSending(false); }
   };
 

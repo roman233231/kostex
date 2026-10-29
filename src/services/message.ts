@@ -17,13 +17,14 @@ export async function sendMessage(data: {
   return docRef.id;
 }
 
-export async function getOrderMessages(orderId: string, userId?: string): Promise<Message[]> {
+// Запит ТІЛЬКИ за orderId, без сортування та userId
+export async function getOrderMessages(orderId: string): Promise<Message[]> {
   const q = query(collection(db, 'messages'), where('orderId', '==', orderId));
   const snap = await getDocs(q);
   const messages: Message[] = [];
   snap.forEach((d) => messages.push({ id: d.id, ...d.data() } as Message));
   
-  // Використовуємо fallback (0 або поточна дата), якщо createdAt чомусь немає
+  // Сортуємо на клієнті, щоб не створювати індекс у Firebase
   return messages.sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;

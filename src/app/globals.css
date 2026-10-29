@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* =========================================
-   THEME VARIABLES (DARK & LIGHT)
+   THEME VARIABLES
    ========================================= */
 :root {
   --bg: #050505;
@@ -28,29 +28,32 @@
   --border-purple: rgba(139, 92, 246, 0.3);
 }
 
+/* =========================================
+   VIBRANT LIGHT THEME (Світла тема)
+   ========================================= */
 :root:not(.dark) {
-  --bg: #f8fafc;
-  --bg-2: #f1f5f9;
+  --bg: #f1f5f9;          /* Трохи темніший фон, щоб білі картки виділялися */
+  --bg-2: #e2e8f0;
   --surface: #ffffff;
-  --surface-2: #f1f5f9;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --text: #0f172a;
+  --surface-2: #f8fafc;
+  --border: #cbd5e1;      /* Чіткіші рамки */
+  --border-strong: #94a3b8;
+  --text: #0f172a;        /* Майже чорний для заголовків */
   --text-2: #1e293b;
   --text-3: #475569;
   --text-4: #94a3b8;
   --text-muted: #64748b;
-  --accent: #7c3aed;
-  --accent-2: #4f46e5;
-  --accent-soft: #f3e8ff;
-  --accent-border: #d8b4fe;
+  --accent: #7c3aed;      /* Яскравий фіолетовий */
+  --accent-2: #2563eb;    /* Синій */
+  --accent-soft: #ede9fe;
+  --accent-border: #c4b5fd;
   --gold: #d97706;
   --gold-soft: #fef3c7;
   --purple: #7c3aed;
   --purple-bright: #6d28d9;
   --purple-neon: #4f46e5;
-  --purple-soft: #f3e8ff;
-  --border-purple: #d8b4fe;
+  --purple-soft: #ede9fe;
+  --border-purple: #c4b5fd;
 }
 
 /* =========================================
@@ -64,8 +67,17 @@ body {
   overflow-x: hidden;
 }
 
+/* Додаємо легкий кольоровий градієнт на фон для світлої теми */
+:root:not(.dark) body {
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.04), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(37, 99, 235, 0.04), transparent 30%),
+    #f1f5f9;
+  background-attachment: fixed;
+}
+
 /* =========================================
-   COMPONENTS
+   CARDS & COMPONENTS
    ========================================= */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
@@ -75,25 +87,35 @@ body {
   transition: all 0.3s ease;
 }
 
+/* Світла тема: Об'ємні картки з кольоровими тінями */
 :root:not(.dark) .glass-card {
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 10px 30px -10px rgba(124, 58, 237, 0.08);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.03),
+    0 10px 25px -5px rgba(124, 58, 237, 0.08),
+    0 0 0 1px rgba(124, 58, 237, 0.02);
 }
 
 :root:not(.dark) .glass-card:hover {
-  box-shadow: 0 20px 40px -10px rgba(124, 58, 237, 0.15);
-  border-color: #cbd5e1;
-  transform: translateY(-2px);
+  background: #ffffff;
+  border-color: #c4b5fd;
+  box-shadow: 
+    0 20px 40px -10px rgba(124, 58, 237, 0.15),
+    0 0 20px rgba(124, 58, 237, 0.05);
+  transform: translateY(-3px);
 }
 
-/* Color Cards */
+/* Кольорові картки (Каталог, Білдер) */
 .color-card {
   position: relative;
   border-radius: 1.5rem;
   padding: 1px;
   background: linear-gradient(135deg, var(--card-color-1), var(--card-color-2));
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 10px 30px -10px var(--card-glow);
+}
+:root:not(.dark) .color-card {
   box-shadow: 0 10px 30px -10px var(--card-glow);
 }
 .color-card-inner {
@@ -130,7 +152,9 @@ body {
   transform: translateX(4px);
 }
 
-/* Buttons */
+/* =========================================
+   BUTTONS & INPUTS
+   ========================================= */
 .btn-tactile {
   transition: transform 0.1s ease, filter 0.2s ease;
 }
@@ -138,8 +162,25 @@ body {
   transform: scale(0.96);
 }
 
+/* Поля вводу у світлій темі */
+:root:not(.dark) input,
+:root:not(.dark) textarea,
+:root:not(.dark) select {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+}
+:root:not(.dark) input:focus,
+:root:not(.dark) textarea:focus,
+:root:not(.dark) select:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1) !important;
+  outline: none;
+}
+
 /* =========================================
-   UTILITIES
+   UTILITIES & ANIMATIONS
    ========================================= */
 .marquee { display: flex; overflow: hidden; user-select: none; gap: 2rem; }
 .marquee-track { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; gap: 2rem; min-width: 100%; animation: scroll 30s linear infinite; }
@@ -155,12 +196,20 @@ body {
   opacity: 0.3;
   pointer-events: none;
 }
+:root:not(.dark) .grid-bg {
+  background-image: linear-gradient(#cbd5e1 1px, transparent 1px), linear-gradient(90deg, #cbd5e1 1px, transparent 1px);
+  opacity: 0.4;
+}
 
 .glow-orb {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
   pointer-events: none;
+}
+:root:not(.dark) .glow-orb {
+  opacity: 0.2;
+  mix-blend-mode: multiply;
 }
 
 .gradient-text, .text-gradient-animated {
@@ -194,9 +243,4 @@ body {
 :root:not(.dark) .glass-card h3,
 :root:not(.dark) .glass-card h4 {
   color: #0f172a !important;
-}
-:root:not(.dark) .glass-card p,
-:root:not(.dark) .glass-card span,
-:root:not(.dark) .glass-card div {
-  color: var(--text-3);
 }
