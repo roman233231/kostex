@@ -3,25 +3,29 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { useLanguage } from '@/context/LanguageContext';
 import { logoutUser } from '@/services/auth';
 import { User, Package, Bell, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
 
 export default function UserMenu() {
   const { currentUser, appUser } = useAuth();
-  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Закриваємо меню при кліку або тапі поза ним
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    if (!isOpen) return;
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('touchstart', handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!currentUser) return null;
 
@@ -36,67 +40,73 @@ export default function UserMenu() {
   ];
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative z-[300]" ref={menuRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 pr-2 rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-all bg-[var(--surface)]"
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:pr-2 rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-all bg-[var(--surface)] relative z-[310] cursor-pointer"
       >
         <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
           {initial}
         </div>
-        <ChevronDown size={14} className={`text-[var(--text-3)] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-[var(--text-3)] transition-transform duration-300 hidden sm:block ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[100]">
-          <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
-            <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
-            <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
-          </div>
-
-          <div className="p-2">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
-                >
-                  <Icon size={18} />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-
-          {isAdmin && (
-            <div className="p-2 border-t border-[var(--border)]">
-              <Link
-                href="/admin"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-              >
-                <Shield size={18} />
-                Адмін-панель
-              </Link>
+        <>
+          {/* Невидимий фон для закриття на мобільному */}
+          <div className="fixed inset-0 z-[290]" onClick={() => setIsOpen(false)} />
+          
+          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[300]">
+            <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
+              <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
+              <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
             </div>
-          )}
 
-          <div className="p-2 border-t border-[var(--border)]">
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                logoutUser();
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-            >
-              <LogOut size={18} />
-              Вийти
-            </button>
+            <div className="p-2">
+              {menuItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
+                  >
+                    <Icon size={18} />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {isAdmin && (
+              <div className="p-2 border-t border-[var(--border)]">
+                <Link
+                  href="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+                >
+                  <Shield size={18} />
+                  Адмін-панель
+                </Link>
+              </div>
+            )}
+
+            <div className="p-2 border-t border-[var(--border)]">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  logoutUser();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut size={18} />
+                Вийти
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
