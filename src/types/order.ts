@@ -11,7 +11,13 @@ export interface Order {
   references?: string[];
   estimatedPrice: number;
   estimatedTime?: string;
-  finalPrice?: number;
+  
+  // Фінанси
+  finalPrice?: number;          // Загальна вартість проєкту
+  currentInvoiceAmount?: number; // Сума до сплати зараз
+  paidAmount?: number;          // Скільки вже сплачено
+  invoiceType?: 'prepayment' | 'final' | 'full'; // Тип поточного рахунку
+
   status: string;
   createdAt?: string;
   updatedAt?: string;
@@ -19,8 +25,8 @@ export interface Order {
   contactPreference?: 'telegram' | 'instagram' | 'phone' | 'email' | 'whatsapp' | 'viber' | 'site';
   contactValue?: string;
 
-  // Оплата
-  paymentStatus?: 'pending' | 'awaiting_manual' | 'pending_confirmation' | 'paid' | 'cancelled';
+  // Статус оплати
+  paymentStatus?: 'pending' | 'awaiting_manual' | 'pending_confirmation' | 'partially_paid' | 'fully_paid' | 'cancelled';
   paymentMethod?: 'card' | 'crypto' | 'paypal' | 'other';
   paymentDetails?: string;
   paidAt?: string;

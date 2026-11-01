@@ -53,7 +53,7 @@ export default function PaymentPage() {
       await markOrderAsPaidByClient(order.id!);
       await notifyAllAdmins('Клієнт підтвердив оплату!', `Замовлення #${order.id?.slice(0, 8)} — ${order.productTitle}. Перевірте надходження коштів.`, `/admin/orders/${order.id}`);
       alert('Дякуємо! Адміністратор перевірить оплату найближчим часом.');
-      setOrder({ ...order, paymentStatus: 'paid' });
+      setOrder({ ...order, paymentStatus: 'pending_confirmation' });
     } catch (err) {
       console.error(err);
       alert('Помилка. Спробуйте ще раз.');
@@ -115,7 +115,7 @@ export default function PaymentPage() {
           </div>
         </Reveal>
 
-        {order.paymentStatus === 'paid' ? (
+        {order.paymentStatus === 'pending_confirmation' || order.paymentStatus === 'fully_paid' ? (
           <Reveal delay={100}>
             <div className="glass-card rounded-[2rem] p-10 md:p-16 text-center border-green-500/30">
               <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">

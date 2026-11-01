@@ -178,7 +178,7 @@ export default function AdminOrderDetailPage() {
             </Reveal>
 
             {/* Блок доставки проєкту з'являється ТІЛЬКИ після підтвердження оплати */}
-            {order.paymentStatus === 'paid' && (
+            {order.paymentStatus === 'fully_paid' && (
               <Reveal delay={140}>
                 <DeliveryLinkPanel order={order} onUpdate={fetchOrder} />
               </Reveal>
