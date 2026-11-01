@@ -13,10 +13,10 @@ export interface Order {
   estimatedTime?: string;
   
   // Фінанси
-  finalPrice?: number;          // Загальна вартість проєкту
-  currentInvoiceAmount?: number; // Сума до сплати зараз
-  paidAmount?: number;          // Скільки вже сплачено
-  invoiceType?: 'prepayment' | 'final' | 'full'; // Тип поточного рахунку
+  finalPrice?: number;            // Загальна вартість проєкту
+  currentInvoiceAmount?: number;  // Сума, на яку виставлено рахунок ЗАРАЗ
+  paidAmount?: number;            // Скільки вже фактично сплачено
+  invoiceType?: 'prepayment' | 'final' | 'full'; 
 
   status: string;
   createdAt?: string;
