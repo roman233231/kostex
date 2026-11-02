@@ -11,12 +11,12 @@ export interface Order {
   references?: string[];
   estimatedPrice: number;
   estimatedTime?: string;
-  
+
   // Фінанси
-  finalPrice?: number;            // Загальна вартість проєкту
-  currentInvoiceAmount?: number;  // Сума, на яку виставлено рахунок ЗАРАЗ
-  paidAmount?: number;            // Скільки вже фактично сплачено
-  invoiceType?: 'prepayment' | 'final' | 'full'; 
+  finalPrice?: number;
+  currentInvoiceAmount?: number;
+  paidAmount?: number;
+  invoiceType?: 'prepayment' | 'final' | 'full';
 
   status: string;
   createdAt?: string;
@@ -25,10 +25,13 @@ export interface Order {
   contactPreference?: 'telegram' | 'instagram' | 'phone' | 'email' | 'whatsapp' | 'viber' | 'site';
   contactValue?: string;
 
-  // Статус оплати
+  // Оплата
   paymentStatus?: 'pending' | 'awaiting_manual' | 'pending_confirmation' | 'partially_paid' | 'fully_paid' | 'cancelled';
   paymentMethod?: 'card' | 'crypto' | 'paypal' | 'other';
   paymentDetails?: string;
+  paymentToken?: string;     // Токен публічного посилання на оплату
+  paymentId?: string | number;
+  paymentProvider?: string;
   paidAt?: string;
   paymentClaimedAt?: string;
 }
