@@ -12,7 +12,7 @@ import SupportMessagesBell from './SupportMessagesBell';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { TranslationKey } from '@/lib/translations';
-import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight, LayoutTemplate, Bell } from 'lucide-react';
+import { Menu, X, Home, Layers, Tag, Briefcase, Lightbulb, BookOpen, Info, Mail, LogIn, UserPlus, User, MessageSquare, Shield, Star, Package, ArrowRight, LayoutTemplate, HelpCircle } from 'lucide-react';
 
 const NotificationBell = dynamic(() => import('./NotificationBell'), { ssr: false });
 
@@ -24,6 +24,7 @@ const navLinks: { href: string; key: any; icon: any }[] = [
   { href: '/portfolio', key: 'nav.portfolio', icon: Home },
   { href: '/reviews', key: 'reviews.badge', icon: Star },
   { href: '/blog', key: 'nav.blog', icon: BookOpen },
+  { href: '/faq', key: 'FAQ', icon: HelpCircle },
   { href: '/inspiration', key: 'nav.inspiration', icon: Lightbulb },
   { href: '/about', key: 'nav.about', icon: Info },
   { href: '/contact', key: 'nav.contact', icon: Mail },
@@ -57,8 +58,8 @@ export default function Navbar() {
       <header className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolled ? 'py-2 bg-[var(--bg)]/90 backdrop-blur-xl border-b border-[var(--border)] shadow-lg' : 'py-3 md:py-4 bg-transparent border-b border-transparent'}`}>
         <div className="container flex items-center justify-between px-4 md:px-0">
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <Logo size={32} className="w-8 h-8 md:w-9 md:h-9 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
-            <span className="text-lg md:text-xl font-bold tracking-tight text-gradient-animated">KOSTEX</span>
+            <Logo size={32} className="w-7 h-7 md:w-9 md:h-9 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12" />
+            <span className="text-base md:text-xl font-bold tracking-tight text-gradient-animated">KOSTEX</span>
           </Link>
 
           <nav className="hidden xl:flex items-center gap-1 bg-[var(--surface-2)]/50 px-2 py-1.5 rounded-full border border-[var(--border)]/50 backdrop-blur-md">
@@ -74,7 +75,6 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* На мобільному ховаємо ці іконки, щоб вони не заважали кнопці меню */}
             <div className="hidden sm:flex items-center gap-1">
               <ThemeToggle />
               {currentUser && (
@@ -96,22 +96,20 @@ export default function Navbar() {
               </>
             )}
 
-            {/* Кнопка меню (Бургер) */}
             <button 
               type="button"
               onClick={() => setMenuOpen(!menuOpen)} 
-              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-1 relative z-[200]"
+              className="xl:hidden w-9 h-9 rounded-full flex items-center justify-center text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)] hover:border-[var(--accent)] transition-all ml-1 relative z-[200]"
               aria-label="Меню"
             >
-              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Мобільне меню (найвищий пріоритет z-index) */}
       {menuOpen && (
-        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] flex flex-col" style={{ animation: 'slideUp 0.3s ease' }}>
+        <div className="xl:hidden fixed inset-0 z-[9999] bg-[var(--bg)] flex flex-col">
           <div className="flex items-center justify-between px-4 h-16 border-b border-[var(--border)] shrink-0 bg-[var(--bg)]">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               <Logo size={28} className="w-7 h-7" />

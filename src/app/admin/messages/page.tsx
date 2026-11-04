@@ -16,7 +16,7 @@ import { db } from '@/lib/firebase';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
-import { Send, Check, CheckCheck, MessageSquare, Search, Shield } from 'lucide-react';
+import { Send, Check, CheckCheck, MessageSquare, Shield, Search, ArrowLeft } from 'lucide-react';
 
 interface ClientInfo {
   uid: string;
@@ -88,10 +88,7 @@ export default function AdminMessagesPage() {
     if (!text.trim() || !currentUser || !selectedUserId) return;
     setSending(true);
     try {
-      await sendSupportMessage({
-        userId: selectedUserId, senderId: currentUser.uid,
-        senderRole: 'admin', text: text.trim(),
-      });
+      await sendSupportMessage({ userId: selectedUserId, senderId: currentUser.uid, senderRole: 'admin', text: text.trim() });
       setText('');
     } catch (err) { console.error(err); } finally { setSending(false); }
   };
@@ -100,18 +97,10 @@ export default function AdminMessagesPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
-  if (loading) {
-    return (
-      <div className="container py-32 flex items-center justify-center min-h-screen">
-        <div className="w-10 h-10 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
+  if (loading) return <div className="container py-32 flex items-center justify-center min-h-screen"><div className="w-10 h-10 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" /></div>;
   if (!currentUser || appUser?.role !== 'admin') return null;
 
   const selectedClient = selectedUserId ? clients.get(selectedUserId) : null;
-
   const filteredConvs = conversations.filter((c) => {
     if (!search) return true;
     const client = clients.get(c.userId);
@@ -120,33 +109,31 @@ export default function AdminMessagesPage() {
     return client.displayName.toLowerCase().includes(q) || client.email.toLowerCase().includes(q);
   });
 
+  // Для мобільного: якщо вибрано користувача, показуємо тільки чат
+  const showMobileChat = selectedUserId && selectedClient;
+
   return (
     <>
       <Navbar />
-      <main className="container py-24 md:py-32 h-[calc(100vh-100px)] flex flex-col">
+      <main className="container py-24 md:py-32 min-h-screen flex flex-col">
         <Reveal>
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">
-                Повідомлення
-              </h1>
-              <p className="text-[var(--text-3)]">Спілкування з клієнтами в реальному часі</p>
-            </div>
+          <div className="mb-6">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2 text-[var(--text)]">Повідомлення</h1>
+            <p className="text-[var(--text-3)]">Спілкування з клієнтами в реальному часі</p>
           </div>
         </Reveal>
 
-        <Reveal delay={100} className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0">
           {conversations.length === 0 ? (
-            <div className="glass-card rounded-[2rem] text-center py-20 h-full flex flex-col justify-center items-center">
+            <div className="glass-card rounded-[2rem] text-center py-20">
               <MessageSquare size={48} className="text-[var(--text-4)] mb-4" />
               <h3 className="text-xl font-bold text-[var(--text)] mb-2">Немає розмов</h3>
-              <p className="text-[var(--text-3)] max-w-sm">Коли клієнти напишуть через чат, їхні повідомлення з'являться тут.</p>
+              <p className="text-[var(--text-3)]">Коли клієнти напишуть через чат, їхні повідомлення з'являться тут.</p>
             </div>
           ) : (
-            <div className="glass-card rounded-3xl overflow-hidden flex h-full border border-[var(--border)]">
-              
+            <div className="glass-card rounded-3xl overflow-hidden flex h-[calc(100dvh-280px)] min-h-[500px] border border-[var(--border)]">
               {/* ЛІВА ПАНЕЛЬ (Список чатів) */}
-              <div className="w-full md:w-80 flex flex-col border-r border-[var(--border)] bg-[var(--surface)]/50 backdrop-blur-md">
+              <div className={`w-full md:w-80 flex-col border-r border-[var(--border)] bg-[var(--surface)]/50 backdrop-blur-md ${showMobileChat ? 'hidden md:flex' : 'flex'}`}>
                 <div className="p-4 border-b border-[var(--border)]">
                   <div className="relative">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-4)]" />
@@ -155,11 +142,10 @@ export default function AdminMessagesPage() {
                       placeholder="Пошук клієнта..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] placeholder:text-[var(--text-4)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                      className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] placeholder:text-[var(--text-4)] focus:outline-none focus:border-[var(--accent)]"
                     />
                   </div>
                 </div>
-                
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
                   {filteredConvs.map((conv) => {
                     const client = clients.get(conv.userId);
@@ -168,9 +154,7 @@ export default function AdminMessagesPage() {
                       <button
                         key={conv.userId}
                         onClick={() => setSelectedUserId(conv.userId)}
-                        className={`w-full text-left p-4 border-b border-[var(--border)] transition-all flex items-center gap-3 relative overflow-hidden ${
-                          isActive ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--surface-2)]'
-                        }`}
+                        className={`w-full text-left p-4 border-b border-[var(--border)] transition-all flex items-center gap-3 relative overflow-hidden ${isActive ? 'bg-[var(--accent)]/10' : 'hover:bg-[var(--surface-2)]'}`}
                       >
                         {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--accent)] shadow-[0_0_10px_var(--accent)]" />}
                         <div className="w-11 h-11 rounded-full text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
@@ -178,18 +162,14 @@ export default function AdminMessagesPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-0.5">
-                            <span className={`text-sm font-bold truncate ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}>
-                              {client?.displayName || 'Завантаження...'}
-                            </span>
+                            <span className={`text-sm font-bold truncate ${isActive ? 'text-[var(--accent)]' : 'text-[var(--text)]'}`}>{client?.displayName || 'Завантаження...'}</span>
                             {conv.unreadCount > 0 && (
                               <span className="min-w-[20px] h-5 px-1.5 rounded-full text-white text-[10px] font-bold flex items-center justify-center bg-pink-500 shadow-[0_0_10px_rgba(236,72,153,0.5)]">
                                 {conv.unreadCount}
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-[var(--text-3)] truncate">
-                            {conv.lastMessage.text}
-                          </div>
+                          <div className="text-xs text-[var(--text-3)] truncate">{conv.lastMessage.text}</div>
                         </div>
                       </button>
                     );
@@ -198,10 +178,13 @@ export default function AdminMessagesPage() {
               </div>
 
               {/* ПРАВА ПАНЕЛЬ (Чат) */}
-              <div className="hidden md:flex flex-1 flex-col bg-[var(--bg)]/50">
+              <div className={`flex-1 flex-col bg-[var(--bg)]/50 ${showMobileChat ? 'flex' : 'hidden md:flex'}`}>
                 {selectedClient ? (
                   <>
                     <div className="p-4 border-b border-[var(--border)] flex items-center gap-4 bg-[var(--surface)]/80 backdrop-blur-sm z-10">
+                      <button onClick={() => setSelectedUserId(null)} className="md:hidden w-8 h-8 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)]">
+                        <ArrowLeft size={16} />
+                      </button>
                       <div className="w-10 h-10 rounded-full text-white font-bold flex items-center justify-center shadow-md" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
                         {selectedClient.initial}
                       </div>
@@ -209,12 +192,9 @@ export default function AdminMessagesPage() {
                         <div className="font-bold text-[var(--text)] text-sm">{selectedClient.displayName}</div>
                         <div className="text-xs text-[var(--text-3)]">{selectedClient.email}</div>
                       </div>
-                      <div className="ml-auto flex items-center gap-1.5 text-xs font-bold text-green-500 bg-green-500/10 px-3 py-1.5 rounded-lg">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Онлайн
-                      </div>
                     </div>
 
-                    <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+                    <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
                       {messages.length === 0 ? (
                         <div className="text-center py-20 text-[var(--text-4)] text-sm">Ще немає повідомлень</div>
                       ) : (
@@ -222,11 +202,7 @@ export default function AdminMessagesPage() {
                           const isAdmin = m.senderRole === 'admin';
                           return (
                             <div key={m.id} className={`flex flex-col ${isAdmin ? 'items-end' : 'items-start'}`}>
-                              <div className={`p-4 rounded-2xl max-w-[75%] shadow-sm ${
-                                isAdmin 
-                                  ? 'bg-[var(--accent)] text-white rounded-tr-sm' 
-                                  : 'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-tl-sm'
-                              }`}>
+                              <div className={`p-3 rounded-2xl max-w-[80%] shadow-sm ${isAdmin ? 'bg-[var(--accent)] text-white rounded-tr-sm' : 'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-tl-sm'}`}>
                                 <div className="text-sm leading-relaxed">{m.text}</div>
                               </div>
                               <div className="text-[10px] font-medium text-[var(--text-4)] mt-1 px-1 flex items-center gap-1">
@@ -247,7 +223,7 @@ export default function AdminMessagesPage() {
                           onChange={(e) => setText(e.target.value)}
                           onKeyDown={handleKey}
                           placeholder="Напишіть повідомлення..."
-                          className="flex-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-4)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          className="flex-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-4)] focus:outline-none focus:border-[var(--accent)]"
                           disabled={sending}
                         />
                         <button
@@ -273,7 +249,7 @@ export default function AdminMessagesPage() {
               </div>
             </div>
           )}
-        </Reveal>
+        </div>
       </main>
       <Footer />
     </>

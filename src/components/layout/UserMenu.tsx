@@ -36,146 +36,85 @@ export default function UserMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Кнопка-аватар */}
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen((v) => !v);
-        }}
+        onClick={(e) => { e.stopPropagation(); setIsOpen((v) => !v); }}
         className="flex items-center gap-1 sm:gap-2 p-1 sm:pr-2 rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-all bg-[var(--surface)] cursor-pointer"
       >
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}
-        >
+        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
           {initial}
         </div>
-        <ChevronDown
-          size={14}
-          className={`text-[var(--text-3)] transition-transform duration-300 hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
-        />
+        <ChevronDown size={14} className={`text-[var(--text-3)] transition-transform duration-300 hidden sm:block ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* ===== DESKTOP DROPDOWN ===== */}
+      {/* DESKTOP DROPDOWN */}
       {isOpen && (
         <div className="hidden sm:block absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[1000]">
           <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
             <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
             <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
           </div>
-
           <div className="p-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
-                >
-                  <Icon size={18} />
-                  {item.label}
+                <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors">
+                  <Icon size={18} /> {item.label}
                 </Link>
               );
             })}
           </div>
-
           {isAdmin && (
             <div className="p-2 border-t border-[var(--border)]">
-              <Link
-                href="/admin"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-              >
-                <Shield size={18} />
-                Адмін-панель
+              <Link href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors">
+                <Shield size={18} /> Адмін-панель
               </Link>
             </div>
           )}
-
           <div className="p-2 border-t border-[var(--border)]">
-            <button
-              type="button"
-              onClick={() => {
-                setIsOpen(false);
-                logoutUser();
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-            >
-              <LogOut size={18} />
-              Вийти
+            <button type="button" onClick={() => { setIsOpen(false); logoutUser(); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors">
+              <LogOut size={18} /> Вийти
             </button>
           </div>
         </div>
       )}
 
-      {/* ===== MOBILE FULLSCREEN MENU ===== */}
+      {/* MOBILE BOTTOM SHEET */}
       {isOpen && (
-        <div className="sm:hidden fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-end justify-center p-3">
-          <div className="w-full rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up">
+        <div className="sm:hidden fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-end justify-center p-3" onClick={() => setIsOpen(false)}>
+          <div className="w-full rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
-                style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}
-              >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
                 {initial}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
                 <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)]"
-              >
+              <button type="button" onClick={() => setIsOpen(false)} className="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)]">
                 <X size={18} />
               </button>
             </div>
-
             <div className="p-2">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
-                  >
-                    <Icon size={18} />
-                    {item.label}
+                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors">
+                    <Icon size={18} /> {item.label}
                   </Link>
                 );
               })}
             </div>
-
             {isAdmin && (
               <div className="p-2 border-t border-[var(--border)]">
-                <Link
-                  href="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
-                >
-                  <Shield size={18} />
-                  Адмін-панель
+                <Link href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors">
+                  <Shield size={18} /> Адмін-панель
                 </Link>
               </div>
             )}
-
             <div className="p-2 border-t border-[var(--border)]">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  logoutUser();
-                }}
-                className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
-              >
-                <LogOut size={18} />
-                Вийти
+              <button type="button" onClick={() => { setIsOpen(false); logoutUser(); }} className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors">
+                <LogOut size={18} /> Вийти
               </button>
             </div>
           </div>

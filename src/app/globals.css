@@ -343,3 +343,25 @@ main {
     padding: 0.75rem !important;
   }
 }
+
+/* =========================================
+   MOBILE LAYOUT FIXES
+   ========================================= */
+html {
+  scroll-padding-top: 80px;
+}
+body {
+  overflow-x: hidden;
+}
+main {
+  padding-top: 80px;
+}
+@media (max-width: 768px) {
+  main {
+    padding-top: 64px;
+  }
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}

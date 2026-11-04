@@ -15,6 +15,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { createOrder } from '@/services/order';
 import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
+import { validatePromoCode } from '@/services/promoCode';
 import { Feature } from '@/types/feature';
 import {
   Package, Palette, FileText, Zap, PenLine, Check,
@@ -97,6 +98,10 @@ export default function BuilderPage() {
   const [design, setDesign] = useState('');
   const [selectedPages, setSelectedPages] = useState<string[]>(['Home']);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [promoInput, setPromoInput] = useState('');
+  const [promoData, setPromoData] = useState<{ code: string; discountPercent: number; discountAmount: number } | null>(null);
+  const [promoError, setPromoError] = useState('');
+  const [checkingPromo, setCheckingPromo] = useState(false);
   const [requirements, setRequirements] = useState('');
   const [references, setReferences] = useState('');
   const [contactPreference, setContactPreference] = useState('');
@@ -169,6 +174,10 @@ export default function BuilderPage() {
         requirements,
         references: references ? references.split('\n').filter((r) => r.trim()) : [],
         estimatedPrice: totalPrice,
+        originalPrice: totalPrice,
+        promoCode: promoData?.code,
+        promoDiscount: promoData?.discountAmount,
+        promoDiscountPercent: promoData?.discountPercent,
         estimatedTime: selectedCategory?.time || 'TBD',
         status: 'NEW',
         contactPreference: contactPreference as any,
