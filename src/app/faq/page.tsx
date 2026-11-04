@@ -1,11 +1,12 @@
 'use client';
+
+import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Badge from '@/components/ui/Badge';
 import Reveal from '@/components/ui/Reveal';
-import { HelpCircle, MessageCircle, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import { MessageCircle, Send, ArrowRight, HelpCircle } from 'lucide-react';
 
 const faqs = [
   { q: 'Скільки коштує розробка сайту?', a: 'Ціна залежить від складності. Орієнтовна вартість — від 5 000 ₴ за лендінг. Точну ціну ви побачите в конструкторі після вибору всіх параметрів.' },
@@ -19,6 +20,12 @@ const faqs = [
 ];
 
 export default function FAQPage() {
+  const openChat = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('open-support-chat'));
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -38,8 +45,8 @@ export default function FAQPage() {
             <Reveal key={i} delay={i * 50}>
               <details className="glass-card rounded-2xl p-6 group">
                 <summary className="flex items-center justify-between cursor-pointer list-none">
-                  <span className="text-lg font-semibold text-[var(--text)]">{f.q}</span>
-                  <span className="text-[var(--accent)] transition-transform group-open:rotate-180">▼</span>
+                  <span className="text-lg font-semibold text-[var(--text)] pr-4">{f.q}</span>
+                  <span className="text-[var(--accent)] transition-transform group-open:rotate-180 shrink-0">▼</span>
                 </summary>
                 <p className="mt-4 text-[var(--text-3)] leading-relaxed">{f.a}</p>
               </details>
@@ -48,11 +55,38 @@ export default function FAQPage() {
         </div>
 
         <Reveal delay={300}>
-          <div className="glass-card rounded-3xl p-8 md:p-12 text-center mt-12 border-[var(--accent)]/30">
-            <MessageCircle size={48} className="text-[var(--accent)] mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-3">Не знайшли відповідь?</h2>
-            <p className="text-[var(--text-3)] mb-6">Напишіть нам у підтримку — відповімо протягом 24 годин.</p>
-            <Link href="/contact"><Button>Зв’язатися з нами <ArrowRight size={18} className="ml-2" /></Button></Link>
+          <div className="glass-card rounded-3xl p-8 md:p-12 text-center mt-12 border-[var(--accent)]/30 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent)]/10 rounded-full blur-[80px] pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="w-20 h-20 rounded-3xl bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center mx-auto mb-5">
+                <HelpCircle size={40} />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-[var(--text)]">Не знайшли відповідь?</h2>
+              <p className="text-[var(--text-3)] mb-8 max-w-lg mx-auto">
+                Напишіть нам — відповімо протягом 24 годин. Або зв'яжіться зручним для вас способом.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  onClick={openChat}
+                  className="btn-tactile rounded-xl px-8 py-4 text-base shadow-[0_0_20px_var(--accent)]"
+                >
+                  <MessageCircle size={18} className="mr-2" /> Відкрити чат підтримки
+                </Button>
+                <a href="https://t.me/kostex_official" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="btn-tactile rounded-xl px-8 py-4 text-base w-full sm:w-auto">
+                    <Send size={18} className="mr-2" /> Написати в Telegram
+                  </Button>
+                </a>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-[var(--border)]">
+                <Link href="/builder" className="text-sm text-[var(--accent)] hover:underline inline-flex items-center gap-1 font-semibold">
+                  Або одразу почати проєкт <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
           </div>
         </Reveal>
       </main>
