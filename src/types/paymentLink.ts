@@ -1,7 +1,8 @@
 export interface PaymentLink {
-  id?: string; // token = doc ID
-  orderId: string;
-  userId: string;
+  id?: string;
+  orderId?: string;          // необов'язково — для ручних рахунків
+  userId?: string;
+  customerName?: string;     // ім'я клієнта для ручного рахунку
   amount: number;
   totalPrice: number;
   paidAmountBefore: number;

@@ -46,21 +46,28 @@ export default function PaymentPage() {
   };
 
   const handleClaimPaid = async () => {
-    if (!link?.orderId || !token) return;
+    if (!link?.id) return;
     if (!confirm(`Ви впевнені, що оплатили ${link.amount.toLocaleString('uk-UA')} ₴?`)) return;
     setClaiming(true);
     try {
       const now = new Date().toISOString();
       const batch = writeBatch(db);
-      batch.update(doc(db, 'orders', link.orderId), {
-        paymentStatus: 'pending_confirmation',
-        paymentClaimedAt: now,
-        updatedAt: now,
-      });
-      batch.update(doc(db, 'paymentLinks', token), {
+
+      // Оновлюємо статус paymentLink
+      batch.update(doc(db, 'paymentLinks', link.id), {
         status: 'pending_confirmation',
         claimedAt: now,
       });
+
+      // Якщо є прив'язка до замовлення — оновлюємо і його
+      if (link.orderId) {
+        batch.update(doc(db, 'orders', link.orderId), {
+          paymentStatus: 'pending_confirmation',
+          paymentClaimedAt: now,
+          updatedAt: now,
+        });
+      }
+
       await batch.commit();
       setClaimed(true);
       await load();
@@ -94,7 +101,6 @@ export default function PaymentPage() {
   const method = methodLabels[link.paymentMethod] || methodLabels.other;
   const Icon = method.icon;
 
-  // Статус: оплачено
   if (link.status === 'confirmed') {
     return (
       <>
@@ -113,7 +119,6 @@ export default function PaymentPage() {
     );
   }
 
-  // Статус: очікує підтвердження (клієнт вже натиснув)
   if (link.status === 'pending_confirmation' || claimed) {
     return (
       <>
@@ -133,7 +138,6 @@ export default function PaymentPage() {
     );
   }
 
-  // Статус: скасовано/відхилено/застаріле
   if (link.status === 'rejected' || link.status === 'superseded') {
     return (
       <>
@@ -151,7 +155,6 @@ export default function PaymentPage() {
     );
   }
 
-  // Активне посилання — показуємо реквізити
   return (
     <>
       <Navbar />
@@ -161,6 +164,7 @@ export default function PaymentPage() {
             <ShieldCheck size={14} /> Рахунок на оплату
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-[var(--text)] mb-2">{link.productTitle}</h1>
+          {link.customerName && <p className="text-sm text-[var(--text-3)]">Для: {link.customerName}</p>}
         </div>
 
         <div className="glass-card rounded-[2rem] p-8 md:p-10 mb-6">

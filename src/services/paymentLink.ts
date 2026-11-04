@@ -38,3 +38,20 @@ export async function supersedeOldLink(token: string | undefined): Promise<void>
     console.error(err);
   }
 }
+
+export async function getManualInvoices(): Promise<PaymentLink[]> {
+  const q = query(collection(db, 'paymentLinks'), where('orderId', '==', null));
+  const snap = await getDocs(q);
+  const list: PaymentLink[] = [];
+  snap.forEach((d) => list.push({ id: d.id, ...d.data() } as PaymentLink));
+  // також беремо ті, де orderId відсутнє
+  const q2 = query(collection(db, 'paymentLinks'));
+  const snap2 = await getDocs(q2);
+  snap2.forEach((d) => {
+    const data = d.data();
+    if (!data.orderId) {
+      if (!list.find((x) => x.id === d.id)) list.push({ id: d.id, ...data } as PaymentLink);
+    }
+  });
+  return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
