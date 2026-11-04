@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { getManualInvoices } from '@/services/paymentLink';
 import { PaymentLink } from '@/types/paymentLink';
@@ -9,13 +11,14 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
 import Button from '@/components/ui/Button';
-import { Plus, FileText, Check, Clock, XCircle, Copy, ExternalLink } from 'lucide-react';
+import { Plus, FileText, Check, Clock, XCircle, Copy, ExternalLink, Loader2 } from 'lucide-react';
 
 export default function InvoicesPage() {
   const { appUser, loading } = useAuth();
   const [invoices, setInvoices] = useState<PaymentLink[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -32,11 +35,80 @@ export default function InvoicesPage() {
     if (appUser?.role === 'admin') load();
   }, [appUser]);
 
-  const copyLink = (id: string, token: string) => {
-    const url = `${window.location.origin}/pay/${token}`;
+  const copyLink = (id: string) => {
+    const url = `${window.location.origin}/pay/${id}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleConfirm = async (inv: PaymentLink) => {
+    if (!inv.id) return;
+    if (!confirm(`Підтвердити оплату на суму ${inv.amount.toLocaleString('uk-UA')} ₴?`)) return;
+    setProcessingId(inv.id);
+    try {
+      const now = new Date().toISOString();
+      const batch = writeBatch(db);
+
+      // Оновлюємо сам рахунок
+      batch.update(doc(db, 'paymentLinks', inv.id), {
+        status: 'confirmed',
+        confirmedAt: now,
+      });
+
+      // Якщо рахунок прив'язаний до замовлення — оновлюємо і його
+      if (inv.orderId) {
+        const newPaid = (inv.paidAmountBefore || 0) + inv.amount;
+        const isFullyPaid = newPaid >= inv.totalPrice;
+        batch.update(doc(db, 'orders', inv.orderId), {
+          paidAmount: newPaid,
+          paymentStatus: isFullyPaid ? 'fully_paid' : 'partially_paid',
+          currentInvoiceAmount: 0,
+          paymentToken: null,
+          paidAt: now,
+          updatedAt: now,
+        });
+      }
+
+      await batch.commit();
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Помилка підтвердження');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleReject = async (inv: PaymentLink) => {
+    if (!inv.id) return;
+    if (!confirm(`Скасувати рахунок на ${inv.amount.toLocaleString('uk-UA')} ₴?`)) return;
+    setProcessingId(inv.id);
+    try {
+      const now = new Date().toISOString();
+      const batch = writeBatch(db);
+
+      batch.update(doc(db, 'paymentLinks', inv.id), {
+        status: 'rejected',
+      });
+
+      if (inv.orderId) {
+        batch.update(doc(db, 'orders', inv.orderId), {
+          paymentStatus: 'cancelled',
+          currentInvoiceAmount: 0,
+          paymentToken: null,
+          updatedAt: now,
+        });
+      }
+
+      await batch.commit();
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Помилка скасування');
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   if (loading || loadingData) {
@@ -64,9 +136,7 @@ export default function InvoicesPage() {
         <Reveal>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div>
-              <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 text-[var(--text)]">
-                Рахунки
-              </h1>
+              <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-2 text-[var(--text)]">Рахунки</h1>
               <p className="text-lg text-[var(--text-3)]">Публічні посилання на оплату</p>
             </div>
             <Link href="/admin/invoices/new">
@@ -89,29 +159,56 @@ export default function InvoicesPage() {
             {invoices.map((inv, i) => {
               const status = statusLabels[inv.status] || statusLabels.awaiting;
               const Icon = status.icon;
+              const busy = processingId === inv.id;
               return (
                 <Reveal key={inv.id} delay={i * 30}>
-                  <div className="glass-card rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <h3 className="text-lg font-bold text-[var(--text)]">{inv.productTitle}</h3>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[var(--surface-2)] border border-[var(--border)] ${status.color}`}>
-                          <Icon size={12} /> {status.label}
-                        </span>
+                  <div className="glass-card rounded-2xl p-5 flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <h3 className="text-lg font-bold text-[var(--text)]">{inv.productTitle}</h3>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-[var(--surface-2)] border border-[var(--border)] ${status.color}`}>
+                            <Icon size={12} /> {status.label}
+                          </span>
+                        </div>
+                        <p className="text-sm text-[var(--text-3)] mb-2">Для: {inv.customerName || 'Клієнт'}</p>
+                        <div className="text-base font-bold text-[var(--text)]">{inv.amount.toLocaleString('uk-UA')} ₴</div>
                       </div>
-                      <p className="text-sm text-[var(--text-3)] mb-2">Для: {inv.customerName || 'Клієнт'}</p>
-                      <div className="text-base font-bold text-[var(--text)]">{inv.amount.toLocaleString('uk-UA')} ₴</div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Button onClick={() => copyLink(inv.id!)} variant="outline" className="!py-2.5 !px-4">
+                          {copiedId === inv.id ? <Check size={16} className="mr-1" /> : <Copy size={16} className="mr-1" />}
+                          {copiedId === inv.id ? 'Скопійовано' : 'Копіювати'}
+                        </Button>
+                        <a href={`/pay/${inv.id}`} target="_blank" rel="noopener noreferrer">
+                          <Button variant="outline" className="!py-2.5 !px-4">
+                            <ExternalLink size={16} className="mr-1" /> Відкрити
+                          </Button>
+                        </a>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Button onClick={() => copyLink(inv.id!, inv.id!)} variant="outline" className="!py-2.5 !px-4">
-                        {copiedId === inv.id ? <Check size={16} className="mr-1" /> : <Copy size={16} className="mr-1" />}
-                        {copiedId === inv.id ? 'Скопійовано' : 'Копіювати посилання'}
-                      </Button>
-                      <a href={`/pay/${inv.id}`} target="_blank" rel="noopener noreferrer">
-                        <Button className="!py-2.5 !px-4"><ExternalLink size={16} className="mr-1" /> Відкрити</Button>
-                      </a>
-                    </div>
+                    {/* Кнопки дій для активних рахунків */}
+                    {(inv.status === 'awaiting' || inv.status === 'pending_confirmation') && (
+                      <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-[var(--border)]">
+                        <Button
+                          onClick={() => handleConfirm(inv)}
+                          disabled={busy}
+                          className="flex-1 !py-3 bg-green-500 hover:bg-green-600 border-none shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                        >
+                          {busy ? <Loader2 size={16} className="animate-spin mr-2" /> : <Check size={16} className="mr-2" />}
+                          {busy ? 'Обробка...' : 'Підтвердити оплату'}
+                        </Button>
+                        <Button
+                          onClick={() => handleReject(inv)}
+                          disabled={busy}
+                          variant="outline"
+                          className="flex-1 !py-3 border-red-500/30 text-red-500 hover:bg-red-500/10"
+                        >
+                          <XCircle size={16} className="mr-2" /> Скасувати
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Reveal>
               );
