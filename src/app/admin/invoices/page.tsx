@@ -11,7 +11,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Reveal from '@/components/ui/Reveal';
 import Button from '@/components/ui/Button';
-import { Plus, FileText, Check, Clock, XCircle, Copy, ExternalLink, Loader2 } from 'lucide-react';
+import { Plus, FileText, Check, Clock, XCircle, Copy, ExternalLink, Loader2, RotateCcw, Undo2 } from 'lucide-react';
 
 export default function InvoicesPage() {
   const { appUser, loading } = useAuth();
@@ -49,14 +49,8 @@ export default function InvoicesPage() {
     try {
       const now = new Date().toISOString();
       const batch = writeBatch(db);
+      batch.update(doc(db, 'paymentLinks', inv.id), { status: 'confirmed', confirmedAt: now });
 
-      // Оновлюємо сам рахунок
-      batch.update(doc(db, 'paymentLinks', inv.id), {
-        status: 'confirmed',
-        confirmedAt: now,
-      });
-
-      // Якщо рахунок прив'язаний до замовлення — оновлюємо і його
       if (inv.orderId) {
         const newPaid = (inv.paidAmountBefore || 0) + inv.amount;
         const isFullyPaid = newPaid >= inv.totalPrice;
@@ -69,7 +63,6 @@ export default function InvoicesPage() {
           updatedAt: now,
         });
       }
-
       await batch.commit();
       await load();
     } catch (err) {
@@ -87,11 +80,7 @@ export default function InvoicesPage() {
     try {
       const now = new Date().toISOString();
       const batch = writeBatch(db);
-
-      batch.update(doc(db, 'paymentLinks', inv.id), {
-        status: 'rejected',
-      });
-
+      batch.update(doc(db, 'paymentLinks', inv.id), { status: 'rejected' });
       if (inv.orderId) {
         batch.update(doc(db, 'orders', inv.orderId), {
           paymentStatus: 'cancelled',
@@ -100,12 +89,73 @@ export default function InvoicesPage() {
           updatedAt: now,
         });
       }
-
       await batch.commit();
       await load();
     } catch (err) {
       console.error(err);
       alert('Помилка скасування');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // Скасувати підтвердження — повернути рахунок в "Очікує оплати"
+  const handleUnconfirm = async (inv: PaymentLink) => {
+    if (!inv.id) return;
+    if (!confirm('Скасувати підтвердження? Рахунок повернеться в «Очікує оплати». Гроші в замовленні НЕ зміняться.')) return;
+    setProcessingId(inv.id);
+    try {
+      const now = new Date().toISOString();
+      const batch = writeBatch(db);
+      batch.update(doc(db, 'paymentLinks', inv.id), { status: 'awaiting', confirmedAt: null });
+
+      if (inv.orderId) {
+        const newPaid = Math.max((inv.paidAmountBefore || 0), 0);
+        const isFullyPaid = newPaid >= inv.totalPrice;
+        batch.update(doc(db, 'orders', inv.orderId), {
+          paidAmount: newPaid,
+          paymentStatus: isFullyPaid ? 'fully_paid' : newPaid > 0 ? 'partially_paid' : 'awaiting_manual',
+          currentInvoiceAmount: inv.amount,
+          paymentToken: inv.id,
+          updatedAt: now,
+        });
+      }
+      await batch.commit();
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Помилка');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  // Повернення коштів — гроші повернено, сума в замовленні зменшується
+  const handleRefund = async (inv: PaymentLink) => {
+    if (!inv.id) return;
+    if (!confirm(`Повернути кошти клієнту на ${inv.amount.toLocaleString('uk-UA')} ₴? Сума сплаченого в замовленні зменшиться.`)) return;
+    setProcessingId(inv.id);
+    try {
+      const now = new Date().toISOString();
+      const batch = writeBatch(db);
+      batch.update(doc(db, 'paymentLinks', inv.id), { status: 'refunded', refundedAt: now });
+
+      if (inv.orderId) {
+        const newPaid = Math.max((inv.paidAmountBefore || 0), 0);
+        const isFullyPaid = newPaid >= inv.totalPrice;
+        batch.update(doc(db, 'orders', inv.orderId), {
+          paidAmount: newPaid,
+          paymentStatus: isFullyPaid ? 'fully_paid' : newPaid > 0 ? 'partially_paid' : 'pending',
+          currentInvoiceAmount: 0,
+          paymentToken: null,
+          updatedAt: now,
+        });
+      }
+      await batch.commit();
+      await load();
+    } catch (err) {
+      console.error(err);
+      alert('Помилка повернення');
     } finally {
       setProcessingId(null);
     }
@@ -127,6 +177,7 @@ export default function InvoicesPage() {
     confirmed: { label: 'Оплачено', color: 'text-green-500', icon: Check },
     rejected: { label: 'Відхилено', color: 'text-red-500', icon: XCircle },
     superseded: { label: 'Замінено', color: 'text-gray-500', icon: XCircle },
+    refunded: { label: 'Повернуто', color: 'text-orange-500', icon: Undo2 },
   };
 
   return (
@@ -188,24 +239,26 @@ export default function InvoicesPage() {
                       </div>
                     </div>
 
-                    {/* Кнопки дій для активних рахунків */}
                     {(inv.status === 'awaiting' || inv.status === 'pending_confirmation') && (
                       <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-[var(--border)]">
-                        <Button
-                          onClick={() => handleConfirm(inv)}
-                          disabled={busy}
-                          className="flex-1 !py-3 bg-green-500 hover:bg-green-600 border-none shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                        >
+                        <Button onClick={() => handleConfirm(inv)} disabled={busy} className="flex-1 !py-3 bg-green-500 hover:bg-green-600 border-none">
                           {busy ? <Loader2 size={16} className="animate-spin mr-2" /> : <Check size={16} className="mr-2" />}
-                          {busy ? 'Обробка...' : 'Підтвердити оплату'}
+                          Підтвердити оплату
                         </Button>
-                        <Button
-                          onClick={() => handleReject(inv)}
-                          disabled={busy}
-                          variant="outline"
-                          className="flex-1 !py-3 border-red-500/30 text-red-500 hover:bg-red-500/10"
-                        >
+                        <Button onClick={() => handleReject(inv)} disabled={busy} variant="outline" className="flex-1 !py-3 border-red-500/30 text-red-500 hover:bg-red-500/10">
                           <XCircle size={16} className="mr-2" /> Скасувати
+                        </Button>
+                      </div>
+                    )}
+
+                    {inv.status === 'confirmed' && (
+                      <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t border-[var(--border)]">
+                        <Button onClick={() => handleUnconfirm(inv)} disabled={busy} variant="outline" className="flex-1 !py-3 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10">
+                          {busy ? <Loader2 size={16} className="animate-spin mr-2" /> : <RotateCcw size={16} className="mr-2" />}
+                          Скасувати підтвердження
+                        </Button>
+                        <Button onClick={() => handleRefund(inv)} disabled={busy} variant="outline" className="flex-1 !py-3 border-orange-500/30 text-orange-500 hover:bg-orange-500/10">
+                          <Undo2 size={16} className="mr-2" /> Повернути кошти
                         </Button>
                       </div>
                     )}

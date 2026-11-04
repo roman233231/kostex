@@ -1,8 +1,8 @@
 export interface PaymentLink {
   id?: string;
-  orderId?: string;          // необов'язково — для ручних рахунків
+  orderId?: string;
   userId?: string;
-  customerName?: string;     // ім'я клієнта для ручного рахунку
+  customerName?: string;
   amount: number;
   totalPrice: number;
   paidAmountBefore: number;
@@ -10,8 +10,9 @@ export interface PaymentLink {
   paymentMethod: 'card' | 'crypto' | 'paypal' | 'other';
   paymentDetails: string;
   productTitle: string;
-  status: 'awaiting' | 'pending_confirmation' | 'confirmed' | 'rejected' | 'superseded';
+  status: 'awaiting' | 'pending_confirmation' | 'confirmed' | 'rejected' | 'superseded' | 'refunded';
   createdAt: string;
   claimedAt?: string;
   confirmedAt?: string;
+  refundedAt?: string;
 }
