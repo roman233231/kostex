@@ -128,11 +128,38 @@ export default function BuilderPage() {
     const feature = availableFeatures.find((f) => f.id === featureId); return sum + (feature?.price || 0);
   }, 0);
   const totalPrice = (selectedCategory?.price || 0) + pagesPrice + featuresPrice;
+  const discountAmount = promoData?.discountAmount || 0;
+  const finalTotalPrice = Math.max(0, totalPrice - discountAmount);
 
   const toggleSelection = (list: string[], setList: (val: string[]) => void, value: string) => {
     if (list.includes(value)) { setList(list.filter((v) => v !== value)); }
     else { setList([...list, value]); }
   };
+
+  const handleApplyPromo = async () => {
+    if (promoInput.trim() === '') return;
+    setCheckingPromo(true);
+    setPromoError('');
+    try {
+      const result = await validatePromoCode(promoInput, totalPrice);
+      if (result.valid && result.promo) {
+        setPromoData({
+          code: result.promo.code,
+          discountPercent: result.promo.discountPercent,
+          discountAmount: result.discountAmount || 0,
+        });
+      } else {
+        setPromoError(result.error || 'Невірний промокод');
+        setPromoData(null);
+      }
+    } catch (err) {
+      setPromoError('Помилка перевірки');
+    } finally {
+      setCheckingPromo(false);
+    }
+  };
+
+  const removePromo = () => { setPromoData(null); setPromoInput(''); setPromoError(''); };
 
   const handleNext = () => {
     if (step === 0 && !selectedCategoryId) { setError('Оберіть тип проєкту'); return; }
@@ -173,7 +200,7 @@ export default function BuilderPage() {
         features: featureNames,
         requirements,
         references: references ? references.split('\n').filter((r) => r.trim()) : [],
-        estimatedPrice: totalPrice,
+        estimatedPrice: finalTotalPrice,
         originalPrice: totalPrice,
         promoCode: promoData?.code,
         promoDiscount: promoData?.discountAmount,
@@ -455,8 +482,41 @@ export default function BuilderPage() {
                 <div className="flex justify-between items-center text-sm"><span className="text-[var(--text-3)]">Сторінки ({selectedPages.length})</span><span className="font-semibold text-[var(--text)]">+{pagesPrice.toLocaleString('uk-UA')} ₴</span></div>
                 <div className="flex justify-between items-center text-sm"><span className="text-[var(--text-3)]">Фічі ({selectedFeatures.length})</span><span className="font-semibold text-[var(--text)]">+{featuresPrice.toLocaleString('uk-UA')} ₴</span></div>
               </div>
+              <div className="mb-6 pt-4 border-t border-[var(--border)]">
+                {promoData ? (
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-green-500/10 border border-green-500/30">
+                    <div>
+                      <div className="text-xs font-bold text-green-500 uppercase">{promoData.code}</div>
+                      <div className="text-[10px] text-[var(--text-3)]">-{promoData.discountPercent}% знижка</div>
+                    </div>
+                    <button type="button" onClick={removePromo} className="text-red-400 text-xs font-bold hover:text-red-300">✕</button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoInput}
+                        onChange={(e) => setPromoInput(e.target.value)}
+                        placeholder="Промокод"
+                        className="flex-1 px-3 py-2 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:border-[var(--accent)] uppercase"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyPromo}
+                        disabled={checkingPromo}
+                        className="px-4 py-2 rounded-xl bg-[var(--accent)] text-white text-sm font-bold disabled:opacity-50"
+                      >
+                        {checkingPromo ? '...' : 'OK'}
+                      </button>
+                    </div>
+                    {promoError && <div className="text-[10px] text-red-400 mt-2">{promoError}</div>}
+                  </div>
+                )}
+              </div>
               <div className="pt-6 border-t border-[var(--border)] mb-8">
-                <div className="flex justify-between items-end"><span className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-1">Разом</span><span className="text-3xl font-bold text-gradient-animated leading-none">{totalPrice.toLocaleString('uk-UA')} ₴</span></div>
+                <div className="flex justify-between items-end"><span className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-1">Разом</span><span className="text-3xl font-bold text-gradient-animated leading-none">{finalTotalPrice.toLocaleString('uk-UA')} ₴</span>
+                {promoData && (<div className="text-xs text-[var(--text-4)] mt-1 line-through">{totalPrice.toLocaleString('uk-UA')} ₴</div>)}</div>
                 <p className="text-[10px] text-[var(--text-4)] mt-3 leading-relaxed">Фінальна ціна може відрізнятися.</p>
               </div>
               <div className="space-y-3 relative z-10">
@@ -476,7 +536,7 @@ export default function BuilderPage() {
 
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-[var(--bg)]/90 backdrop-blur-xl border-t border-[var(--border)] pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.2)]">
           <div className="flex items-center justify-between gap-4 max-w-2xl mx-auto">
-            <div><div className="text-[10px] text-[var(--text-4)] uppercase font-bold tracking-wider mb-0.5">Разом</div><div className="text-xl font-bold text-gradient-animated">{totalPrice.toLocaleString('uk-UA')} ₴</div></div>
+            <div><div className="text-[10px] text-[var(--text-4)] uppercase font-bold tracking-wider mb-0.5">Разом</div><div className="text-xl font-bold text-gradient-animated">{finalTotalPrice.toLocaleString('uk-UA')} ₴</div></div>
             <div className="flex gap-2">
               {step > 0 && (<Button variant="outline" onClick={handleBack} className="px-4 py-3 rounded-xl"><ArrowLeft size={18} /></Button>)}
               {step < steps.length - 1 ? (
