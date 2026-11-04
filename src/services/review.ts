@@ -72,3 +72,21 @@ export async function seedDemoReviews(): Promise<{ created: number; skipped: boo
   }
   return { created: demoReviews.length, skipped: false };
 }
+
+// Створити загальний відгук (без замовлення)
+export async function createGeneralReview(data: {
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  rating: number;
+  text: string;
+}): Promise<string> {
+  const docRef = await addDoc(collection(db, 'reviews'), {
+    ...data,
+    approved: false,
+    featured: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  return docRef.id;
+}
