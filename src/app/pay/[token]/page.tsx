@@ -147,7 +147,7 @@ export default function PaymentPage() {
             <XCircle size={56} className="text-red-500 mx-auto mb-6" />
             <h2 className="text-2xl font-bold text-[var(--text)] mb-2">Це посилання неактивне</h2>
             <p className="text-[var(--text-3)] mb-6">Зв'яжіться з менеджером, щоб отримати актуальне посилання на оплату.</p>
-            <Link href="/contact"><Button>Зв'язатися</Button></Link>
+            <Button onClick={() => window.dispatchEvent(new Event('open-support-chat'))}>Зв'язатися з підтримкою</Button>
           </div>
         </main>
         <Footer />

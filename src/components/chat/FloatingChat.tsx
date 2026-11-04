@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { MessageCircle, X, Send } from 'lucide-react';
+import Link from 'next/link';
+import { MessageCircle, X, Send, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -15,7 +16,13 @@ export default function FloatingChat() {
   const { currentUser } = useAuth();
   const pathname = usePathname();
 
-  // ХУКИ ПОВИННІ БУТИ НА ПОЧАТКУ!
+  // Слухаємо кастомну подію для відкриття чату з будь-якого місця
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-support-chat', handleOpen);
+    return () => window.removeEventListener('open-support-chat', handleOpen);
+  }, []);
+
   useEffect(() => {
     if (!isOpen || !currentUser) return;
     const load = async () => {
@@ -30,9 +37,6 @@ export default function FloatingChat() {
     };
     load();
   }, [isOpen, currentUser]);
-
-  // Після всіх хуків можна робити перевірки
-  if (!currentUser) return null;
 
   const isBuilderOrAdmin = pathname === '/builder' || pathname?.startsWith('/admin');
   const bottomPosition = isBuilderOrAdmin ? 'bottom-28 md:bottom-24' : 'bottom-6';
@@ -92,38 +96,55 @@ export default function FloatingChat() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
-              {messages.length === 0 ? (
-                <div className="text-center py-10 text-[var(--text-3)] text-sm">
-                  Напишіть нам, і ми відповімо найближчим часом.
+            {/* Якщо НЕ залогінений */}
+            {!currentUser ? (
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                <div className="w-20 h-20 rounded-full bg-[var(--accent-soft)] flex items-center justify-center mb-4">
+                  <LogIn size={40} className="text-[var(--accent)]" />
                 </div>
-              ) : (
-                messages.map((m) => (
-                  <div key={m.id} className={`flex ${m.senderRole === 'admin' ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-2xl ${m.senderRole === 'admin' ? 'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)]' : 'bg-[var(--accent)] text-white'}`}>
-                      <p className="text-sm">{m.text}</p>
+                <h4 className="text-lg font-bold text-[var(--text)] mb-2">Потрібна допомога?</h4>
+                <p className="text-sm text-[var(--text-3)] mb-6">Увійдіть в акаунт, щоб написати в підтримку.</p>
+                <Link href="/login" className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white font-bold hover:brightness-110 transition-all btn-tactile">
+                  Увійти
+                </Link>
+              </div>
+            ) : (
+              <>
+                {/* Якщо залогінений — показуємо чат */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
+                  {messages.length === 0 ? (
+                    <div className="text-center py-10 text-[var(--text-3)] text-sm">
+                      Напишіть нам, і ми відповімо найближчим часом.
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  ) : (
+                    messages.map((m) => (
+                      <div key={m.id} className={`flex ${m.senderRole === 'admin' ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`max-w-[80%] p-3 rounded-2xl ${m.senderRole === 'admin' ? 'bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)]' : 'bg-[var(--accent)] text-white'}`}>
+                          <p className="text-sm">{m.text}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
 
-            <form onSubmit={handleSend} className="p-4 border-t border-[var(--border)] bg-[var(--surface-2)] flex gap-2">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Напишіть повідомлення..."
-                className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:border-[var(--accent)]"
-              />
-              <button
-                type="submit"
-                disabled={sending || !newMessage.trim()}
-                className="w-12 h-12 rounded-xl bg-[var(--accent)] text-white flex items-center justify-center hover:brightness-110 disabled:opacity-50 transition-all"
-              >
-                <Send size={18} />
-              </button>
-            </form>
+                <form onSubmit={handleSend} className="p-4 border-t border-[var(--border)] bg-[var(--surface-2)] flex gap-2">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Напишіть повідомлення..."
+                    className="flex-1 px-4 py-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-sm text-[var(--text)] focus:outline-none focus:border-[var(--accent)]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={sending || !newMessage.trim()}
+                    className="w-12 h-12 rounded-xl bg-[var(--accent)] text-white flex items-center justify-center hover:brightness-110 disabled:opacity-50 transition-all"
+                  >
+                    <Send size={18} />
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </div>
       )}
