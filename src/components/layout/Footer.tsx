@@ -43,11 +43,16 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">Продукти</h3>
             <ul className="space-y-4">
-              {['Сайти', 'Веб-додатки', 'Софт', 'Боти'].map((item) => (
-                <li key={item}>
-                  <Link href="/catalog" className="text-[var(--text-3)] text-sm hover:text-[var(--accent)] transition-colors flex items-center gap-2 group">
+              {[
+                { name: 'Сайти', href: '/services/website' },
+                { name: 'Веб-додатки', href: '/services/webapp' },
+                { name: 'Софт', href: '/services/software' },
+                { name: 'Боти', href: '/services/bot' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link href={item.href} className="text-[var(--text-3)] text-sm hover:text-[var(--accent)] transition-colors flex items-center gap-2 group">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {item}
+                    {item.name}
                   </Link>
                 </li>
               ))}
