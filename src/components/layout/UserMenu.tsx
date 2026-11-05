@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { logoutUser } from '@/services/auth';
@@ -9,7 +10,12 @@ import { User, Package, Bell, Settings, LogOut, Shield, ChevronDown, X } from 'l
 export default function UserMenu() {
   const { currentUser, appUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -20,6 +26,16 @@ export default function UserMenu() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  // Блокуємо скрол фону, коли відкрите мобільне меню
+  useEffect(() => {
+    if (isOpen && window.innerWidth < 640) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
   if (!currentUser) return null;
@@ -79,46 +95,47 @@ export default function UserMenu() {
         </div>
       )}
 
-      {/* MOBILE BOTTOM SHEET */}
-      {isOpen && (
-        <div className="sm:hidden fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-end justify-center p-3" onClick={() => setIsOpen(false)}>
-          <div className="w-full rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-3 p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
+      {/* MOBILE BOTTOM SHEET (Через портал, щоб не ламалося через Navbar) */}
+      {isOpen && mounted && createPortal(
+        <div className="sm:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-end justify-center p-3 animate-fade-in" onClick={() => setIsOpen(false)}>
+          <div className="w-full rounded-[2rem] bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up pb-safe" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 p-5 border-b border-[var(--border)] bg-[var(--surface-2)]">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}>
                 {initial}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
+                <p className="font-bold text-[var(--text)] truncate text-base">{appUser?.displayName || 'Користувач'}</p>
                 <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
               </div>
-              <button type="button" onClick={() => setIsOpen(false)} className="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)]">
-                <X size={18} />
+              <button type="button" onClick={() => setIsOpen(false)} className="w-10 h-10 rounded-full bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--text-3)] hover:text-red-500 transition-colors">
+                <X size={20} />
               </button>
             </div>
-            <div className="p-2">
+            <div className="p-3">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors">
-                    <Icon size={18} /> {item.label}
+                  <Link key={item.href} href={item.href} onClick={() => setIsOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors">
+                    <Icon size={20} /> {item.label}
                   </Link>
                 );
               })}
             </div>
             {isAdmin && (
-              <div className="p-2 border-t border-[var(--border)]">
-                <Link href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors">
-                  <Shield size={18} /> Адмін-панель
+              <div className="px-3 pb-2">
+                <Link href="/admin" onClick={() => setIsOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors">
+                  <Shield size={20} /> Адмін-панель
                 </Link>
               </div>
             )}
-            <div className="p-2 border-t border-[var(--border)]">
-              <button type="button" onClick={() => { setIsOpen(false); logoutUser(); }} className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors">
-                <LogOut size={18} /> Вийти
+            <div className="p-3 border-t border-[var(--border)] pb-8">
+              <button type="button" onClick={() => { setIsOpen(false); logoutUser(); }} className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] font-medium text-red-500 hover:bg-red-500/10 transition-colors">
+                <LogOut size={20} /> Вийти
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
