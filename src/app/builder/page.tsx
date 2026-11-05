@@ -17,6 +17,7 @@ import { getActiveFeatures } from '@/services/feature';
 import { notifyAllAdmins } from '@/services/notification';
 import { validatePromoCode } from '@/services/promoCode';
 import { Feature } from '@/types/feature';
+import { serviceCategories as baseCategories } from '@/data/services';
 import {
   Package, Palette, FileText, Zap, PenLine, Check,
   ArrowLeft, ArrowRight, Loader2, Sparkles, LayoutTemplate,
@@ -25,18 +26,7 @@ import {
   HeartPulse, Building2, Send, AtSign, Phone, Mail, MessageCircle
 } from 'lucide-react';
 
-const baseCategories = [
-  { id: 'website', name: 'Сайт / Корпоративний', icon: Globe, price: 5000, time: '7–14 днів', desc: 'Багатосторінковий сайт для бізнесу' },
-  { id: 'landing', name: 'Лендінг', icon: LayoutTemplate, price: 3500, time: '3–7 днів', desc: 'Односторінковий сайт для продажу послуги' },
-  { id: 'webapp', name: 'Веб-додаток', icon: Zap, price: 12000, time: '2–4 тижні', desc: 'Додаток з авторизацією, базою даних та логікою' },
-  { id: 'bot', name: 'Telegram-бот', icon: Bot, price: 4000, time: '3–7 днів', desc: 'Бот для продажів, запису або підтримки' },
-  { id: 'software', name: 'Софт / Десктоп', icon: Code, price: 15000, time: '3–5 тижнів', desc: 'Крос-платформний софт або утиліта' },
-  { id: 'crm', name: 'CRM-система', icon: BarChart3, price: 20000, time: '4–6 тижнів', desc: 'Управління клієнтами та замовленнями' },
-  { id: 'ecommerce', name: 'E-commerce', icon: ShoppingCart, price: 15000, time: '2–4 тижні', desc: 'Онлайн-магазин з каталогом та оплатою' },
-  { id: 'mobile', name: 'Мобільний додаток', icon: Smartphone, price: 25000, time: '4–8 тижнів', desc: 'iOS / Android додаток під ваш бізнес' },
-  { id: 'automation', name: 'Автоматизація', icon: Settings, price: 8000, time: '1–2 тижні', desc: 'Інтеграції, парсери, скрипти' },
-  { id: 'other', name: 'Інше / Кастом', icon: HelpCircle, price: 0, time: 'Узгоджується', desc: 'Нестандартний проєкт — обговоримо' },
-];
+
 
 const sphereOptions = [
   { id: 'Business', label: 'Бізнес / Послуги', icon: Building2 },
@@ -111,6 +101,14 @@ export default function BuilderPage() {
 
   const [availableFeatures, setAvailableFeatures] = useState<Feature[]>([]);
   const [featuresLoading, setFeaturesLoading] = useState(true);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+    if (type && baseCategories.find((c) => c.id === type)) {
+      setSelectedCategoryId(type);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchFeatures = async () => {
