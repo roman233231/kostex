@@ -11,8 +11,8 @@ export default function UserMenu() {
   const { currentUser, appUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -22,16 +22,15 @@ export default function UserMenu() {
     if (!isOpen) return;
     const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
-      if (
-        menuRef.current && !menuRef.current.contains(target) &&
-        buttonRef.current && !buttonRef.current.contains(target)
-      ) {
+      const inButton = buttonRef.current?.contains(target);
+      const inMenu = menuContentRef.current?.contains(target);
+      if (!inButton && !inMenu) {
         setIsOpen(false);
       }
     };
     const timeout = setTimeout(() => {
       document.addEventListener('pointerdown', handleClickOutside);
-    }, 50);
+    }, 100);
     return () => {
       clearTimeout(timeout);
       document.removeEventListener('pointerdown', handleClickOutside);
@@ -59,88 +58,92 @@ export default function UserMenu() {
     { href: '/account/profile', label: 'Налаштування профілю', icon: Settings },
   ];
 
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
-      <div className="relative" ref={menuRef}>
-        <button
-          ref={buttonRef}
-          type="button"
-          onClick={() => setIsOpen((v) => !v)}
-          className="flex items-center gap-1 sm:gap-2 p-1 sm:pr-2 rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-all bg-[var(--surface)] cursor-pointer"
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:pr-2 rounded-full border border-[var(--border)] hover:border-[var(--accent)] transition-all bg-[var(--surface)] cursor-pointer"
+      >
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
+          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}
         >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))' }}
-          >
-            {initial}
+          {initial}
+        </div>
+        <ChevronDown
+          size={14}
+          className={`text-[var(--text-3)] transition-transform duration-300 hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {/* DESKTOP DROPDOWN — портал з ref */}
+      {isOpen && mounted && createPortal(
+        <div
+          ref={menuContentRef}
+          className="hidden sm:block w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[9999]"
+          style={{
+            position: 'fixed',
+            top: buttonRef.current ? buttonRef.current.getBoundingClientRect().bottom + 10 : 0,
+            left: buttonRef.current ? Math.max(8, buttonRef.current.getBoundingClientRect().right - 256) : 0,
+          }}
+        >
+          <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
+            <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
+            <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
           </div>
-          <ChevronDown
-            size={14}
-            className={`text-[var(--text-3)] transition-transform duration-300 hidden sm:block ${isOpen ? 'rotate-180' : ''}`}
-          />
-        </button>
-
-        {/* DESKTOP DROPDOWN — рендериться через портал */}
-        {isOpen && mounted && createPortal(
-          <div
-            className="hidden sm:block absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[9999]"
-            style={{
-              position: 'fixed',
-              top: buttonRef.current ? buttonRef.current.getBoundingClientRect().bottom + 10 : 0,
-              left: buttonRef.current ? buttonRef.current.getBoundingClientRect().right - 256 : 0,
-            }}
-          >
-            <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
-              <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
-              <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
-            </div>
-            <div className="p-2">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
-                  >
-                    <Icon size={18} /> {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-            {isAdmin && (
-              <div className="p-2 border-t border-[var(--border)]">
+          <div className="p-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
                 <Link
-                  href="/admin"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+                  key={item.href}
+                  href={item.href}
+                  onClick={handleLinkClick}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
                 >
-                  <Shield size={18} /> Адмін-панель
+                  <Icon size={18} /> {item.label}
                 </Link>
-              </div>
-            )}
+              );
+            })}
+          </div>
+          {isAdmin && (
             <div className="p-2 border-t border-[var(--border)]">
-              <button
-                type="button"
-                onClick={() => { setIsOpen(false); logoutUser(); }}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+              <Link
+                href="/admin"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
               >
-                <LogOut size={18} /> Вийти
-              </button>
+                <Shield size={18} /> Адмін-панель
+              </Link>
             </div>
-          </div>,
-          document.body
-        )}
-      </div>
+          )}
+          <div className="p-2 border-t border-[var(--border)]">
+            <button
+              type="button"
+              onClick={() => { setIsOpen(false); logoutUser(); }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut size={18} /> Вийти
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
 
-      {/* MOBILE BOTTOM SHEET — через портал, поверх усього */}
+      {/* MOBILE BOTTOM SHEET — портал з ref */}
       {isOpen && mounted && createPortal(
         <div
           className="sm:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-end justify-center p-3"
           onClick={() => setIsOpen(false)}
         >
           <div
+            ref={menuContentRef}
             className="w-full rounded-[2rem] bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up pb-safe"
             onClick={(e) => e.stopPropagation()}
           >
@@ -170,7 +173,7 @@ export default function UserMenu() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                     className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] font-medium text-[var(--text-2)] hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] transition-colors"
                   >
                     <Icon size={20} /> {item.label}
@@ -182,7 +185,7 @@ export default function UserMenu() {
               <div className="px-3 pb-2">
                 <Link
                   href="/admin"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleLinkClick}
                   className="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-[15px] font-bold text-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)] hover:text-white transition-colors"
                 >
                   <Shield size={20} /> Адмін-панель
