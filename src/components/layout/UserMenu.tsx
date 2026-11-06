@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { logoutUser } from '@/services/auth';
@@ -9,8 +10,13 @@ import { User, Package, Bell, Settings, LogOut, Shield, ChevronDown, X } from 'l
 export default function UserMenu() {
   const { currentUser, appUser } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -74,8 +80,16 @@ export default function UserMenu() {
           />
         </button>
 
-        {isOpen && (
-          <div className="hidden sm:block absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[1000]">
+        {/* DESKTOP DROPDOWN — рендериться через портал */}
+        {isOpen && mounted && createPortal(
+          <div
+            className="hidden sm:block absolute right-0 mt-3 w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[9999]"
+            style={{
+              position: 'fixed',
+              top: buttonRef.current ? buttonRef.current.getBoundingClientRect().bottom + 10 : 0,
+              left: buttonRef.current ? buttonRef.current.getBoundingClientRect().right - 256 : 0,
+            }}
+          >
             <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
               <p className="font-bold text-[var(--text)] truncate">{appUser?.displayName || 'Користувач'}</p>
               <p className="text-xs text-[var(--text-3)] truncate">{currentUser.email}</p>
@@ -115,11 +129,13 @@ export default function UserMenu() {
                 <LogOut size={18} /> Вийти
               </button>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
 
-      {isOpen && (
+      {/* MOBILE BOTTOM SHEET — через портал, поверх усього */}
+      {isOpen && mounted && createPortal(
         <div
           className="sm:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-end justify-center p-3"
           onClick={() => setIsOpen(false)}
@@ -183,7 +199,8 @@ export default function UserMenu() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
