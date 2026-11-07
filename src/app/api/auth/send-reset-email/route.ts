@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminAuth } from "@/lib/firebaseAdmin";
+import { getAdminAuth } from "@/lib/firebaseAdmin";
 import { Resend } from "resend";
+
+export const dynamic = 'force-dynamic';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,6 +13,8 @@ export async function POST(req: NextRequest) {
     if (!email) {
       return NextResponse.json({ error: "Email обов'язковий" }, { status: 400 });
     }
+
+    const adminAuth = getAdminAuth();
 
     const resetLink = await adminAuth.generatePasswordResetLink(email, {
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/login`,
