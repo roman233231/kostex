@@ -7,7 +7,6 @@ import Footer from '@/components/layout/Footer';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Reveal from '@/components/ui/Reveal';
-import { resetPassword } from '@/services/auth';
 import { useLanguage } from '@/context/LanguageContext';
 import { ArrowRight, ArrowLeft, Mail, CheckCircle2 } from 'lucide-react';
 
@@ -20,14 +19,26 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
     setLoading(true);
+
     try {
-      await resetPassword(email);
-      setMessage('Лист для скидання пароля надіслано. Перевірте пошту.');
-    } catch (err) {
-      setError('Не вдалося надіслати лист. Перевірте email.');
+      const response = await fetch("/api/auth/send-reset-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Помилка");
+      }
+
+      setMessage("Якщо такий email існує, лист для скидання пароля надіслано. Перевірте пошту (і папку Спам).");
+    } catch (err: any) {
+      setError(err.message || "Не вдалося надіслати лист.");
     } finally {
       setLoading(false);
     }
@@ -37,7 +48,6 @@ export default function ForgotPasswordPage() {
     <>
       <Navbar />
       <main className="container py-24 min-h-[85vh] flex items-center justify-center relative overflow-hidden">
-        {/* Фонові плями */}
         <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none animate-float" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[var(--accent)]/10 rounded-full blur-[100px] pointer-events-none animate-float" style={{ animationDelay: '2s' }} />
 
@@ -59,13 +69,14 @@ export default function ForgotPasswordPage() {
 
             <div className="glass-card rounded-[2rem] p-8 md:p-10 border-[var(--border)] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]">
               {error && (
-                <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm flex items-center gap-2 animate-slide-up">
-                  <span className="text-lg">⚠</span> {error}
+                <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm flex items-start gap-2 animate-slide-up">
+                  <span className="text-lg shrink-0">⚠</span>
+                  <span>{error}</span>
                 </div>
               )}
               {message && (
-                <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-500 text-sm flex items-center gap-2 animate-slide-up">
-                  <CheckCircle2 size={18} /> {message}
+                <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-500 text-sm flex items-start gap-2 animate-slide-up">
+                  <CheckCircle2 size={18} className="shrink-0 mt-0.5" /> <span>{message}</span>
                 </div>
               )}
 
