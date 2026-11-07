@@ -12,7 +12,8 @@ export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const menuContentRef = useRef<HTMLDivElement>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -23,8 +24,9 @@ export default function UserMenu() {
     const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
       const inButton = buttonRef.current?.contains(target);
-      const inMenu = menuContentRef.current?.contains(target);
-      if (!inButton && !inMenu) {
+      const inDesktopMenu = desktopMenuRef.current?.contains(target);
+      const inMobileMenu = mobileMenuRef.current?.contains(target);
+      if (!inButton && !inDesktopMenu && !inMobileMenu) {
         setIsOpen(false);
       }
     };
@@ -82,10 +84,10 @@ export default function UserMenu() {
         />
       </button>
 
-      {/* DESKTOP DROPDOWN — портал з ref */}
+      {/* DESKTOP DROPDOWN */}
       {isOpen && mounted && createPortal(
         <div
-          ref={menuContentRef}
+          ref={desktopMenuRef}
           className="hidden sm:block w-64 rounded-2xl bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up z-[9999]"
           style={{
             position: 'fixed',
@@ -136,14 +138,14 @@ export default function UserMenu() {
         document.body
       )}
 
-      {/* MOBILE BOTTOM SHEET — портал з ref */}
+      {/* MOBILE BOTTOM SHEET */}
       {isOpen && mounted && createPortal(
         <div
           className="sm:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-sm flex items-end justify-center p-3"
           onClick={() => setIsOpen(false)}
         >
           <div
-            ref={menuContentRef}
+            ref={mobileMenuRef}
             className="w-full rounded-[2rem] bg-[var(--surface)] border border-[var(--border)] shadow-2xl overflow-hidden animate-slide-up pb-safe"
             onClick={(e) => e.stopPropagation()}
           >
