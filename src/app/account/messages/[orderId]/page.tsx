@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { getOrderById } from '@/services/order';
+import { getUserOrders } from '@/services/order';
 import { getOrderMessages, sendMessage } from '@/services/message';
 import { Order } from '@/types/order';
 import { Message } from '@/types/message';
@@ -13,7 +13,7 @@ import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
-  const { currentUser, appUser } = useAuth();
+  const { currentUser } = useAuth();
   const orderId = params.orderId as string;
 
   const [order, setOrder] = useState<Order | null>(null);
@@ -27,9 +27,12 @@ export default function ChatPage() {
     if (!currentUser || !orderId) return;
     const load = async () => {
       try {
-        const o = await getOrderById(orderId);
-        if (o && o.userId === currentUser.uid) {
-          setOrder(o);
+        // Використовуємо getUserOrders замість getOrderById
+        const orders = await getUserOrders(currentUser.uid);
+        const foundOrder = orders.find(o => o.id === orderId);
+        
+        if (foundOrder) {
+          setOrder(foundOrder);
           const msgs = await getOrderMessages(orderId);
           setMessages(msgs);
         } else {
@@ -71,7 +74,7 @@ export default function ChatPage() {
     }
   };
 
-  if (loading) return <div className="p-20 text-center">Завантаження...</div>;
+  if (loading) return <div className="p-20 text-center text-[var(--text-3)]">Завантаження...</div>;
   if (!order) return null;
 
   return (

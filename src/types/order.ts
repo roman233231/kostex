@@ -36,4 +36,8 @@ export interface Order {
   paymentProvider?: string;
   paidAt?: string;
   paymentClaimedAt?: string;
+
+  // ДОДАНО: Поле для файлів (вихідний код, макети тощо)
+  files?: { name: string; url: string }[];
+  attachments?: { name: string; url: string }[];
 }

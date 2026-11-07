@@ -5,12 +5,12 @@ import Reveal from '@/components/ui/Reveal';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { getUserOrders } from '@/services/order';
-import { FolderOpen, ExternalLink, FileText } from 'lucide-react';
+import { FolderOpen, ExternalLink, FileCode, FileText } from 'lucide-react';
 
 export default function FilesPage() {
   const { t } = useLanguage();
   const { currentUser } = useAuth();
-  const [files, setFiles] = useState<{url: string, orderTitle: string, orderId: string}[]>([]);
+  const [files, setFiles] = useState<{name: string, url: string, orderTitle: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,34 +18,44 @@ export default function FilesPage() {
     const fetchFiles = async () => {
       try {
         const orders = await getUserOrders(currentUser.uid);
-        const allFiles: {url: string, orderTitle: string, orderId: string}[] = [];
+        const allFiles: {name: string, url: string, orderTitle: string}[] = [];
         const urlRegex = /(https?:\/\/[^\s]+)/g;
 
         orders.forEach(order => {
-          // Збираємо текст з обох полів
+          // 1. Шукаємо у масиві files (якщо є)
+          if (order.files && Array.isArray(order.files)) {
+            order.files.forEach((f: any) => {
+              allFiles.push({ name: f.name || 'Файл проєкту', url: f.url, orderTitle: order.productTitle || 'Проєкт' });
+            });
+          }
+
+          // 2. Шукаємо у масиві attachments (якщо є)
+          if (order.attachments && Array.isArray(order.attachments)) {
+            order.attachments.forEach((f: any) => {
+              allFiles.push({ name: f.name || 'Вкладення', url: f.url, orderTitle: order.productTitle || 'Проєкт' });
+            });
+          }
+
+          // 3. Шукаємо URL в тексті (requirements та references)
           const textToScan = `${order.requirements || ''} \n ${(order.references || []).join('\n')}`;
-          
-          // Шукаємо всі URL-адреси в тексті
           const urls = textToScan.match(urlRegex);
           
           if (urls) {
             urls.forEach(url => {
-              // Видаляємо зайві розділові знаки в кінці (якщо є)
               const cleanUrl = url.replace(/[.,;!?)]+$/, '');
-              allFiles.push({ 
-                url: cleanUrl, 
-                orderTitle: order.productTitle || 'Проєкт', 
-                orderId: order.id! 
-              });
+              // Перевіряємо, чи немає вже такого URL
+              if (!allFiles.some(f => f.url === cleanUrl)) {
+                allFiles.push({ 
+                  name: 'Посилання з замовлення', 
+                  url: cleanUrl, 
+                  orderTitle: order.productTitle || 'Проєкт'
+                });
+              }
             });
           }
         });
         
-        // Видаляємо дублікати
-        const uniqueFiles = Array.from(new Set(allFiles.map(f => JSON.stringify(f))))
-          .map(s => JSON.parse(s));
-          
-        setFiles(uniqueFiles);
+        setFiles(allFiles);
       } catch (err) {
         console.error(err);
       } finally {
@@ -62,7 +72,7 @@ export default function FilesPage() {
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-2">
             {t('account.files')}
           </h1>
-          <p className="text-lg text-[var(--text-3)]">Файли, макети та документи ваших проєктів</p>
+          <p className="text-lg text-[var(--text-3)]">Файли, макети та вихідний код ваших проєктів</p>
         </div>
       </Reveal>
 
@@ -74,12 +84,12 @@ export default function FilesPage() {
             <Reveal key={i} delay={i * 50}>
               <a href={file.url} target="_blank" rel="noopener noreferrer" className="glass-card p-6 rounded-2xl flex flex-col h-full hover:border-[var(--accent)] transition-all group">
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <FileText size={24} />
+                  {file.url.includes('.zip') || file.url.includes('github') ? <FileCode size={24} /> : <FileText size={24} />}
                 </div>
-                <h3 className="font-bold text-[var(--text)] mb-1 line-clamp-1 break-all">{file.url}</h3>
+                <h3 className="font-bold text-[var(--text)] mb-1 line-clamp-1 break-all" title={file.name}>{file.name}</h3>
                 <p className="text-xs text-[var(--text-3)] mb-4 flex-1">До замовлення: {file.orderTitle}</p>
                 <div className="flex items-center justify-between text-xs font-medium text-[var(--accent)] mt-auto pt-4 border-t border-[var(--border)]">
-                  Відкрити посилання <ExternalLink size={14} />
+                  Відкрити <ExternalLink size={14} />
                 </div>
               </a>
             </Reveal>
