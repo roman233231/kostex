@@ -19,17 +19,33 @@ export default function FilesPage() {
       try {
         const orders = await getUserOrders(currentUser.uid);
         const allFiles: {url: string, orderTitle: string, orderId: string}[] = [];
-        
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+
         orders.forEach(order => {
-          if (order.references && order.references.length > 0) {
-            order.references.forEach(ref => {
-              if (ref.startsWith('http')) {
-                 allFiles.push({ url: ref, orderTitle: order.productTitle || 'Проєкт', orderId: order.id! });
-              }
+          // Збираємо текст з обох полів
+          const textToScan = `${order.requirements || ''} \n ${(order.references || []).join('\n')}`;
+          
+          // Шукаємо всі URL-адреси в тексті
+          const urls = textToScan.match(urlRegex);
+          
+          if (urls) {
+            urls.forEach(url => {
+              // Видаляємо зайві розділові знаки в кінці (якщо є)
+              const cleanUrl = url.replace(/[.,;!?)]+$/, '');
+              allFiles.push({ 
+                url: cleanUrl, 
+                orderTitle: order.productTitle || 'Проєкт', 
+                orderId: order.id! 
+              });
             });
           }
         });
-        setFiles(allFiles);
+        
+        // Видаляємо дублікати
+        const uniqueFiles = Array.from(new Set(allFiles.map(f => JSON.stringify(f))))
+          .map(s => JSON.parse(s));
+          
+        setFiles(uniqueFiles);
       } catch (err) {
         console.error(err);
       } finally {

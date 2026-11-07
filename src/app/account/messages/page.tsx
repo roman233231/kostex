@@ -47,7 +47,7 @@ export default function MessagesPage() {
         <div className="space-y-4">
           {chats.map((order, i) => (
             <Reveal key={order.id} delay={i * 50}>
-              <Link href={`/account/orders/${order.id}`} className="glass-card p-6 rounded-2xl flex items-center gap-6 hover:border-[var(--accent)] transition-all group block">
+              <Link href={`/account/messages/${order.id}`} className="glass-card p-6 rounded-2xl flex items-center gap-6 hover:border-[var(--accent)] transition-all group block">
                 <div className="w-14 h-14 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <MessageSquare size={24} />
                 </div>
